@@ -3,6 +3,7 @@ import HeroSection from '../components/HeroSection'
 import FeatureCards from '../components/FeatureCards'
 import ModularCustomizer from '../components/ModularCustomizer'
 import DesignPhilosophy from '../components/DesignPhilosophy'
+import Footer from '../components/Footer'
 
 function Home() {
     return (
@@ -29,6 +30,9 @@ function Home() {
             <section id="philosophy" className="py-20">
                 <DesignPhilosophy />
             </section>
+
+            {/* Footer */}
+            <Footer />
         </div>
     )
 }
