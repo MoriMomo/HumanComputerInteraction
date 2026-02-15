@@ -5,12 +5,19 @@ import Navbar from './components/Navbar'
 
 function App() {
     return (
-        <ReactLenis root>
+        <ReactLenis
+            root
+            options={{
+                lerp: 0.2,
+                smoothWheel: true,
+                smoothTouch: false
+            }}
+        >
             <Router
                 future={{
                     v7_startTransition: true,
                     v7_relativeSplatPath: true,
-                }}
+                // }}
             >
                 <div className="bg-deep-black min-h-screen">
                     <Navbar />

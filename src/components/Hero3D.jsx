@@ -1,181 +1,301 @@
-import { useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { PresentationControls, Environment, PerspectiveCamera, Float } from '@react-three/drei'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
+import {
+    BakeShadows,
+    ContactShadows,
+    Environment,
+    Float,
+    Html,
+    OrbitControls,
+    Preload,
+    useGLTF,
+    useProgress
+} from '@react-three/drei'
 import * as THREE from 'three'
 
-// Product Model Component
-function ProductModel() {
-    const groupRef = useRef()
+const MODEL_URL = `${import.meta.env.BASE_URL || '/'}models/card/scene.gltf`
 
-    // Reduce animation intensity
-    useFrame((state) => {
-        if (groupRef.current) {
-            groupRef.current.rotation.z = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.03
+const useGsap = () => {
+    const [gsap, setGsap] = useState(null)
+
+    useEffect(() => {
+        if (window.gsap) {
+            setGsap(window.gsap)
+            return
         }
-    })
+
+        const script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'
+        script.async = true
+        script.onload = () => setGsap(window.gsap)
+        document.head.appendChild(script)
+
+        return () => {
+            if (document.head && document.head.contains(script)) {
+                document.head.removeChild(script)
+            }
+        }
+    }, [])
+
+    return gsap
+}
+
+function Loader() {
+    const { progress } = useProgress()
 
     return (
-        <group ref={groupRef} position={[0, 0, 0]}>
-            {/* Main Chassis - ID Card Holder */}
-            <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[2, 3, 0.1]} />
-                <meshStandardMaterial
-                    color="#0a0a0a"
-                    metalness={0.8}
-                    roughness={0.2}
-                />
-            </mesh>
-
-            {/* Glowing Edge/Border */}
-            <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[2.02, 3.02, 0.08]} />
-                <meshBasicMaterial color="#00FAFF" toneMapped={false} />
-            </mesh>
-            <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[2, 3, 0.12]} />
-                <meshStandardMaterial color="#0a0a0a" metalness={0.9} roughness={0.1} />
-            </mesh>
-
-            {/* Fragrance Module (Left) - Optimized Glass */}
-            <mesh position={[-1.2, 0, -0.1]} rotation={[0, 0, 0]}>
-                <cylinderGeometry args={[0.2, 0.2, 1.8, 16]} />
-                <meshPhysicalMaterial
-                    color="#00FAFF"
-                    metalness={0.1}
-                    roughness={0.1}
-                    transmission={0.9}
-                    thickness={0.5}
-                    transparent
-                    opacity={0.3}
-                />
-            </mesh>
-
-            {/* Core Fluid inside Glass */}
-            <mesh position={[-1.2, 0, -0.1]}>
-                <cylinderGeometry args={[0.15, 0.15, 1.6, 12]} />
-                <meshStandardMaterial
-                    color="#00FAFF"
-                    emissive="#00FAFF"
-                    emissiveIntensity={1.5}
-                />
-            </mesh>
-
-            {/* Tech Storage Module (Right) - Solid compartment */}
-            <mesh position={[1.2, 0, -0.1]}>
-                <boxGeometry args={[0.6, 1.8, 0.4]} />
-                <meshStandardMaterial
-                    color="#111"
-                    metalness={0.9}
-                    roughness={0.2}
-                />
-            </mesh>
-
-            {/* Cyberpunk LED Strip on Tech Module */}
-            <mesh position={[1.2, 0.8, 0.11]}>
-                <boxGeometry args={[0.4, 0.05, 0.01]} />
-                <meshStandardMaterial
-                    color="#39FF14"
-                    emissive="#39FF14"
-                    emissiveIntensity={2}
-                />
-            </mesh>
-
-            <mesh position={[1.2, -0.8, 0.11]}>
-                <boxGeometry args={[0.4, 0.05, 0.01]} />
-                <meshStandardMaterial
-                    color="#39FF14"
-                    emissive="#39FF14"
-                    emissiveIntensity={2}
-                />
-            </mesh>
-
-            {/* Clamp/Connector indicators */}
-            <mesh position={[-1.2, 0, 0.05]}>
-                <boxGeometry args={[0.15, 0.4, 0.1]} />
-                <meshStandardMaterial color="#333" metalness={1} roughness={0.2} />
-            </mesh>
-            <mesh position={[1.2, 0, 0.05]}>
-                <boxGeometry args={[0.15, 0.4, 0.1]} />
-                <meshStandardMaterial color="#333" metalness={1} roughness={0.2} />
-            </mesh>
-        </group>
+        <Html center>
+            <div className="flex flex-col items-center justify-center text-white w-screen h-screen bg-[#050505] z-50 font-sans">
+                <div className="text-4xl md:text-5xl font-black tracking-tighter mb-4 italic uppercase">
+                    {progress < 100 ? 'Syncing' : 'Ready'}
+                </div>
+                <div className="w-48 h-0.5 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                        className="h-full bg-cyan-400 transition-all duration-300"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+                <div className="mt-4 font-mono text-[9px] text-cyan-400/50 uppercase tracking-[0.4em]">
+                    Core_Sync: {Math.round(progress)}%
+                </div>
+            </div>
+        </Html>
     )
 }
 
-// Main Hero 3D Component
+function FragranceModule({ mode, gsap }) {
+    const { scene } = useGLTF(MODEL_URL)
+    const materialsRef = useRef([])
+    const { camera, controls } = useThree()
+
+    useMemo(() => {
+        if (!scene) return
+
+        const box = new THREE.Box3().setFromObject(scene)
+        const center = new THREE.Vector3()
+        const size = new THREE.Vector3()
+        box.getCenter(center)
+        box.getSize(size)
+
+        scene.position.set(0, 0, 0)
+        scene.position.sub(center)
+
+        const maxDim = Math.max(size.x, size.y, size.z)
+        scene.scale.setScalar(3.5 / (maxDim || 1))
+
+        const materials = []
+        scene.traverse((child) => {
+            if (!child.isMesh) return
+
+            const sourceMaterials = Array.isArray(child.material)
+                ? child.material
+                : [child.material]
+            const nextMaterials = sourceMaterials.map((sourceMaterial) => {
+                const baseColor = sourceMaterial?.color || new THREE.Color('#ffffff')
+                const material = new THREE.MeshPhysicalMaterial({
+                    color: baseColor,
+                    roughness: 0.2,
+                    metalness: 0.8,
+                    envMapIntensity: 1.5,
+                    transparent: true,
+                    opacity: 1
+                })
+                materials.push(material)
+                return material
+            })
+
+            child.material = Array.isArray(child.material)
+                ? nextMaterials
+                : nextMaterials[0]
+        })
+        materialsRef.current = materials
+    }, [scene])
+
+    useEffect(() => {
+        if (!gsap || materialsRef.current.length === 0) return
+
+        const targets = materialsRef.current
+        gsap.killTweensOf(targets)
+
+        if (mode === 'glass') {
+            targets.forEach((mat) => {
+                mat.wireframe = false
+            })
+            gsap.to(targets, {
+                transmission: 1,
+                thickness: 2,
+                roughness: 0.05,
+                metalness: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'expo.out'
+            })
+        } else if (mode === 'wireframe') {
+            gsap.to(targets, {
+                transmission: 0,
+                opacity: 0.2,
+                duration: 0.4,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    targets.forEach((mat) => {
+                        mat.wireframe = true
+                    })
+                }
+            })
+        } else {
+            targets.forEach((mat) => {
+                mat.wireframe = false
+            })
+            gsap.to(targets, {
+                transmission: 0,
+                thickness: 0,
+                roughness: 0.2,
+                metalness: 0.8,
+                opacity: 1,
+                duration: 1,
+                ease: 'expo.out'
+            })
+        }
+    }, [mode, gsap])
+
+    useEffect(() => {
+        if (!scene || !camera) return
+
+        const box = new THREE.Box3().setFromObject(scene)
+        const center = box.getCenter(new THREE.Vector3())
+        const size = box.getSize(new THREE.Vector3())
+        const maxDim = Math.max(size.x, size.y, size.z)
+        const fov = (camera.fov * Math.PI) / 180
+        const fitDistance = (maxDim / 2) / Math.tan(fov / 2)
+        const distance = fitDistance * 1.4
+
+        camera.position.set(center.x, center.y, center.z + distance)
+        camera.near = Math.max(0.1, distance / 100)
+        camera.far = Math.max(1000, distance * 10)
+        camera.updateProjectionMatrix()
+
+        if (controls) {
+            controls.target.copy(center)
+            controls.update()
+        }
+    }, [scene, camera, controls])
+
+    return <primitive object={scene} />
+}
+
 function Hero3D() {
+    const [mode, setMode] = useState('normal')
+    const gsap = useGsap()
+    const containerRef = useRef()
+
     return (
-        <div className="w-full h-screen relative bg-deep-black z-10 overflow-hidden">
-            {/* Overlay text - Pointer events none allows clicking through to 3D */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 text-center pointer-events-none mix-blend-exclusion">
-                <h2 className="text-6xl md:text-9xl font-black mb-4 tracking-tighter opacity-20 text-white leading-none">
-                    MODULAR
-                </h2>
-                <h2 className="text-6xl md:text-9xl font-black mb-4 tracking-tighter opacity-20 text-white leading-none">
-                    PRECISION
-                </h2>
+        <div
+            ref={containerRef}
+            data-lenis-prevent
+            className="relative w-full h-screen bg-[#050505] text-white overflow-hidden font-sans select-none"
+        >
+            <div className="absolute inset-0 z-20 pointer-events-none p-8 md:p-12 flex flex-col justify-between">
+                <header className="flex flex-col md:flex-row justify-between items-start gap-8">
+                    <div className="pointer-events-auto group cursor-crosshair">
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.85] italic transition-transform group-hover:skew-x-2">
+                            Modular<br />Aura
+                        </h1>
+                        <div className="h-0.5 w-16 bg-cyan-400 mt-4 shadow-[0_0_15px_#22d3ee]" />
+                    </div>
+
+                    <nav className="pointer-events-auto flex gap-1 bg-white/5 backdrop-blur-3xl p-1 rounded-full border border-white/10 shadow-2xl">
+                        {['normal', 'glass', 'wireframe'].map((nextMode) => (
+                            <button
+                                key={nextMode}
+                                onClick={() => setMode(nextMode)}
+                                className={`px-6 py-2.5 rounded-full text-[10px] uppercase font-bold tracking-[0.2em] transition-all duration-500 ${mode === nextMode
+                                    ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.4)] scale-105'
+                                    : 'text-white/40 hover:text-white hover:bg-white/5'
+                                    }`}
+                            >
+                                {nextMode}
+                            </button>
+                        ))}
+                    </nav>
+                </header>
+
+                <footer className="flex justify-between items-end">
+                    <div className="space-y-1 font-mono">
+                        <div className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee]" />
+                            <p className="text-[10px] text-cyan-400 tracking-widest uppercase">Input: Active</p>
+                        </div>
+                        <p className="text-[9px] text-white/20 uppercase tracking-tighter">Render_Tier: High_Performance</p>
+                    </div>
+                </footer>
             </div>
 
-            <div className="absolute bottom-20 left-10 z-10 pointer-events-none">
-                <h3 className="text-xl text-electric-cyan font-mono tracking-widest mb-2">SYSTEM.ACTIVE</h3>
-                <p className="text-xs text-gray-500 max-w-[200px] leading-relaxed">
-                    AURA-LINK v2.0 // NEURAL INTERFACE READY <br />
-                    SCENT MODULE: <span className="text-white">CONNECTED</span> <br />
-                    CREDITS: <span className="text-neon-mint">∞</span>
-                </p>
-            </div>
-
-            {/* Three.js Canvas - Optimized for performance */}
             <Canvas
+                data-lenis-prevent
                 shadows={false}
-                dpr={[1, 1.5]}
+                dpr={[1, 2]}
+                eventSource={containerRef}
                 gl={{
                     antialias: true,
-                    alpha: false,
                     powerPreference: 'high-performance',
+                    alpha: false,
+                    depth: true,
                     stencil: false,
-                    depth: true
+                    precision: 'highp'
                 }}
-                performance={{ min: 0.5 }}
+                camera={{ position: [0, 0, 10], fov: 30 }}
             >
-                <color attach="background" args={['#050505']} />
+                <Suspense fallback={<Loader />}>
+                    <color attach="background" args={['#050505']} />
 
-                {/* Camera */}
-                <PerspectiveCamera
+                    <Environment preset="night" />
+                    <ambientLight intensity={0.4} />
+                    <spotLight position={[5, 10, 5]} angle={0.15} penumbra={1} intensity={1.5} />
+                    <pointLight position={[-10, 5, -5]} intensity={1} color="#00FAFF" />
+
+                    <Float speed={1.4} rotationIntensity={0.2} floatIntensity={0.3}>
+                        <FragranceModule mode={mode} gsap={gsap} />
+                    </Float>
+
+                    <ContactShadows
+                        position={[0, -2.5, 0]}
+                        opacity={0.4}
+                        scale={12}
+                        blur={2.5}
+                        far={4.5}
+                        color="#000000"
+                    />
+                    <BakeShadows />
+                    <Preload all />
+                </Suspense>
+
+                <OrbitControls
+                    enablePan={false}
+                    enableDamping
+                    dampingFactor={0.08}
+                    enableZoom={false}
+                    minDistance={5}
+                    maxDistance={15}
+                    minPolarAngle={Math.PI / 4}
+                    maxPolarAngle={Math.PI / 1.5}
                     makeDefault
-                    position={[0, 0, 8]}
-                    fov={45}
                 />
-
-                {/* Lights */}
-                <ambientLight intensity={0.4} />
-                <spotLight position={[5, 5, 5]} angle={0.3} penumbra={1} intensity={0.8} />
-
-                {/* Product Model with Float and Presentation Controls */}
-                <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-                    <PresentationControls
-                        global
-                        zoom={0.8}
-                        rotation={[0, -0.3, 0]}
-                        polar={[-Math.PI / 4, Math.PI / 4]}
-                        azimuth={[-Math.PI / 4, Math.PI / 4]}
-                        config={{ mass: 2, tension: 400, friction: 40 }}
-                        snap={{ mass: 4, tension: 400, friction: 50 }}
-                    >
-                        <ProductModel />
-                    </PresentationControls>
-                </Float>
-
-                {/* Simplified Environment */}
-                <Environment preset="sunset" />
             </Canvas>
 
-            {/* Scroll indicator */}
-            <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce pointer-events-none">
-                <div className="w-5 h-8 border border-white/20 rounded-full flex justify-center pt-2 backdrop-blur-sm">
-                    <div className="w-0.5 h-2 bg-electric-cyan rounded-full shadow-[0_0_10px_#00FAFF]"></div>
-                </div>
-            </div>
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap');
+        body { margin: 0; font-family: 'Space Grotesk', sans-serif; background: #050505; }
+        .bg-glow {
+                    background: radial-gradient(circle at center, rgba(34, 211, 238, 0.04) 0%, transparent 80%);
+          pointer-events: none;
+        }
+                canvas { touch-action: auto; }
+      `
+                }}
+            />
+            <div className="absolute inset-0 bg-glow" />
         </div>
     )
 }

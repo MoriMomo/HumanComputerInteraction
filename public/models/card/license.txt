@@ -1,0 +1,11 @@
+Model Information:
+* title:	ID Card Holder
+* source:	https://sketchfab.com/3d-models/id-card-holder-1d6df5d3693f41499b9408d527b39dd1
+* author:	Joe Poehlmann (https://sketchfab.com/joepoehlmann)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "ID Card Holder" (https://sketchfab.com/3d-models/id-card-holder-1d6df5d3693f41499b9408d527b39dd1) by Joe Poehlmann (https://sketchfab.com/joepoehlmann) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
