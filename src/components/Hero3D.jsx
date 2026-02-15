@@ -125,15 +125,18 @@ function Hero3D() {
                 </p>
             </div>
 
-            {/* Three.js Canvas */}
+            {/* Three.js Canvas - Optimized for performance */}
             <Canvas
                 shadows={false}
                 dpr={[1, 1.5]}
                 gl={{
                     antialias: true,
                     alpha: false,
-                    powerPreference: 'high-performance'
+                    powerPreference: 'high-performance',
+                    stencil: false,
+                    depth: true
                 }}
+                performance={{ min: 0.5 }}
             >
                 <color attach="background" args={['#050505']} />
 
@@ -156,8 +159,8 @@ function Hero3D() {
                         rotation={[0, -0.3, 0]}
                         polar={[-Math.PI / 4, Math.PI / 4]}
                         azimuth={[-Math.PI / 4, Math.PI / 4]}
-                        config={{ mass: 2, tension: 400 }}
-                        snap={{ mass: 4, tension: 400 }}
+                        config={{ mass: 2, tension: 400, friction: 40 }}
+                        snap={{ mass: 4, tension: 400, friction: 50 }}
                     >
                         <ProductModel />
                     </PresentationControls>

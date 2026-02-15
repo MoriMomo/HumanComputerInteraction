@@ -29,13 +29,21 @@ body {
   overflow-x: hidden;
 }
 
-/* Smooth scroll behavior */
+/* Smooth scroll behavior with hardware acceleration */
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Optimize scrolling performance */
+* {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
 
-/* Scanline & Vignette Overlay */
+/* Minimal scanline effect - much lighter on performance */
 body::after {
   content: "";
   position: fixed;
@@ -43,12 +51,10 @@ body::after {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: 
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 4px, 3px 100%;
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.15) 100%);
   pointer-events: none;
   z-index: 9999;
+  will-change: opacity;
 }
 
 /* Glassmorphism Utility Classes */
