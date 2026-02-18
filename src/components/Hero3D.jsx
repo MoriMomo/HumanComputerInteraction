@@ -13,6 +13,11 @@ import {
 } from '@react-three/drei'
 import * as THREE from 'three'
 
+// Import model from public folder
+// OPTIMIZATION TIP: When exporting from Blender:
+// - Set texture format to JPG (not "auto") for better compression
+// - Keep polygon count reasonable (< 50k triangles)
+// - Apply all modifiers before export
 const MODEL_URL = `${import.meta.env.BASE_URL || '/'}models/card/scene.gltf`
 
 const useGsap = () => {
@@ -31,8 +36,9 @@ const useGsap = () => {
         document.head.appendChild(script)
 
         return () => {
-            if (document.head && document.head.contains(script)) {
-                document.head.removeChild(script)
+            script.onload = null
+            if (script.parentNode) {
+                script.parentNode.removeChild(script)
             }
         }
     }, [])
@@ -64,9 +70,11 @@ function Loader() {
 }
 
 function FragranceModule({ mode, gsap }) {
+    // Load the GLTF model into here
     const { scene } = useGLTF(MODEL_URL)
     const materialsRef = useRef([])
-    const { camera, controls } = useThree()
+    const oldMaterialsRef = useRef([])
+    const { camera, controls, gl } = useThree()
 
     useMemo(() => {
         if (!scene) return
@@ -87,18 +95,44 @@ function FragranceModule({ mode, gsap }) {
         scene.traverse((child) => {
             if (!child.isMesh) return
 
+            // Optimize geometry
+            if (child.geometry) {
+                child.geometry.computeVertexNormals()
+                child.frustumCulled = true
+            }
+
+            // Store old materials for disposal
+            const oldMats = Array.isArray(child.material) ? child.material : [child.material]
+            oldMaterialsRef.current.push(...oldMats)
+
             const sourceMaterials = Array.isArray(child.material)
                 ? child.material
                 : [child.material]
             const nextMaterials = sourceMaterials.map((sourceMaterial) => {
                 const baseColor = sourceMaterial?.color || new THREE.Color('#ffffff')
+
+                // Optimize textures if they exist
+                const map = sourceMaterial?.map
+                if (map) {
+                    map.encoding = THREE.sRGBEncoding
+                    map.anisotropy = Math.min(gl.capabilities.getMaxAnisotropy(), 4)
+                    map.generateMipmaps = true
+                    map.minFilter = THREE.LinearMipmapLinearFilter
+                    map.magFilter = THREE.LinearFilter
+                }
+
                 const material = new THREE.MeshPhysicalMaterial({
                     color: baseColor,
                     roughness: 0.2,
                     metalness: 0.8,
                     envMapIntensity: 1.5,
                     transparent: true,
-                    opacity: 1
+                    opacity: 1,
+                    transmission: 0,
+                    thickness: 0,
+                    ior: 1.5,
+                    wireframe: false,
+                    map: map || null
                 })
                 materials.push(material)
                 return material
@@ -109,7 +143,17 @@ function FragranceModule({ mode, gsap }) {
                 : nextMaterials[0]
         })
         materialsRef.current = materials
-    }, [scene])
+
+        // Cleanup function for old materials
+        return () => {
+            oldMaterialsRef.current.forEach((mat) => {
+                if (mat && mat.dispose) {
+                    mat.dispose()
+                }
+            })
+            oldMaterialsRef.current = []
+        }
+    }, [scene, gl])
 
     useEffect(() => {
         if (!gsap || materialsRef.current.length === 0) return
@@ -174,7 +218,7 @@ function FragranceModule({ mode, gsap }) {
         camera.far = Math.max(1000, distance * 10)
         camera.updateProjectionMatrix()
 
-        if (controls) {
+        if (controls?.target) {
             controls.target.copy(center)
             controls.update()
         }
@@ -234,6 +278,8 @@ function Hero3D() {
                 data-lenis-prevent
                 shadows={false}
                 dpr={[1, 2]}
+                frameloop="always"
+                performance={{ min: 0.5 }}
                 eventSource={containerRef}
                 gl={{
                     antialias: true,
@@ -241,9 +287,10 @@ function Hero3D() {
                     alpha: false,
                     depth: true,
                     stencil: false,
-                    precision: 'highp'
+                    precision: 'highp',
+                    logarithmicDepthBuffer: true
                 }}
-                camera={{ position: [0, 0, 10], fov: 30 }}
+                camera={{ position: [0, 0, 10], fov: 100, near: 0.01, far: 1000 }}
             >
                 <Suspense fallback={<Loader />}>
                     <color attach="background" args={['#050505']} />
@@ -253,9 +300,7 @@ function Hero3D() {
                     <spotLight position={[5, 10, 5]} angle={0.15} penumbra={1} intensity={1.5} />
                     <pointLight position={[-10, 5, -5]} intensity={1} color="#00FAFF" />
 
-                    <Float speed={1.4} rotationIntensity={0.2} floatIntensity={0.3}>
-                        <FragranceModule mode={mode} gsap={gsap} />
-                    </Float>
+                    <FragranceModule mode={mode} gsap={gsap} />
 
                     <ContactShadows
                         position={[0, -2.5, 0]}

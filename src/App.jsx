@@ -17,7 +17,7 @@ function App() {
                 future={{
                     v7_startTransition: true,
                     v7_relativeSplatPath: true,
-                // }}
+                }}
             >
                 <div className="bg-deep-black min-h-screen">
                     <Navbar />
