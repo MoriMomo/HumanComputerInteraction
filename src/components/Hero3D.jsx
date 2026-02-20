@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState, Component } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import {
     BakeShadows,
@@ -12,6 +12,61 @@ import {
     useProgress
 } from '@react-three/drei'
 import * as THREE from 'three'
+
+// WebGL Support Detection
+function detectWebGLSupport() {
+    try {
+        const canvas = document.createElement('canvas')
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        return !!gl
+    } catch (e) {
+        return false
+    }
+}
+
+// Error Boundary Component
+class CanvasErrorBoundary extends Component {
+    constructor(props) {
+        super(props)
+        this.state = { hasError: false, error: null }
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error }
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error('Canvas Error:', error, errorInfo)
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback || (
+                <div className="flex flex-col items-center justify-center w-full h-full bg-[#050505] text-white">
+                    <div className="text-center max-w-md px-8">
+                        <div className="text-6xl mb-4">⚠️</div>
+                        <h2 className="text-2xl font-bold mb-2">WebGL Initialization Failed</h2>
+                        <p className="text-white/60 mb-4">
+                            3D rendering is unavailable. Please try:
+                        </p>
+                        <ul className="text-left text-sm text-white/50 space-y-2 mb-6">
+                            <li>• Enable hardware acceleration in your browser</li>
+                            <li>• Update your graphics drivers</li>
+                            <li>• Try a different browser (Chrome, Firefox, Edge)</li>
+                        </ul>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-3 bg-cyan-400 text-black rounded-full font-bold hover:bg-cyan-300 transition-colors"
+                        >
+                            Reload Page
+                        </button>
+                    </div>
+                </div>
+            )
+        }
+        return this.props.children
+    }
+}
 
 // Import model from public folder
 // OPTIMIZATION TIP: When exporting from Blender:
@@ -229,8 +284,40 @@ function FragranceModule({ mode, gsap }) {
 
 function Hero3D() {
     const [mode, setMode] = useState('normal')
+    const [webglSupported, setWebglSupported] = useState(true)
     const gsap = useGsap()
     const containerRef = useRef()
+
+    useEffect(() => {
+        const supported = detectWebGLSupport()
+        setWebglSupported(supported)
+        if (!supported) {
+            console.error('WebGL is not supported in this browser')
+        }
+    }, [])
+
+    // Fallback UI for no WebGL support
+    if (!webglSupported) {
+        return (
+            <div className="relative w-full h-screen bg-[#050505] text-white overflow-hidden font-sans select-none flex items-center justify-center">
+                <div className="text-center max-w-md px-8">
+                    <div className="text-6xl mb-4">🎨</div>
+                    <h2 className="text-3xl font-bold mb-4">WebGL Not Supported</h2>
+                    <p className="text-white/60 mb-4">
+                        Your browser doesn't support 3D graphics. Please enable WebGL or use a modern browser to experience the full interactive design.
+                    </p>
+                    <a
+                        href="https://get.webgl.org/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-6 py-3 bg-cyan-400 text-black rounded-full font-bold hover:bg-cyan-300 transition-colors"
+                    >
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div
@@ -274,58 +361,64 @@ function Hero3D() {
                 </footer>
             </div>
 
-            <Canvas
-                data-lenis-prevent
-                shadows={false}
-                dpr={[1, 2]}
-                frameloop="always"
-                performance={{ min: 0.5 }}
-                eventSource={containerRef}
-                gl={{
-                    antialias: true,
-                    powerPreference: 'high-performance',
-                    alpha: false,
-                    depth: true,
-                    stencil: false,
-                    precision: 'highp',
-                    logarithmicDepthBuffer: true
-                }}
-                camera={{ position: [0, 0, 10], fov: 100, near: 0.01, far: 1000 }}
-            >
-                <Suspense fallback={<Loader />}>
-                    <color attach="background" args={['#050505']} />
+            <CanvasErrorBoundary>
+                <Canvas
+                    data-lenis-prevent
+                    shadows={false}
+                    dpr={[1, 2]}
+                    frameloop="always"
+                    performance={{ min: 0.5 }}
+                    eventSource={containerRef}
+                    onCreated={({ gl }) => {
+                        console.log('WebGL Renderer created successfully')
+                    }}
+                    gl={{
+                        antialias: true,
+                        powerPreference: 'high-performance',
+                        alpha: false,
+                        depth: true,
+                        stencil: false,
+                        precision: 'highp',
+                        logarithmicDepthBuffer: true,
+                        failIfMajorPerformanceCaveat: false
+                    }}
+                    camera={{ position: [0, 0, 10], fov: 100, near: 0.01, far: 1000 }}
+                >
+                    <Suspense fallback={<Loader />}>
+                        <color attach="background" args={['#050505']} />
 
-                    <Environment preset="night" />
-                    <ambientLight intensity={0.4} />
-                    <spotLight position={[5, 10, 5]} angle={0.15} penumbra={1} intensity={1.5} />
-                    <pointLight position={[-10, 5, -5]} intensity={1} color="#00FAFF" />
+                        <Environment preset="night" />
+                        <ambientLight intensity={0.4} />
+                        <spotLight position={[5, 10, 5]} angle={0.15} penumbra={1} intensity={1.5} />
+                        <pointLight position={[-10, 5, -5]} intensity={1} color="#00FAFF" />
 
-                    <FragranceModule mode={mode} gsap={gsap} />
+                        <FragranceModule mode={mode} gsap={gsap} />
 
-                    <ContactShadows
-                        position={[0, -2.5, 0]}
-                        opacity={0.4}
-                        scale={12}
-                        blur={2.5}
-                        far={4.5}
-                        color="#000000"
+                        <ContactShadows
+                            position={[0, -2.5, 0]}
+                            opacity={0.4}
+                            scale={12}
+                            blur={2.5}
+                            far={4.5}
+                            color="#000000"
+                        />
+                        <BakeShadows />
+                        <Preload all />
+                    </Suspense>
+
+                    <OrbitControls
+                        enablePan={false}
+                        enableDamping
+                        dampingFactor={0.08}
+                        enableZoom={false}
+                        minDistance={5}
+                        maxDistance={15}
+                        minPolarAngle={Math.PI / 4}
+                        maxPolarAngle={Math.PI / 1.5}
+                        makeDefault
                     />
-                    <BakeShadows />
-                    <Preload all />
-                </Suspense>
-
-                <OrbitControls
-                    enablePan={false}
-                    enableDamping
-                    dampingFactor={0.08}
-                    enableZoom={false}
-                    minDistance={5}
-                    maxDistance={15}
-                    minPolarAngle={Math.PI / 4}
-                    maxPolarAngle={Math.PI / 1.5}
-                    makeDefault
-                />
-            </Canvas>
+                </Canvas>
+            </CanvasErrorBoundary>
 
             <style
                 dangerouslySetInnerHTML={{
