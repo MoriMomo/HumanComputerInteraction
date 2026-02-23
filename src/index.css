@@ -31,7 +31,7 @@ body {
 
 /* Smooth scroll behavior with hardware acceleration */
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; */
   -webkit-overflow-scrolling: touch;
 }
 
