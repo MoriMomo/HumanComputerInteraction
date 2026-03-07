@@ -1,9 +1,13 @@
-import Hero3D from '../components/Hero3D'
+import { lazy, Suspense } from 'react'
+
 import HeroSection from '../components/HeroSection'
 import FeatureCards from '../components/FeatureCards'
-import ModularCustomizer from '../components/ModularCustomizer'
 import DesignPhilosophy from '../components/DesignPhilosophy'
 import Footer from '../components/Footer'
+
+// Lazy load heavy 3D components
+const Hero3D = lazy(() => import('../components/Hero3D'))
+const ModularCustomizer = lazy(() => import('../components/ModularCustomizer'))
 
 function Home() {
     return (
@@ -13,7 +17,9 @@ function Home() {
 
             {/* 3D Product Showcase */}
             <section id="showcase" className="min-h-screen relative">
-                <Hero3D />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading 3D Experience...</div>}>
+                    <Hero3D />
+                </Suspense>
             </section>
 
             {/* Feature Cards */}
@@ -23,7 +29,9 @@ function Home() {
 
             {/* Interactive Customizer */}
             <section id="customizer" className="py-20 bg-charcoal">
-                <ModularCustomizer />
+                <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]">Loading Customizer...</div>}>
+                    <ModularCustomizer />
+                </Suspense>
             </section>
 
             {/* Design Philosophy */}

@@ -7,32 +7,23 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Urban Tech-Noir Color Palette
-                'deep-black': '#050505',
-                'electric-cyan': '#00FAFF',
-                'neon-mint': '#39FF14',
-                'charcoal': '#1A1A1A',
-                'slate': {
-                    850: '#1e293b',
-                    950: '#0f172a',
-                }
+                primary: '#B48A63',
+                secondary: '#573111',
+                charcoal: '#302C2B',
+                'soft-grey': '#DBDBDE',
+                'background-light': '#F8F8F9',
             },
             fontFamily: {
                 sans: ['Inter', 'system-ui', 'sans-serif'],
-                mono: ['JetBrains Mono', 'monospace'],
+                serif: ['Playfair Display', 'serif'],
             },
-            backdropBlur: {
-                xs: '2px',
-            },
-            animation: {
-                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                'float': 'float 6s ease-in-out infinite',
-            },
-            keyframes: {
-                float: {
-                    '0%, 100%': { transform: 'translateY(0px)' },
-                    '50%': { transform: 'translateY(-20px)' },
-                }
+            borderRadius: {
+                DEFAULT: '0.375rem',
+                lg: '0.5rem',
+                xl: '0.75rem',
+                full: '9999px',
+                '2xl': '1rem',
+                '3xl': '1.5rem',
             }
         },
     },
