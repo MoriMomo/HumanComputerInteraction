@@ -1,3 +1,4 @@
+"use client";
 import PropTypes from 'prop-types'
 import { useEffect, useMemo, useRef } from 'react'
 import { useThree } from '@react-three/fiber'

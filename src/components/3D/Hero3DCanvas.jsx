@@ -1,7 +1,9 @@
+"use client";
 import PropTypes from 'prop-types'
 import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { BakeShadows, ContactShadows, OrbitControls, Preload } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import ErrorBoundary from '../ErrorBoundary'
 import Loader3D from './Loader3D'
 import SceneLights from './SceneLights'
@@ -59,8 +61,24 @@ function Hero3DCanvas({ mode, gsap, materialColor }) {
                     {/* background handled by parent CSS div */}
                     <SceneLights />
                     <FragranceModule mode={mode} gsap={gsap} materialColor={materialColor} />
-                    <ContactShadows position={[0, -2.5, 0]} opacity={0.25} scale={12} blur={2.5} far={4.5} color="#584738" resolution={256} frames={1} />
+                    <ContactShadows position={[0, -2.5, 0]} opacity={0.35} scale={15} blur={2.5} far={4.5} color="#302C2B" resolution={512} frames={1} />
                     <BakeShadows />
+
+                    {/* 3D Web Experience Magic */}
+                    <EffectComposer disableNormalPass multisampling={4}>
+                        <Bloom
+                            luminanceThreshold={0.5}
+                            luminanceSmoothing={0.9}
+                            height={300}
+                            intensity={0.4}
+                        />
+                        <Vignette
+                            eskil={false}
+                            offset={0.1}
+                            darkness={0.5}
+                        />
+                    </EffectComposer>
+
                     <Preload all />
                 </Suspense>
 

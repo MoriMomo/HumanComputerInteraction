@@ -5,7 +5,7 @@
 export * from './colors'
 
 // Model URLs
-export const MODEL_URL = `${import.meta.env.BASE_URL || '/'}models/card/tes.gltf`
+export const MODEL_URL = '/models/card/tes.gltf'
 
 // Camera positions for different views
 export const CAMERA_POSITIONS = {

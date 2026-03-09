@@ -1,86 +1,46 @@
+"use client";
 import PropTypes from 'prop-types'
 import { MATERIAL_COLORS } from '../../constants'
 
-// SatSet palette tokens
-const C = {
-    bg: '#C6C1AB',
-    secondary: '#584738',
-    primary: '#B59E7D',
-    textMain: '#333333',
-    textMuted: '#666666',
-    border: 'rgba(88,71,56,0.12)',
-    cardBg: 'rgba(255,255,255,0.80)',
-}
-
 const RENDER_MODES = [
-    { id: 'normal', label: 'Normal (PBR)', icon: '▦' },
-    { id: 'glass', label: 'Glass', icon: '◎' },
-    { id: 'wireframe', label: 'Wireframe', icon: '⊞' },
+    { id: 'normal', label: 'Normal (PBR)', icon: 'view_in_ar' },
+    { id: 'glass', label: 'Glass', icon: 'lens_blur' },
+    { id: 'wireframe', label: 'Wireframe', icon: 'grid_3x3' },
 ]
 
 function Hero3DControls({ mode, setMode, materialColor, setMaterialColor }) {
-    const panelStyle = {
-        background: C.bg,
-        border: `1px solid ${C.border}`,
-        borderRadius: '12px',
-        padding: '18px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-    }
-
-    const sectionHeaderStyle = {
-        fontSize: '11px',
-        letterSpacing: '0.15em',
-        color: C.secondary,
-        textTransform: 'uppercase',
-        fontWeight: 700,
-        marginBottom: '14px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-    }
-
     return (
-        <div className="flex flex-col gap-4 w-full lg:w-60 flex-shrink-0 py-4">
+        <div className="flex flex-col gap-6 w-full lg:w-72 flex-shrink-0 py-4 relative z-10">
 
             {/* ── Render Mode Panel ── */}
-            <div style={panelStyle}>
-                <div style={sectionHeaderStyle}>
-                    <span style={{ fontSize: '14px' }}>◈</span> Render Mode
+            <div className="glass p-6 rounded-3xl border border-white/20 shadow-premium">
+                <div className="text-[11px] tracking-[0.15em] text-secondary uppercase font-bold mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[14px]">tune</span> Render Mode
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                     {RENDER_MODES.map((renderMode) => {
                         const active = mode === renderMode.id
                         return (
                             <button
                                 key={renderMode.id}
                                 onClick={() => setMode(renderMode.id)}
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    background: active ? 'rgba(255,255,255,1)' : C.cardBg,
-                                    border: active ? `1px solid ${C.secondary}` : `1px solid ${C.border}`,
-                                    borderRadius: '8px',
-                                    padding: '10px 12px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    textAlign: 'left',
-                                }}
+                                className={`w-full flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all duration-300 text-left border ${active
+                                        ? 'bg-white/80 border-primary shadow-sm transform scale-[1.02]'
+                                        : 'bg-white/30 border-white/20 hover:bg-white/50 hover:border-white/40'
+                                    }`}
                             >
-                                <span style={{ fontSize: '16px', color: active ? C.secondary : C.textMuted }}>
+                                <span className={`material-symbols-outlined text-[18px] ${active ? 'text-primary' : 'text-gray-500'}`}>
                                     {renderMode.icon}
                                 </span>
-                                <span style={{ flex: 1, fontSize: '13px', fontWeight: 600, color: active ? C.textMain : C.textMuted }}>
+                                <span className={`flex-1 text-[13px] font-semibold ${active ? 'text-charcoal' : 'text-gray-500'}`}>
                                     {renderMode.label}
                                 </span>
-                                <span style={{
-                                    width: '16px', height: '16px', borderRadius: '50%',
-                                    border: active ? `2px solid ${C.secondary}` : `2px solid ${C.primary}60`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                }}>
-                                    {active && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: C.secondary }} />}
-                                </span>
+
+                                {/* Custom radio button UI */}
+                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${active ? 'border-primary' : 'border-gray-300'
+                                    }`}>
+                                    {active && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                                </div>
                             </button>
                         )
                     })}
@@ -88,14 +48,14 @@ function Hero3DControls({ mode, setMode, materialColor, setMaterialColor }) {
             </div>
 
             {/* ── Divider ── */}
-            <div style={{ borderTop: `1px solid ${C.border}`, margin: '0 4px' }} />
+            <div className="border-t border-soft-grey/40 mx-2" />
 
             {/* ── Material Color Panel ── */}
-            <div style={panelStyle}>
-                <div style={sectionHeaderStyle}>
-                    <span style={{ fontSize: '14px' }}>◈</span> Material Color
+            <div className="glass p-6 rounded-3xl border border-white/20 shadow-premium">
+                <div className="text-[11px] tracking-[0.15em] text-secondary uppercase font-bold mb-4 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[14px]">palette</span> Material Color
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
+                <div className="flex flex-wrap gap-4 mb-4">
                     {MATERIAL_COLORS.map((colorOption) => {
                         const active = materialColor === colorOption.hex
                         return (
@@ -104,39 +64,36 @@ function Hero3DControls({ mode, setMode, materialColor, setMaterialColor }) {
                                 onClick={() => setMaterialColor(colorOption.hex)}
                                 title={colorOption.label}
                                 aria-label={`Select ${colorOption.label} material`}
+                                className={`w-10 h-10 rounded-[14px] cursor-pointer transition-all duration-300 relative overflow-hidden`}
                                 style={{
-                                    width: '34px', height: '34px', borderRadius: '50%',
-                                    background: colorOption.hex,
-                                    border: active ? '2px solid white' : '2px solid transparent',
-                                    outline: active ? `3px solid ${C.secondary}` : '3px solid transparent',
-                                    outlineOffset: '2px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    boxShadow: active ? `0 0 12px ${colorOption.hex}80` : '0 2px 6px rgba(0,0,0,0.12)',
+                                    backgroundColor: colorOption.hex,
+                                    boxShadow: active ? `0 6px 16px ${colorOption.hex}80` : '0 2px 6px rgba(0,0,0,0.1)',
+                                    transform: active ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
                                 }}
-                            />
+                            >
+                                {/* Subtle inner shadow/border for 3D realism */}
+                                <div className={`absolute inset-0 rounded-[14px] border ${active ? 'border-white/60' : 'border-white/20'} mix-blend-overlay`} />
+                            </button>
                         )
                     })}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: materialColor, boxShadow: `0 0 6px ${materialColor}80` }} />
-                    <span style={{ fontSize: '11px', color: C.textMuted, fontFamily: 'monospace' }}>
+                <div className="flex items-center gap-2.5 bg-white/40 py-2 px-3 rounded-xl border border-white/30">
+                    <div className="w-3 h-3 rounded-full" style={{ background: materialColor, boxShadow: `0 0 8px ${materialColor}90` }} />
+                    <span className="text-xs text-charcoal/80 font-mono tracking-wide">
                         {MATERIAL_COLORS.find((c) => c.hex === materialColor)?.label ?? 'Custom'}
                     </span>
                 </div>
             </div>
 
             {/* ── Status Panel ── */}
-            <div style={{ ...panelStyle, padding: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-                    <span style={{ fontSize: '11px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
-                        Input: Active
+            <div className="glass p-5 rounded-2xl border border-white/20 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                    <span className="text-[11px] text-secondary tracking-[0.12em] uppercase font-bold">
+                        WebGL Active
                     </span>
                 </div>
-                <p style={{ fontSize: '10px', color: C.textMuted, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    Render_Tier: High
-                </p>
+                <span className="material-symbols-outlined text-secondary text-sm">check_circle</span>
             </div>
         </div>
     )
