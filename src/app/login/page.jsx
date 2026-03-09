@@ -1,12 +1,13 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
-import { FaUser, FaLock, FaGoogle, FaGithub } from 'react-icons/fa';
+import { FaUser, FaLock, FaGoogle, FaGithub, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Login = () => {
     const containerRef = useRef(null);
     const formRef = useRef(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -45,7 +46,7 @@ const Login = () => {
                             </h2>
                         </Link>
                         <h3 className="text-xl text-charcoal/80">Welcome back</h3>
-                        <p className="text-sm text-charcoal/60 mt-2">Please enter your details to sign in.</p>
+                        <p className="text-sm text-charcoal/60 mt-2">Securely access your modular ecosystem.</p>
                     </div>
 
                     <form ref={formRef} className="space-y-6">
@@ -78,17 +79,24 @@ const Login = () => {
                                 </a>
                             </div>
                             <div className="relative">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/40">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/40 pointer-events-none">
                                     <FaLock size={16} />
                                 </span>
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
-                                    className="w-full pl-11 pr-4 py-3 bg-white/50 border border-soft-grey/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all text-charcoal placeholder:text-charcoal/30 glass"
+                                    className="w-full pl-11 pr-11 py-3 bg-white/50 border border-soft-grey/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all text-charcoal placeholder:text-charcoal/30 glass"
                                     placeholder="••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-primary transition-colors focus:outline-none"
+                                >
+                                    {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                                </button>
                             </div>
                         </div>
 
@@ -107,9 +115,9 @@ const Login = () => {
                         <div className="stagger-item pt-2">
                             <button
                                 type="submit"
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300"
+                                className="relative w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-premium font-bold text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 transform hover:-translate-y-0.5"
                             >
-                                Sign in
+                                Access Your Ecosystem
                             </button>
                         </div>
                     </form>

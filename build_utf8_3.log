@@ -1,0 +1,39 @@
+﻿
+> aura-link-modusnap@0.0.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 3.3s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/9) ...
+node.exe : Error occurred 
+prerendering page "/login". Read 
+more: https://nextjs.org/docs/messages
+/prerender-error
+At C:\Program Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpec 
+   ified: (Error occurred ...prerend  
+  er-error:String) [], RemoteExcept   
+ ion
+    + FullyQualifiedErrorId : NativeC 
+   ommandError
+ 
+ReferenceError: showPassword is not 
+defined
+    at <unknown> (D:\pasti_berhasil\co
+dee\Kuliah\humanComputerMain\aura-link
+-modusnap\.next\server\chunks\ssr\_295
+f39cd._.js:1:6086) {
+  digest: '2213673308'
+}
+Export encountered an error on 
+/login/page: /login, exiting the 
+build.
+Γ¿» Next.js build worker exited with 
+code: 1 and signal: null

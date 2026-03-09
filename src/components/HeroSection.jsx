@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { gsap } from 'gsap';
 
 function HeroSection() {
@@ -100,10 +101,13 @@ function HeroSection() {
                     <div className="relative flex justify-center items-center h-[500px] lg:h-[700px] w-full mt-10 lg:mt-0 px-4 hero-image-reveal">
                         <div className="relative w-full max-w-[500px] aspect-[3/4] overflow-hidden rounded-2xl glass p-2 shadow-premium-lg group">
                             <div className="relative w-full h-full rounded-xl overflow-hidden">
-                                <img
+                                <Image
                                     alt="Premium ModuSnap Card Holder on executive desk"
                                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVLnBBctRTny20xXQFATtDoFDFgs2dRPk8EkAknFojIdfEQrr3voE0MCNKyia787tCxWjdyLSjpqe-0g4rAvi6thIW6vQxRlJ1PuGmi3n58oPsYVBxGkQhEjbAydsFgOQ2C2k-CO4q0QW5zxCFCnCf1Bnw5R8bheoCNTXukUEVwizDdaXFAZCYIEMRWLCw7yB_WtvMECcTB-cyx0Ay61KkIHVpk8c3mwhKH9Zjz2ABtOkPt8HpSWAi8FxkhEB1ghiPV37VVSLjjBg"
+                                    fill
+                                    priority
+                                    sizes="(max-width: 768px) 100vw, 500px"
                                 />
                                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                             </div>

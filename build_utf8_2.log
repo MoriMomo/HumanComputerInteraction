@@ -1,0 +1,68 @@
+﻿
+> aura-link-modusnap@0.0.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+node.exe : 
+At C:\Program Files\nodejs\npm.ps1:29 
+char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpec 
+   ified: (:String) [], RemoteExcept  
+  ion
+    + FullyQualifiedErrorId : NativeC 
+   ommandError
+ 
+> Build error occurred
+Error: Turbopack build failed with 1 
+errors:
+./src/app/globals.css
+Error evaluating Node.js code
+Error: Missing field `negated` on 
+ScannerOptions.sources
+    [at Object.Once (D:\pasti_berhasil
+\codee\Kuliah\humanComputerMain\aura-l
+ink-modusnap\node_modules\@tailwindcss
+\postcss\dist\index.js:8:4164)]
+    at async LazyResult.runAsync (node
+_modules/postcss/lib/lazy-result.js:26
+1:11) [D:\pasti_berhasil\codee\Kuliah\
+humanComputerMain\aura-link-modusnap\.
+next\build\chunks\node_modules_fe693df
+6._.js:6156:21]
+    at async transform (turbopack:///[
+turbopack-node]/transforms/postcss.ts:
+70:34) [D:\pasti_berhasil\codee\Kuliah
+\humanComputerMain\aura-link-modusnap\
+.next\build\chunks\[root-of-the-server
+]__6d51cb5d._.js:172:36]
+    at async run (turbopack:///[turbop
+ack-node]/ipc/evaluate.ts:92:23) [D:\p
+asti_berhasil\codee\Kuliah\humanComput
+erMain\aura-link-modusnap\.next\build\
+chunks\[root-of-the-server]__44695d76.
+_.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client 
+Component Browser]
+    ./src/app/layout.jsx [Server 
+Component]
+
+
+    at async transform (turbopack:///[
+turbopack-node]/transforms/postcss.ts:
+70:34) [D:\pasti_berhasil\codee\Kuliah
+\humanComputerMain\aura-link-modusnap\
+.next\build\chunks\[root-of-the-server
+]__6d51cb5d._.js:172:36])
+    at async run (turbopack:///[turbop
+ack-node]/ipc/evaluate.ts:92:23) [D:\p
+asti_berhasil\codee\Kuliah\humanComput
+erMain\aura-link-modusnap\.next\build\
+chunks\[root-of-the-server]__44695d76.
+_.js:443:31])
