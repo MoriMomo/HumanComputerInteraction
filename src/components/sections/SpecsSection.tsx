@@ -30,49 +30,82 @@ export default function SpecsSection() {
 
     useGSAP(
         () => {
-            // Animate number counters
-            stats.forEach((stat, i) => {
-                const el = document.querySelector(`[data-counter="${i}"]`);
-                if (!el) return;
-                const obj = { val: 0 };
-                gsap.to(obj, {
-                    val: stat.value,
-                    duration: 1.8,
-                    ease: "power2.out",
-                    onUpdate: () => {
-                        el.textContent = Math.round(obj.val).toString();
-                    },
+            const sectionEl = sectionRef.current;
+            if (!sectionEl) return;
+
+            const runCounters = () => {
+                stats.forEach((stat, i) => {
+                    const el = sectionEl.querySelector<HTMLElement>(`[data-counter="${i}"]`);
+                    if (!el) return;
+
+                    const obj = { val: 0 };
+                    gsap.to(obj, {
+                        val: stat.value,
+                        duration: 1.8,
+                        ease: "power2.out",
+                        onUpdate: () => {
+                            el.textContent = Math.round(obj.val).toString();
+                        },
+                    });
+                });
+            };
+
+            gsap.set(".specs-title, .spec-row", { clearProps: "all" });
+
+            if (ScrollTrigger.isInViewport(sectionEl, 0.12)) {
+                gsap.set(".specs-title, .spec-row", {
+                    x: 0,
+                    y: 0,
+                    autoAlpha: 1,
+                    clearProps: "transform,opacity,visibility,translate,rotate,scale",
+                });
+                runCounters();
+                return;
+            }
+
+            gsap.fromTo(
+                ".specs-title",
+                { y: 40, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    immediateRender: false,
                     scrollTrigger: {
-                        trigger: "[data-stats-row]",
-                        start: "top 80%",
+                        trigger: sectionEl,
+                        start: "top 94%",
                         once: true,
                     },
-                });
+                }
+            );
+
+            gsap.fromTo(
+                ".spec-row",
+                { x: -30, autoAlpha: 0 },
+                {
+                    x: 0,
+                    autoAlpha: 1,
+                    stagger: 0.07,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: sectionEl,
+                        start: "top 92%",
+                        once: true,
+                    },
+                }
+            );
+
+            ScrollTrigger.create({
+                trigger: sectionEl,
+                start: "top 92%",
+                once: true,
+                onEnter: runCounters,
             });
 
-            // Spec rows stagger in
-            gsap.from(".spec-row", {
-                x: -30,
-                opacity: 0,
-                stagger: 0.07,
-                duration: 0.6,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: ".spec-table",
-                    start: "top 80%",
-                },
-            });
-
-            gsap.from(".specs-title", {
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".specs-title",
-                    start: "top 85%",
-                },
-            });
+            ScrollTrigger.refresh();
         },
         { scope: sectionRef }
     );

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -53,6 +53,8 @@ function SceneContent({
     const { camera } = useThree();
     const controlsRef = useRef<OrbitControlsImpl | null>(null);
     const hasAnimatedRef = useRef(false);
+    const rimLightRef = useRef<THREE.PointLight | null>(null);
+    const rimFillRef = useRef<THREE.PointLight | null>(null);
 
     // Camera intro (keep it smooth)
     useEffect(() => {
@@ -83,29 +85,65 @@ function SceneContent({
         };
     }, [camera, cameraLookAt, cameraPosition, introDuration, introFromPosition]);
 
+    useFrame((state) => {
+        const t = state.clock.getElapsedTime();
+
+        if (rimLightRef.current) {
+            rimLightRef.current.intensity = 0.42 + Math.sin(t * 0.85) * 0.08;
+            rimLightRef.current.position.x = 1.9 + Math.sin(t * 0.4) * 0.1;
+            rimLightRef.current.position.z = -1.6 + Math.cos(t * 0.4) * 0.1;
+        }
+
+        if (rimFillRef.current) {
+            rimFillRef.current.intensity = 0.2 + Math.cos(t * 0.7) * 0.05;
+        }
+    });
+
     return (
         <>
-            {/* Lightweight lighting: soft ambient + key/fill to add depth */}
-            <ambientLight intensity={0.5} />
+            {/* Darker cinematic look for product focus */}
+            <ambientLight intensity={0.2} />
+
+            <hemisphereLight
+                args={["#6f5c45", "#0c0b0a", 0.16]}
+            />
 
             <directionalLight
-                position={[4, 5, 3]}
-                intensity={0.58}
+                position={[3.2, 4.2, 2.6]}
+                intensity={0.42}
                 castShadow={false}
             />
 
             <directionalLight
-                position={[-3, 2, -4]}
-                intensity={0.22}
+                position={[-2.6, 1.8, -3.2]}
+                intensity={0.14}
                 castShadow={false}
             />
 
-            {/* Low-res environment */}
+            <pointLight
+                ref={rimLightRef}
+                position={[1.9, 0.95, -1.6]}
+                color="#f4cf9f"
+                intensity={0.42}
+                distance={6}
+                decay={2.2}
+            />
+
+            <pointLight
+                ref={rimFillRef}
+                position={[-1.6, 0.7, 1.4]}
+                color="#7e6a56"
+                intensity={0.2}
+                distance={5}
+                decay={2.4}
+            />
+
+            {/* Darker reflections with lightweight environment */}
             <Environment
-                preset="apartment"
+                preset="city"
                 background={false}
-                blur={1}
-                resolution={96}
+                blur={0.7}
+                resolution={64}
             />
 
             {/* 3D Model */}
@@ -124,11 +162,12 @@ function SceneContent({
                 enableZoom={enableZoom}
                 enablePan={false}
                 target={cameraLookAt}
-                minDistance={2}
-                maxDistance={10}
-                enableDamping={false}
-                maxPolarAngle={Math.PI / 1.5}
-                minPolarAngle={Math.PI / 6}
+                minDistance={2.2}
+                maxDistance={8.5}
+                enableDamping={true}
+                dampingFactor={0.07}
+                maxPolarAngle={Math.PI / 1.75}
+                minPolarAngle={Math.PI / 3.4}
             />
         </>
     );
@@ -160,11 +199,12 @@ export default function CardHolderScene({
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = false;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
-                    gl.toneMapping = THREE.NoToneMapping;
+                    gl.toneMapping = THREE.ACESFilmicToneMapping;
+                    gl.toneMappingExposure = 0.72;
                 }}
                 dpr={1}
                 gl={{
-                    antialias: false,
+                    antialias: true,
                     alpha: true,
                     powerPreference: "high-performance",
                     stencil: false,

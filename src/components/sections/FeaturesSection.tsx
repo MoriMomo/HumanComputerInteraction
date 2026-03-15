@@ -51,30 +51,58 @@ export default function FeaturesSection() {
 
     useGSAP(
         () => {
-            // Title wipe reveal
-            gsap.from(".feat-title", {
-                y: 50,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".feat-title",
-                    start: "top 85%",
-                },
-            });
+            const sectionEl = sectionRef.current;
+            if (!sectionEl) return;
 
-            // Cards stagger fan-up
-            gsap.from(".feat-card", {
-                y: 60,
-                opacity: 0,
-                stagger: 0.12,
-                duration: 0.75,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".feat-grid",
-                    start: "top 80%",
-                },
-            });
+            // Clear stale inline styles left by previous GSAP runs/hot reloads.
+            gsap.set(".feat-title, .feat-card", { clearProps: "all" });
+
+            // If already in viewport, force visible state and skip intro animation.
+            if (ScrollTrigger.isInViewport(sectionEl, 0.1)) {
+                gsap.set(".feat-title, .feat-card", {
+                    y: 0,
+                    autoAlpha: 1,
+                    clearProps: "transform,opacity,visibility,translate,rotate,scale",
+                });
+                return;
+            }
+
+            gsap.fromTo(
+                ".feat-title",
+                { y: 50, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 0.8,
+                    ease: "power3.out",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: sectionEl,
+                        start: "top 94%",
+                        once: true,
+                    },
+                }
+            );
+
+            gsap.fromTo(
+                ".feat-card",
+                { y: 60, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    stagger: 0.12,
+                    duration: 0.75,
+                    ease: "power3.out",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: sectionEl,
+                        start: "top 91%",
+                        once: true,
+                    },
+                }
+            );
+
+            ScrollTrigger.refresh();
         },
         { scope: sectionRef }
     );

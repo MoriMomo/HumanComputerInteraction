@@ -85,28 +85,58 @@ export default function MaterialSection({
 
     useGSAP(
         () => {
-            gsap.from(".showcase-entry", {
-                y: 38,
-                opacity: 0,
-                duration: 0.9,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 75%",
-                },
-            });
+            const sectionEl = sectionRef.current;
+            if (!sectionEl) return;
 
-            gsap.from(".showcase-panel", {
-                y: 24,
-                opacity: 0,
-                stagger: 0.08,
-                duration: 0.6,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: ".showcase-panel-wrap",
-                    start: "top 82%",
-                },
-            });
+            // Reset any stale inline styles from prior hot-reloads/route changes.
+            gsap.set(".showcase-entry, .showcase-panel", { clearProps: "all" });
+
+            // If already in viewport, keep content visible and skip intro animation.
+            if (ScrollTrigger.isInViewport(sectionEl, 0.1)) {
+                gsap.set(".showcase-entry, .showcase-panel", {
+                    y: 0,
+                    autoAlpha: 1,
+                    clearProps: "transform,opacity,visibility,translate,rotate,scale",
+                });
+                return;
+            }
+
+            gsap.fromTo(
+                ".showcase-entry",
+                { y: 38, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 0.9,
+                    ease: "power3.out",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: sectionEl,
+                        start: "top 92%",
+                        once: true,
+                    },
+                }
+            );
+
+            gsap.fromTo(
+                ".showcase-panel",
+                { y: 24, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    stagger: 0.08,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    immediateRender: false,
+                    scrollTrigger: {
+                        trigger: sectionEl,
+                        start: "top 92%",
+                        once: true,
+                    },
+                }
+            );
+
+            ScrollTrigger.refresh();
         },
         { scope: sectionRef }
     );
@@ -161,21 +191,24 @@ export default function MaterialSection({
                     </aside>
 
                     <div className="showcase-entry rounded-2xl border border-[#c8c0b6] bg-[#130d08] p-2 shadow-[0_20px_40px_rgba(0,0,0,0.25)] min-h-150">
-                        <div className="w-full h-full rounded-xl bg-[#170f08] overflow-hidden">
+                        <div className="relative w-full h-full rounded-xl bg-[#170f08] overflow-hidden">
                             <CardHolderScene
                                 color={activeColor}
                                 autoRotate={true}
                                 renderMode={renderMode}
                                 enableZoom={true}
-                                cameraPosition={[0.2, 0.16, 3.55]}
-                                cameraLookAt={[0, 0, 0]}
-                                introFromPosition={[0.95, 1.7, 5.6]}
+                                cameraPosition={[0.1, 0.06, 3.5]}
+                                cameraLookAt={[0, 0.02, 0]}
+                                introFromPosition={[0.8, 1.25, 5.15]}
                                 introDuration={1.3}
-                                modelRotation={[0.03, 0.24, 0]}
-                                modelOffset={[0, 0, 0]}
+                                modelRotation={[0, 0.2, 0]}
+                                modelOffset={[0, -0.02, 0]}
                                 modelScaleMultiplier={1}
                                 className="w-full h-full"
                             />
+
+                            <div aria-hidden className="showcase-vignette pointer-events-none absolute inset-0" />
+                            <div aria-hidden className="showcase-top-glow pointer-events-none absolute inset-x-0 top-0 h-28" />
                         </div>
                     </div>
 
