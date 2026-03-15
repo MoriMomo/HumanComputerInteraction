@@ -1,28 +1,28 @@
 "use client";
 
-import { useMemo, useRef, useEffect } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
 
-const DEFAULT_STL_PARTS = [
-    "/satset 3d/block 2pcs.STL",
-    "/satset 3d/botol 1pcs.STL",
-    "/satset 3d/BOX1 1pcs.STL",
-    "/satset 3d/DOR 3pcs.STL",
-    "/satset 3d/lock.STL",
-    "/satset 3d/obat 1pcs.STL",
-    "/satset 3d/Part1 2pcs.STL",
-    "/satset 3d/s 2pcs.STL",
-    "/satset 3d/SLOT 2pcs.STL",
-    "/satset 3d/tutup bot 1pcs.STL",
+const GLB_PARTS = [
+    "/satset 3d/glb/block 2pcs.glb",
+    "/satset 3d/glb/botol 1pcs.glb",
+    "/satset 3d/glb/BOX1 1pcs.glb",
+    "/satset 3d/glb/DOR 3pcs.glb",
+    "/satset 3d/glb/lock.glb",
+    "/satset 3d/glb/obat 1pcs.glb",
+    "/satset 3d/glb/Part1 2pcs.glb",
+    "/satset 3d/glb/s 2pcs.glb",
+    "/satset 3d/glb/SLOT 2pcs.glb",
+    "/satset 3d/glb/tutup bot 1pcs.glb",
 ];
 
 interface CardHolderModelProps {
     color?: string;
     autoRotate?: boolean;
     renderMode?: "normal" | "glass" | "wireframe";
-    modelPaths?: string[];
     modelRotation?: [number, number, number];
     modelOffset?: [number, number, number];
     modelScaleMultiplier?: number;
@@ -32,155 +32,99 @@ export default function CardHolderModel({
     color = "#B48A63",
     autoRotate = true,
     renderMode = "normal",
-    modelPaths = DEFAULT_STL_PARTS,
     modelRotation = [0, 0, 0],
     modelOffset = [0, 0, 0],
-    modelScaleMultiplier = 1,
+    modelScaleMultiplier = 2,
 }: CardHolderModelProps) {
     const groupRef = useRef<THREE.Group>(null);
-    const meshRef = useRef<THREE.Mesh>(null);
     const isPointerDown = useRef(false);
 
-    const loadedGeometries = useLoader(STLLoader, modelPaths);
+    const models = useGLTF(GLB_PARTS) as GLTF[];
 
-    // ULTRA OPTIMIZATION 1: Merge + Simplify geometry
-    const { geometry, center, scale } = useMemo(() => {
-        console.log(`🔧 Merging ${loadedGeometries.length} STL parts...`);
+    const { combinedGroup, baseScale, meshes } = useMemo(() => {
+        const group = new THREE.Group();
+        const meshList: THREE.Mesh[] = [];
 
-        const positions: number[] = [];
-        const normals: number[] = [];
-        const indices: number[] = [];
-        let vertexOffset = 0;
+        models.forEach((gltf) => {
+            const clonedScene = gltf.scene.clone(true);
 
-        // Merge all geometries
-        loadedGeometries.forEach((geo) => {
-            const tempGeo = geo.clone();
-            tempGeo.computeVertexNormals();
-
-            const pos = tempGeo.getAttribute('position');
-            const norm = tempGeo.getAttribute('normal');
-            const index = tempGeo.getIndex();
-
-            if (pos) {
-                for (let i = 0; i < pos.count; i++) {
-                    positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
+            clonedScene.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    meshList.push(child);
                 }
-            }
+            });
 
-            if (norm) {
-                for (let i = 0; i < norm.count; i++) {
-                    normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
-                }
-            }
-
-            if (index) {
-                for (let i = 0; i < index.count; i++) {
-                    indices.push(index.getX(i) + vertexOffset);
-                }
-                vertexOffset += pos.count;
-            }
-
-            tempGeo.dispose();
+            group.add(clonedScene);
         });
 
-        const mergedGeometry = new THREE.BufferGeometry();
-        mergedGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        mergedGeometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+        const box = new THREE.Box3().setFromObject(group);
+        let normalizedScale = 1;
 
-        if (indices.length > 0) {
-            mergedGeometry.setIndex(indices);
+        if (!box.isEmpty()) {
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+
+            group.position.set(-center.x, -center.y, -center.z);
+            normalizedScale = maxDim > 0 ? 2.5 / maxDim : 1;
         }
-
-        // ULTRA OPTIMIZATION 2: Simplify geometry (reduce vertices by ~50%)
-        mergedGeometry.computeBoundingBox();
-        mergedGeometry.computeBoundingSphere();
-
-        const box = mergedGeometry.boundingBox!;
-        const centerVec = new THREE.Vector3();
-        const size = new THREE.Vector3();
-
-        box.getCenter(centerVec);
-        box.getSize(size);
-
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const scaleVal = 2.5 / maxDim;
-
-        console.log(`✓ Merged to single geometry:`);
-        console.log(`  Vertices: ${positions.length / 3}`);
-        console.log(`  Scale: ${scaleVal.toFixed(4)}`);
 
         return {
-            geometry: mergedGeometry,
-            center: centerVec,
-            scale: scaleVal
+            combinedGroup: group,
+            baseScale: normalizedScale,
+            meshes: meshList,
         };
-    }, [loadedGeometries]);
+    }, [models]);
 
-    // ULTRA OPTIMIZATION 3: Single material with minimal features
-    const material = useMemo(() => {
-        let mat: THREE.Material;
+    const sharedMaterial = useMemo(() => {
+        switch (renderMode) {
+            case "wireframe":
+                return new THREE.MeshBasicMaterial({
+                    color,
+                    wireframe: true,
+                });
 
-        if (renderMode === "wireframe") {
-            mat = new THREE.MeshBasicMaterial({
-                color: color,
-                wireframe: true,
-            });
-        } else if (renderMode === "glass") {
-            // Simplified glass - no transmission (very expensive)
-            mat = new THREE.MeshPhongMaterial({
-                color: color,
-                transparent: true,
-                opacity: 0.7,
-                shininess: 90,
-                specular: new THREE.Color(0xffffff),
-            });
-        } else {
-            // Use MeshPhongMaterial instead of MeshStandard (cheaper)
-            mat = new THREE.MeshPhongMaterial({
-                color: color,
-                shininess: 80,
-                specular: new THREE.Color(0x444444),
-            });
+            case "glass":
+                return new THREE.MeshPhongMaterial({
+                    color,
+                    transparent: true,
+                    opacity: 0.7,
+                    shininess: 90,
+                });
+
+            default:
+                return new THREE.MeshPhongMaterial({
+                    color,
+                    shininess: 80,
+                    specular: new THREE.Color(0x444444),
+                });
         }
-
-        return mat;
     }, [color, renderMode]);
 
-    // Cleanup
     useEffect(() => {
+        meshes.forEach((mesh) => {
+            mesh.material = sharedMaterial;
+        });
+
         return () => {
-            geometry.dispose();
-            material.dispose();
+            sharedMaterial.dispose();
         };
-    }, [geometry, material]);
+    }, [meshes, sharedMaterial]);
 
-    // ULTRA OPTIMIZATION 4: Throttled rotation (cap at 30fps)
+    // Rotation animation
     const lastFrameTime = useRef(0);
-    const targetFPS = 30;
-    const frameInterval = 1000 / targetFPS;
-
     useFrame((state) => {
         const now = state.clock.getElapsedTime() * 1000;
 
-        if (now - lastFrameTime.current < frameInterval) {
-            return; // Skip this frame
-        }
-
+        if (now - lastFrameTime.current < 42) return;
         lastFrameTime.current = now;
 
-        if (!groupRef.current) return;
-
-        if (autoRotate && !isPointerDown.current) {
-            groupRef.current.rotation.y += 0.01; // Fixed increment, smoother
+        if (groupRef.current && autoRotate && !isPointerDown.current) {
+            groupRef.current.rotation.y += 0.01;
         }
     });
-
-    // ULTRA OPTIMIZATION 5: Disable frustum culling for single mesh (saves calculations)
-    useEffect(() => {
-        if (meshRef.current) {
-            meshRef.current.frustumCulled = false;
-        }
-    }, []);
 
     return (
         <group
@@ -190,20 +134,12 @@ export default function CardHolderModel({
             onPointerLeave={() => (isPointerDown.current = false)}
             rotation={modelRotation}
             position={modelOffset}
+            scale={baseScale * modelScaleMultiplier}
         >
-            <mesh
-                ref={meshRef}
-                geometry={geometry}
-                material={material}
-                castShadow={false} // Disabled - saves GPU
-                receiveShadow={false} // Disabled - saves GPU
-                scale={scale * modelScaleMultiplier}
-                position={[
-                    -center.x * scale * modelScaleMultiplier,
-                    -center.y * scale * modelScaleMultiplier,
-                    -center.z * scale * modelScaleMultiplier,
-                ]}
-            />
+            <primitive object={combinedGroup} />
         </group>
     );
 }
+
+// Preload all models
+GLB_PARTS.forEach((path) => useGLTF.preload(path));

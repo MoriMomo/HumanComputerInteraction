@@ -85,21 +85,27 @@ function SceneContent({
 
     return (
         <>
-            {/* ULTRA OPTIMIZATION 3: Minimal lighting (2 lights only) */}
-            <ambientLight intensity={0.6} />
+            {/* Lightweight lighting: soft ambient + key/fill to add depth */}
+            <ambientLight intensity={0.5} />
 
             <directionalLight
-                position={[5, 5, 5]}
-                intensity={0.8}
+                position={[4, 5, 3]}
+                intensity={0.58}
                 castShadow={false}
             />
 
-            {/* ULTRA OPTIMIZATION 4: Low-res environment or none */}
+            <directionalLight
+                position={[-3, 2, -4]}
+                intensity={0.22}
+                castShadow={false}
+            />
+
+            {/* Low-res environment */}
             <Environment
                 preset="apartment"
                 background={false}
                 blur={1}
-                resolution={128} // Very low resolution
+                resolution={96}
             />
 
             {/* 3D Model */}
@@ -112,8 +118,6 @@ function SceneContent({
                 modelScaleMultiplier={modelScaleMultiplier}
             />
 
-            {/* ULTRA OPTIMIZATION 5: Remove contact shadows completely */}
-
             {/* Controls */}
             <OrbitControls
                 ref={controlsRef}
@@ -122,7 +126,7 @@ function SceneContent({
                 target={cameraLookAt}
                 minDistance={2}
                 maxDistance={10}
-                enableDamping={false} // Disable damping (saves calculations)
+                enableDamping={false}
                 maxPolarAngle={Math.PI / 1.5}
                 minPolarAngle={Math.PI / 6}
             />
@@ -151,24 +155,23 @@ export default function CardHolderScene({
                     position: cameraPosition,
                     fov: 45,
                     near: 0.1,
-                    far: 50, // Reduced far plane
+                    far: 50,
                 }}
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = false;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.NoToneMapping;
                 }}
-                dpr={1} // Force 1x pixel ratio (huge performance boost)
+                dpr={1}
                 gl={{
-                    antialias: false, // Disable AA (huge performance boost)
+                    antialias: false,
                     alpha: true,
                     powerPreference: "high-performance",
                     stencil: false,
                     depth: true,
                     preserveDrawingBuffer: false,
                 }}
-                shadows={false} // Disable shadows
-                style={{ background: "transparent" }}
+                shadows={false}
             >
                 <Suspense fallback={null}>
                     <SceneContent

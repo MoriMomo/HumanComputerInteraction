@@ -23,6 +23,10 @@ const products = [
         ],
         badge: null,
         cta: "Add to Cart",
+        bgPaleClass: "bg-[#8E9AA6]/8",
+        bgSolidClass: "bg-[#8E9AA6]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#8E9AA6,transparent_70%)]",
+        textColorClass: "text-[#8E9AA6]",
     },
     {
         id: "pro",
@@ -40,6 +44,10 @@ const products = [
         ],
         badge: "Most Popular",
         cta: "Add to Cart",
+        bgPaleClass: "bg-[#B48A63]/8",
+        bgSolidClass: "bg-[#B48A63]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#B48A63,transparent_70%)]",
+        textColorClass: "text-[#B48A63]",
     },
     {
         id: "executive",
@@ -58,6 +66,10 @@ const products = [
         ],
         badge: "Premium",
         cta: "Add to Cart",
+        bgPaleClass: "bg-[#1C1C1E]/8",
+        bgSolidClass: "bg-[#1C1C1E]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#1C1C1E,transparent_70%)]",
+        textColorClass: "text-[#1C1C1E]",
     },
 ];
 
@@ -117,16 +129,16 @@ export default function ShopSection() {
                             <div
                                 key={product.id}
                                 className={`shop-card relative flex flex-col rounded-3xl border overflow-hidden transition-all duration-300 hover:shadow-[0_16px_60px_rgba(48,44,43,0.12)] hover:-translate-y-1 ${isPopular
-                                        ? "border-primary/50 shadow-[0_8px_40px_rgba(180,138,99,0.15)]"
-                                        : "border-soft-grey"
+                                    ? "border-primary/50 shadow-[0_8px_40px_rgba(180,138,99,0.15)]"
+                                    : "border-soft-grey"
                                     }`}
                             >
                                 {/* Badge */}
                                 {product.badge && (
                                     <div
                                         className={`absolute top-5 right-5 text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full ${isPopular
-                                                ? "bg-primary text-white"
-                                                : "bg-charcoal text-white"
+                                            ? "bg-primary text-white"
+                                            : "bg-charcoal text-white"
                                             }`}
                                     >
                                         {product.badge}
@@ -135,19 +147,14 @@ export default function ShopSection() {
 
                                 {/* Colour preview */}
                                 <div
-                                    className="h-48 flex items-center justify-center relative overflow-hidden"
-                                    style={{ backgroundColor: `${product.color}15` }}
+                                    className={`h-48 flex items-center justify-center relative overflow-hidden ${product.bgPaleClass}`}
                                 >
                                     <div
-                                        className="w-28 h-28 rounded-2xl shadow-xl transition-transform duration-500 hover:rotate-6"
-                                        style={{ backgroundColor: product.color }}
+                                        className={`w-28 h-28 rounded-2xl shadow-xl transition-transform duration-500 hover:rotate-6 ${product.bgSolidClass}`}
                                     />
                                     <div
                                         aria-hidden
-                                        className="absolute inset-0 opacity-10 pointer-events-none"
-                                        style={{
-                                            background: `radial-gradient(circle at 50% 50%, ${product.color}, transparent 70%)`,
-                                        }}
+                                        className={`absolute inset-0 opacity-10 pointer-events-none ${product.glowClass}`}
                                     />
                                 </div>
 
@@ -175,8 +182,7 @@ export default function ShopSection() {
                                         {product.features.map((f) => (
                                             <li key={f} className="flex items-center gap-2.5 text-sm text-gray-600">
                                                 <span
-                                                    className="material-symbols-outlined text-base shrink-0"
-                                                    style={{ color: product.color }}
+                                                    className={`material-symbols-outlined text-base shrink-0 ${product.textColorClass}`}
                                                 >
                                                     check_circle
                                                 </span>
@@ -189,8 +195,8 @@ export default function ShopSection() {
                                     <button
                                         onClick={() => addToCart(product.id)}
                                         className={`mt-2 w-full flex items-center justify-center gap-2 rounded-full h-12 text-sm font-semibold tracking-wide transition-all duration-300 ${isPopular
-                                                ? "bg-primary text-white hover:bg-secondary shadow-lg hover:shadow-xl"
-                                                : "bg-charcoal text-white hover:bg-primary"
+                                            ? "bg-primary text-white hover:bg-secondary shadow-lg hover:shadow-xl"
+                                            : "bg-charcoal text-white hover:bg-primary"
                                             }`}
                                     >
                                         <span className="material-symbols-outlined text-base">

@@ -15,6 +15,15 @@ const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ),
 });
 
+const GLOW_CLASS: Record<string, string> = {
+    "#B48A63": "bg-[#B48A63]",
+    "#1C1C1E": "bg-[#1C1C1E]",
+    "#8E9AA6": "bg-[#8E9AA6]",
+    "#BCA782": "bg-[#BCA782]",
+    "#3C2F24": "bg-[#3C2F24]",
+    "#8A683A": "bg-[#8A683A]",
+};
+
 interface HeroSectionProps {
     activeColor: string;
 }
@@ -131,19 +140,18 @@ export default function HeroSection({ activeColor }: HeroSectionProps) {
                     {/* Glow ring behind the model */}
                     <div
                         aria-hidden
-                        className="absolute inset-0 m-auto w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none"
-                        style={{ background: activeColor }}
+                        className={`absolute inset-0 m-auto w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none ${GLOW_CLASS[activeColor] ?? "bg-[#B48A63]"}`}
                     />
                     <CardHolderScene
                         color={activeColor}
                         className="w-full h-full"
                         autoRotate={true}
                         enableZoom={false}
-                        cameraPosition={[1.1, 0.28, 4.2]}
+                        cameraPosition={[0, 0.7, 4.3]}
                         cameraLookAt={[0, 0, 0]}
-                        introFromPosition={[2.6, 1.3, 7.2]}
+                        introFromPosition={[0.35, 1.8, 7.4]}
                         introDuration={1.8}
-                        modelRotation={[0.06, -0.42, 0]}
+                        modelRotation={[-1.42, -0.24, 0.06]}
                         modelOffset={[0, 0, 0]}
                         modelScaleMultiplier={1.06}
                     />

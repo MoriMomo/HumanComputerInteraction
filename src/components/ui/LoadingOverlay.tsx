@@ -41,8 +41,7 @@ export default function LoadingOverlay({ progressValue }: LoadingOverlayProps = 
                 <div className="absolute -inset-2.5 opacity-50">
                     <div className="absolute left-1/4 top-1/4 h-96 w-96 animate-pulse rounded-full bg-amber-900/20 blur-3xl" />
                     <div
-                        className="absolute bottom-1/4 right-1/4 h-96 w-96 animate-pulse rounded-full bg-stone-800/20 blur-3xl"
-                        style={{ animationDelay: "1s" }}
+                        className="absolute bottom-1/4 right-1/4 h-96 w-96 animate-pulse rounded-full bg-stone-800/20 blur-3xl [animation-delay:1s]"
                     />
                 </div>
             </div>
@@ -104,8 +103,8 @@ export default function LoadingOverlay({ progressValue }: LoadingOverlayProps = 
 
                     <div className="flex justify-center space-x-1">
                         <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400" />
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400" style={{ animationDelay: "150ms" }} />
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400" style={{ animationDelay: "300ms" }} />
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:150ms]" />
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:300ms]" />
                     </div>
                 </div>
 

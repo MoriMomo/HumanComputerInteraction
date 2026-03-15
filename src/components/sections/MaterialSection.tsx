@@ -115,7 +115,7 @@ export default function MaterialSection({
         <section id="showcase" ref={sectionRef} className="py-22 bg-[#ececee]">
             <div className="max-w-350 mx-auto px-4 md:px-8 lg:px-10">
                 <div className="showcase-panel-wrap grid grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_220px] gap-5 items-stretch">
-                    <aside className="showcase-entry showcase-panel flex flex-col justify-between rounded-2xl bg-[#eeedef] px-6 py-7 border border-[#dad9de]">
+                    <aside className="showcase-entry flex flex-col justify-between rounded-2xl bg-[#eeedef] px-6 py-7 border border-[#dad9de]">
                         <div>
                             <p className="text-[11px] tracking-[0.3em] font-semibold text-[#6e665f] uppercase mb-7 flex items-center gap-2">
                                 <span className="w-7 h-px bg-[#6e665f]" />
@@ -160,7 +160,7 @@ export default function MaterialSection({
                         </div>
                     </aside>
 
-                    <div className="showcase-entry showcase-panel rounded-2xl border border-[#c8c0b6] bg-[#130d08] p-2 shadow-[0_20px_40px_rgba(0,0,0,0.25)] min-h-150">
+                    <div className="showcase-entry rounded-2xl border border-[#c8c0b6] bg-[#130d08] p-2 shadow-[0_20px_40px_rgba(0,0,0,0.25)] min-h-150">
                         <div className="w-full h-full rounded-xl bg-[#170f08] overflow-hidden">
                             <CardHolderScene
                                 color={activeColor}
