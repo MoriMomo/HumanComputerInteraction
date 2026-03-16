@@ -32,8 +32,8 @@ const products = [
         id: "pro",
         name: "SatSet Pro",
         price: 129,
-        color: "#B48A63",
-        colorLabel: "Desert Bronze",
+        color: "#59636E",
+        colorLabel: "Graphite",
         capacity: "4–8 cards",
         features: [
             "RFID blocking layer",
@@ -44,10 +44,10 @@ const products = [
         ],
         badge: "Most Popular",
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#B48A63]/8",
-        bgSolidClass: "bg-[#B48A63]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#B48A63,transparent_70%)]",
-        textColorClass: "text-[#B48A63]",
+        bgPaleClass: "bg-[#59636E]/8",
+        bgSolidClass: "bg-[#59636E]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#59636E,transparent_70%)]",
+        textColorClass: "text-[#59636E]",
     },
     {
         id: "executive",
@@ -130,6 +130,18 @@ export default function ShopSection() {
                 }
             );
 
+            gsap.to(".shop-orb", {
+                xPercent: 10,
+                yPercent: -14,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                },
+            });
+
             ScrollTrigger.refresh();
         },
         { scope: sectionRef }
@@ -143,16 +155,28 @@ export default function ShopSection() {
     };
 
     return (
-        <section id="shop" ref={sectionRef} className="relative bg-white py-28">
+        <section
+            id="shop"
+            ref={sectionRef}
+            className="relative -mt-8 bg-[linear-gradient(180deg,#e8edf0_0%,#f0f4f6_18%,#fbfcfc_100%)] py-30"
+        >
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 section-seam-paper"
+            />
+            <div
+                aria-hidden
+                className="shop-orb section-orb pointer-events-none absolute left-[10%] top-20 h-52 w-52 rounded-full bg-[#9ba9b5]/12 blur-3xl"
+            />
             <div className="mx-auto max-w-7xl px-4 md:px-10 lg:px-20">
                 {/* Label + title */}
-                <p className="shop-title mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-amber-700">
+                <p className="shop-title mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
                     Shop
                 </p>
                 <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                     <h2 className="shop-title max-w-lg text-4xl font-bold leading-tight text-stone-900 md:text-5xl">
                         Choose your{" "}
-                        <span className="italic text-amber-700">carry companion</span>.
+                        <span className="italic text-primary">desk companion</span>.
                     </h2>
                     <p className="shop-title max-w-xs text-sm leading-relaxed text-stone-500">
                         Free shipping on orders over $100. 30-day returns. Ships worldwide.
@@ -168,16 +192,16 @@ export default function ShopSection() {
                         return (
                             <div
                                 key={product.id}
-                                className={`shop-card relative flex flex-col overflow-hidden rounded-3xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${isPopular
-                                    ? "border-amber-700/30 shadow-lg shadow-amber-900/10"
-                                    : "border-stone-200"
+                                className={`shop-card relative flex flex-col overflow-hidden rounded-[1.9rem] border bg-white/78 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${isPopular
+                                    ? "border-primary/30 shadow-lg shadow-slate-800/10"
+                                    : "border-white/70"
                                     }`}
                             >
                                 {/* Badge */}
                                 {product.badge && (
                                     <div
                                         className={`absolute right-5 top-5 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${isPopular
-                                            ? "bg-amber-700 text-white"
+                                            ? "bg-primary text-white"
                                             : "bg-stone-900 text-white"
                                             }`}
                                     >
@@ -241,8 +265,8 @@ export default function ShopSection() {
                                     <button
                                         onClick={() => addToCart(product.id)}
                                         className={`mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 ${isPopular
-                                            ? "bg-amber-700 text-white shadow-lg hover:bg-amber-800 hover:shadow-xl"
-                                            : "bg-stone-900 text-white hover:bg-amber-700"
+                                            ? "bg-primary text-white shadow-lg hover:bg-primary-dark hover:shadow-xl"
+                                            : "bg-stone-900 text-white hover:bg-primary"
                                             }`}
                                     >
                                         <svg
@@ -284,7 +308,7 @@ export default function ShopSection() {
                         { icon: "⭐", text: "4.9 / 5 from 2,400+ reviews" },
                     ].map(({ icon, text }) => (
                         <span key={text} className="flex items-center gap-2">
-                            <span className="text-lg text-amber-700">{icon}</span>
+                            <span className="text-lg text-primary">{icon}</span>
                             {text}
                         </span>
                     ))}

@@ -105,6 +105,18 @@ export default function SpecsSection() {
                 onEnter: runCounters,
             });
 
+            gsap.to(".specs-orb", {
+                xPercent: -8,
+                yPercent: -12,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                },
+            });
+
             ScrollTrigger.refresh();
         },
         { scope: sectionRef }
@@ -114,12 +126,20 @@ export default function SpecsSection() {
         <section
             id="specs"
             ref={sectionRef}
-            className="py-28 bg-charcoal text-white relative overflow-hidden"
+            className="relative -mt-8 overflow-hidden bg-[linear-gradient(180deg,#26313b_0%,#1a2128_14%,#151b21_100%)] py-30 text-white"
         >
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 section-seam-dark"
+            />
             {/* Decorative arc */}
             <div
                 aria-hidden
                 className="blob-bronze pointer-events-none absolute top-[-30%] left-[-10%] w-[60vw] h-[60vw] rounded-full opacity-[0.04]"
+            />
+            <div
+                aria-hidden
+                className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-[#93a2b0]/10 blur-3xl"
             />
 
             <div className="max-w-350 mx-auto px-4 md:px-10 lg:px-20">

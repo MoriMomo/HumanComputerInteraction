@@ -1,23 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
 
-const GLB_PARTS = [
-    "/satset 3d/glb/block 2pcs.glb",
-    "/satset 3d/glb/botol 1pcs.glb",
-    "/satset 3d/glb/BOX1 1pcs.glb",
-    "/satset 3d/glb/DOR 3pcs.glb",
-    "/satset 3d/glb/lock.glb",
-    "/satset 3d/glb/obat 1pcs.glb",
-    "/satset 3d/glb/Part1 2pcs.glb",
-    "/satset 3d/glb/s 2pcs.glb",
-    "/satset 3d/glb/SLOT 2pcs.glb",
-    "/satset 3d/glb/tutup bot 1pcs.glb",
-];
+const GLB_MODEL = "/satset 3d/glb/lock.glb";
 
 interface CardHolderModelProps {
     color?: string;
@@ -36,28 +25,27 @@ export default function CardHolderModel({
     modelOffset = [0, 0, 0],
     modelScaleMultiplier = 2,
 }: CardHolderModelProps) {
-    const groupRef = useRef<THREE.Group>(null);
-    const isPointerDown = useRef(false);
+    const animatedGroupRef = useRef<THREE.Group>(null);
+    const rotationVelocityRef = useRef(0);
+    const [isHovered, setIsHovered] = useState(false);
 
-    const models = useGLTF(GLB_PARTS) as GLTF[];
+    const model = useGLTF(GLB_MODEL) as GLTF;
 
-    const { combinedGroup, baseScale, meshes } = useMemo(() => {
+    const { modelGroup, baseScale, meshes } = useMemo(() => {
         const group = new THREE.Group();
         const meshList: THREE.Mesh[] = [];
 
-        models.forEach((gltf) => {
-            const clonedScene = gltf.scene.clone(true);
+        const clonedScene = model.scene.clone(true);
 
-            clonedScene.traverse((child) => {
-                if (child instanceof THREE.Mesh) {
-                    child.castShadow = false;
-                    child.receiveShadow = false;
-                    meshList.push(child);
-                }
-            });
-
-            group.add(clonedScene);
+        clonedScene.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                meshList.push(child);
+            }
         });
+
+        group.add(clonedScene);
 
         const box = new THREE.Box3().setFromObject(group);
         let normalizedScale = 1;
@@ -72,33 +60,41 @@ export default function CardHolderModel({
         }
 
         return {
-            combinedGroup: group,
+            modelGroup: group,
             baseScale: normalizedScale,
             meshes: meshList,
         };
-    }, [models]);
+    }, [model]);
 
     const sharedMaterial = useMemo(() => {
+        const isGlass = renderMode === "glass";
+
         switch (renderMode) {
             case "wireframe":
-                return new THREE.MeshBasicMaterial({
+                return new THREE.MeshStandardMaterial({
                     color,
                     wireframe: true,
+                    roughness: 0.38,
+                    metalness: 0.48,
+                    envMapIntensity: 1.1,
                 });
 
             case "glass":
-                return new THREE.MeshPhongMaterial({
+                return new THREE.MeshStandardMaterial({
                     color,
                     transparent: true,
-                    opacity: 0.7,
-                    shininess: 90,
+                    opacity: 0.56,
+                    roughness: 0.08,
+                    metalness: 0.12,
+                    envMapIntensity: 1.55,
                 });
 
             default:
-                return new THREE.MeshPhongMaterial({
+                return new THREE.MeshStandardMaterial({
                     color,
-                    shininess: 80,
-                    specular: new THREE.Color(0x444444),
+                    roughness: isGlass ? 0.08 : 0.28,
+                    metalness: isGlass ? 0.12 : 0.46,
+                    envMapIntensity: 1.08,
                 });
         }
     }, [color, renderMode]);
@@ -113,33 +109,40 @@ export default function CardHolderModel({
         };
     }, [meshes, sharedMaterial]);
 
-    // Rotation animation
-    const lastFrameTime = useRef(0);
-    useFrame((state) => {
-        const now = state.clock.getElapsedTime() * 1000;
+    useFrame((state, delta) => {
+        const group = animatedGroupRef.current;
+        if (!group) return;
 
-        if (now - lastFrameTime.current < 42) return;
-        lastFrameTime.current = now;
+        const hoverBoost = isHovered ? 1.42 : 1;
+        const targetVelocity = autoRotate ? 0.58 * hoverBoost : 0;
 
-        if (groupRef.current && autoRotate && !isPointerDown.current) {
-            groupRef.current.rotation.y += 0.01;
-        }
+        rotationVelocityRef.current = THREE.MathUtils.lerp(
+            rotationVelocityRef.current,
+            targetVelocity,
+            Math.min(1, delta * 2.4)
+        );
+
+        group.rotation.y += rotationVelocityRef.current * delta;
     });
 
+    // In CardHolderModel.tsx
     return (
         <group
-            ref={groupRef}
-            onPointerDown={() => (isPointerDown.current = true)}
-            onPointerUp={() => (isPointerDown.current = false)}
-            onPointerLeave={() => (isPointerDown.current = false)}
-            rotation={modelRotation}
+            // FIX: Apply the user's rotation, but force -90deg (PI/2) on X-axis to stand up
+            rotation={[modelRotation[0] + Math.PI / 2, modelRotation[1], modelRotation[2]]}
             position={modelOffset}
-            scale={baseScale * modelScaleMultiplier}
         >
-            <primitive object={combinedGroup} />
+            <group
+                ref={animatedGroupRef}
+                scale={baseScale * modelScaleMultiplier}
+                onPointerOver={() => setIsHovered(true)}
+                onPointerOut={() => setIsHovered(false)}
+            >
+                <primitive object={modelGroup} />
+            </group>
         </group>
     );
+
 }
 
-// Preload all models
-GLB_PARTS.forEach((path) => useGLTF.preload(path));
+useGLTF.preload(GLB_MODEL);

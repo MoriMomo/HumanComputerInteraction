@@ -1,14 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
+import ReactiveBackground from "@/components/ui/ReactiveBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
+    ssr: false,
+    loading: () => (
+        <div className="w-full h-full flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full border-2 border-white/45 border-t-transparent animate-spin" />
+        </div>
+    ),
+});
+
 const GLOW_CLASS: Record<string, string> = {
+    "#59636E": "bg-[#59636E]",
     "#B48A63": "bg-[#B48A63]",
     "#1C1C1E": "bg-[#1C1C1E]",
     "#8E9AA6": "bg-[#8E9AA6]",
@@ -17,72 +28,43 @@ const GLOW_CLASS: Record<string, string> = {
     "#8A683A": "bg-[#8A683A]",
 };
 
-const HERO_CAROUSEL_ITEMS = [
-    {
-        id: "standard",
-        name: "SatSet Standard",
-        subtitle: "Storm Grey",
-        price: "$79",
-        bgClass: "from-[#EEF1F4] to-[#DDE3E8]",
-        accentClass: "text-[#627387]",
-    },
-    {
-        id: "pro",
-        name: "SatSet Pro",
-        subtitle: "Desert Bronze",
-        price: "$129",
-        bgClass: "from-[#F3E8DE] to-[#E6D3BE]",
-        accentClass: "text-[#9D6D43]",
-    },
-    {
-        id: "executive",
-        name: "SatSet Executive",
-        subtitle: "Midnight Black",
-        price: "$199",
-        bgClass: "from-[#E2E2E5] to-[#C8C8CC]",
-        accentClass: "text-[#2B2B31]",
-    },
-];
-
 interface HeroSectionProps {
     activeColor: string;
+    show3DModel?: boolean;
 }
 
-export default function HeroSection({ activeColor }: HeroSectionProps) {
+const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
+
+export default function HeroSection({ activeColor, show3DModel = true }: HeroSectionProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(
         () => {
-            gsap.set(".hero-word, .hero-sub, .hero-cta, .hero-badge, .hero-canvas", {
+            const sectionEl = containerRef.current;
+            if (!sectionEl) return;
+
+            gsap.set(".hero-title, .hero-kicker, .hero-top-right, .hero-canvas, .hero-meta, .hero-rail", {
                 clearProps: "all",
             });
-
-            gsap.set(".hero-carousel-card", { clearProps: "all" });
 
             const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
             tl.fromTo(
-                ".hero-word",
+                ".hero-title",
                 { y: 70, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.1, duration: 0.9, immediateRender: false }
+                { y: 0, opacity: 1, duration: 0.85, immediateRender: false }
             )
                 .fromTo(
-                    ".hero-sub",
-                    { y: 30, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 0.7, immediateRender: false },
+                    ".hero-kicker",
+                    { y: 24, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.55, immediateRender: false },
+                    "-=0.35"
+                )
+                .fromTo(
+                    ".hero-top-right",
+                    { y: 24, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.55, immediateRender: false },
                     "-=0.4"
-                )
-                .fromTo(
-                    ".hero-cta",
-                    { y: 20, opacity: 0 },
-                    { y: 0, opacity: 1, stagger: 0.12, duration: 0.6, immediateRender: false },
-                    "-=0.3"
-                )
-                .fromTo(
-                    ".hero-badge",
-                    { y: 20, opacity: 0 },
-                    { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, immediateRender: false },
-                    "-=0.2"
                 )
                 .fromTo(
                     ".hero-canvas",
@@ -91,11 +73,66 @@ export default function HeroSection({ activeColor }: HeroSectionProps) {
                     "-=1"
                 )
                 .fromTo(
-                    ".hero-carousel-card",
-                    { y: 24, opacity: 0 },
-                    { y: 0, opacity: 1, stagger: 0.06, duration: 0.55, immediateRender: false },
-                    "-=0.55"
+                    ".hero-meta",
+                    { y: 20, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.55, immediateRender: false },
+                    "-=0.45"
+                )
+                .fromTo(
+                    ".hero-rail",
+                    { y: 18, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.55, immediateRender: false },
+                    "-=0.45"
                 );
+
+            gsap.to(".hero-canvas", {
+                y: 92,
+                scale: 0.86,
+                opacity: 0.38,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top top",
+                    end: "bottom top+=120",
+                    scrub: true,
+                },
+            });
+
+            gsap.to(".hero-meta, .hero-kicker, .hero-top-right", {
+                y: -22,
+                opacity: 0.56,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top top",
+                    end: "bottom top+=120",
+                    scrub: true,
+                },
+            });
+
+            gsap.to(".hero-orb-a", {
+                xPercent: 10,
+                yPercent: 14,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                },
+            });
+
+            gsap.to(".hero-orb-b", {
+                xPercent: -8,
+                yPercent: -18,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sectionEl,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                },
+            });
         },
         { scope: containerRef }
     );
@@ -104,116 +141,131 @@ export default function HeroSection({ activeColor }: HeroSectionProps) {
         <section
             id="showcase"
             ref={containerRef}
-            className="relative min-h-[calc(100vh-5rem)] flex items-center py-8 md:py-12"
+            className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-[#0f141c] via-[#131b24] to-[#0f141c]"
         >
-            {/* Decorative background gradient blob */}
+            <ReactiveBackground color="#3b82f6" blockCount={10} opacity={0.08} />
+
+            {/* Grid overlay */}
             <div
                 aria-hidden
-                className="blob-bronze pointer-events-none absolute top-[-10%] right-[-5%] w-[55vw] h-[55vw] rounded-full opacity-[0.06]"
+                className="pointer-events-none absolute inset-0 z-10 [background:linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[120px_120px]"
             />
 
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full">
-                {/* ── Left copy ── */}
-                <div className="flex flex-col gap-8 px-1 lg:px-2">
-                    {/* Headline — each span animates individually */}
-                    <h1 className="font-serif text-charcoal text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.12] tracking-tight overflow-hidden">
-                        <span className="hero-word inline-block">Elevate</span>{" "}
-                        <span className="hero-word inline-block">Your</span>
-                        <br />
-                        <span className="hero-word inline-block text-primary italic">Everyday</span>
-                        <span className="hero-word inline-block">.</span>
-                        <br />
-                        <span className="hero-word inline-block">Refine</span>{" "}
-                        <span className="hero-word inline-block">Your</span>{" "}
-                        <span className="hero-word inline-block text-secondary">Carry</span>
-                        <span className="hero-word inline-block">.</span>
-                    </h1>
+            {/* Background glows */}
+            <div
+                aria-hidden
+                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(188,201,214,0.22),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(133,146,160,0.18),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(106,120,134,0.16),transparent_50%)] blur-3xl"
+            />
+            <div
+                aria-hidden
+                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-[#d9e1e7]/12 blur-3xl"
+            />
 
-                    <p className="hero-sub text-gray-500 text-base md:text-lg max-w-lg leading-relaxed">
-                        The <strong className="text-charcoal font-semibold">ModuSnap</strong> card holder system — crafted at the
-                        intersection of minimalist design and premium functionality for the modern professional.
-                    </p>
+            {/* Bottom fade to dark – matches StatsSection bg */}
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-48 section-seam-dark"
+            />
 
-                    {/* CTAs */}
-                    <div className="flex flex-wrap gap-4 items-center">
-                        <a
-                            href="#shop"
-                            className="hero-cta flex items-center justify-center rounded-full h-12 px-8 bg-primary text-white text-sm font-semibold tracking-wide transition-all duration-300 hover:bg-secondary shadow-lg hover:shadow-xl"
-                        >
-                            Pre-order Now
-                        </a>
-                        <a
-                            href="#features"
-                            className="hero-cta flex items-center justify-center rounded-full h-12 px-8 bg-transparent border border-gray-300 text-charcoal text-sm font-medium transition-all duration-300 hover:border-primary hover:text-primary"
-                        >
-                            View Collection
-                        </a>
+            {/* Horizontal dividers */}
+            <div aria-hidden className="absolute top-1/3 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+            <div aria-hidden className="absolute top-2/3 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+
+            {/* Main Content - COMPACT LAYOUT */}
+            <div className="relative z-20 min-h-screen flex flex-col justify-between pt-20 pb-8 md:pt-24 md:pb-10 px-8 md:px-16 max-w-480 mx-auto">
+
+                {/* Top Content - REMOVED min-h constraint */}
+                <div className="flex items-end justify-between pb-5 md:pb-7">
+                    <div className="max-w-4xl">
+                        <h1 className="hero-title text-5xl md:text-7xl lg:text-[7.25rem] font-bold text-white leading-none tracking-tight">
+                            <span className="hero-word inline-block">SatSet</span>
+                            <span className="hero-word inline-block align-top text-[0.5em]">™</span>
+                        </h1>
+                        <p className="hero-kicker text-xs uppercase tracking-[0.35em] text-white/60 mt-3">
+                            Office Utility. Refined.
+                        </p>
                     </div>
 
-                    {/* Feature badges */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-7 border-t border-soft-grey">
-                        {[
-                            { icon: "shield_person", label: "RFID Protection" },
-                            { icon: "scale", label: "Ultralight 18g" },
-                            { icon: "widgets", label: "Modular System" },
-                            { icon: "check_circle", label: "Premium Finish" },
-                        ].map(({ icon, label }) => (
-                            <div key={label} className="hero-badge flex flex-col items-start gap-3">
-                                <div className="w-10 h-10 rounded-full bg-soft-grey flex items-center justify-center text-secondary">
-                                    <span className="material-symbols-outlined text-lg">{icon}</span>
-                                </div>
-                                <span className="text-xs text-charcoal font-semibold tracking-widest uppercase">
-                                    {label}
-                                </span>
-                            </div>
-                        ))}
+                    <div className="hero-top-right hidden md:block max-w-xs text-right">
+                        <p className="text-xs text-white/76 leading-relaxed">
+                            A compact carry object tuned for meetings, desks, and daily professional movement.
+                        </p>
                     </div>
                 </div>
 
-                {/* ── Right product carousel ── */}
-                <div className="hero-canvas relative flex justify-center items-center h-105 md:h-130 lg:h-155 w-full">
-                    <div
-                        aria-hidden
-                        className={`absolute inset-0 m-auto w-72 h-72 md:w-80 md:h-80 rounded-full blur-3xl opacity-20 pointer-events-none ${GLOW_CLASS[activeColor] ?? "bg-[#B48A63]"}`}
-                    />
-
-                    <div className="hero-carousel relative w-[72%] max-w-110 min-w-70 h-107.5 md:h-132.5 lg:h-155 overflow-hidden rounded-4xl border border-white/70 bg-white/50 backdrop-blur-sm shadow-[0_24px_52px_rgba(48,44,43,0.16)]">
-                        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-linear-to-b from-white/95 to-transparent" />
-                        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-16 bg-linear-to-t from-white/95 to-transparent" />
-
-                        <div className="hero-carousel-track flex flex-col gap-4 p-4">
-                            {[...HERO_CAROUSEL_ITEMS, ...HERO_CAROUSEL_ITEMS].map((item, index) => (
-                                <article
-                                    key={`${item.id}-${index}`}
-                                    className="hero-carousel-card relative flex items-center gap-4 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_10px_26px_rgba(48,44,43,0.12)]"
-                                >
-                                    <div className={`absolute inset-0 rounded-2xl bg-linear-to-r opacity-45 ${item.bgClass}`} />
-
-                                    <div className="relative z-1 shrink-0 w-18 md:w-20">
-                                        <Image
-                                            src="/models/card/hero-card.svg"
-                                            alt={`${item.name} product preview`}
-                                            width={220}
-                                            height={290}
-                                            priority={index < 3}
-                                            className="w-full h-auto drop-shadow-[0_10px_14px_rgba(48,44,43,0.18)]"
-                                        />
+                {/* Canvas - COMPACT, centered */}
+                <div className="hero-canvas flex items-center justify-center py-3 md:py-4 min-h-[30vh] md:min-h-[36vh]">
+                    <div className="relative w-full max-w-xl md:max-w-2xl aspect-5/4 md:aspect-4/3">
+                        <div
+                            aria-hidden
+                            className={`absolute inset-[10%] rounded-full blur-3xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-full h-full">
+                                {show3DModel ? (
+                                    <CardHolderScene
+                                        color={activeColor}
+                                        autoRotate={true}
+                                        renderMode="normal"
+                                        enableZoom={false}
+                                        cameraPosition={[0.18, 0.05, 3.35]}
+                                        cameraLookAt={[0, 0.02, 0]}
+                                        introFromPosition={[0.95, 1.45, 4.9]}
+                                        introDuration={1.15}
+                                        modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.22, 0]}
+                                        modelOffset={[0, -0.03, 0]}
+                                        modelScaleMultiplier={1.04}
+                                        className="w-full h-full"
+                                    />
+                                ) : (
+                                    <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-[#1c2631] via-[#1a2430] to-[#141b24] flex items-center justify-center">
+                                        <div className="text-center px-6">
+                                            <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
+                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Disabled</p>
+                                            <p className="mt-3 max-w-md text-sm text-white/64 leading-relaxed">
+                                                Focusing on layout and storefront refinement. Interactive product model is temporarily turned off.
+                                            </p>
+                                        </div>
                                     </div>
-
-                                    <div className="relative z-1 min-w-0">
-                                        <p className="text-[11px] uppercase tracking-[0.22em] text-charcoal/55 mb-1">
-                                            {item.subtitle}
-                                        </p>
-                                        <h3 className="font-serif text-charcoal text-xl leading-tight truncate">
-                                            {item.name}
-                                        </h3>
-                                        <p className={`mt-2 text-sm font-semibold ${item.accentClass}`}>
-                                            From {item.price}
-                                        </p>
-                                    </div>
-                                </article>
-                            ))}
+                                )}
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Bottom Content - REMOVED min-h constraint */}
+                <div className="flex items-start justify-between pt-4 md:pt-6">
+                    <div className="hero-meta max-w-xl">
+                        <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-2.5">
+                            Built For Workdays.
+                            <br />
+                            Ready For Every Move.
+                        </h2>
+                        <p className="text-white/68 text-sm leading-relaxed max-w-md">
+                            Minimal enough for the boardroom, durable enough for the commute, and clean enough to feel native on a desk.
+                        </p>
+                    </div>
+
+                    <div className="hero-top-right hidden md:block max-w-xs text-right">
+                        <p className="text-xs uppercase tracking-[0.2em] text-white/45 mb-2">
+                            Compact Work Carry Format
+                        </p>
+                        <p className="text-sm text-white/74">
+                            Precision-built for cards, cash, and daily essentials.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Bottom Rail */}
+                <div className="hero-rail flex items-center justify-between pt-4 border-t border-white/10 mt-4 flex-wrap gap-y-2.5">
+                    <div className="flex gap-8 md:gap-12 flex-wrap">
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Utility Profile</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Slim Desk Carry</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Focus</span>
+                    </div>
+                    <div className="flex gap-8 md:gap-12 flex-wrap md:justify-end">
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Surface</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Graphite, Steel, Sand</span>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,15 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-charcoal text-white pt-20 pb-10">
+        <footer className="relative -mt-8 overflow-hidden bg-[linear-gradient(180deg,#222b34_0%,#171e25_16%,#12181e_100%)] text-white pt-24 pb-10">
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 section-seam-dark"
+            />
+            <div
+                aria-hidden
+                className="section-orb pointer-events-none absolute left-[-8%] top-0 h-72 w-72 rounded-full bg-[#9aa8b4]/10 blur-3xl"
+            />
             <div className="max-w-350 mx-auto px-4 md:px-10 lg:px-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
                     {/* Brand */}

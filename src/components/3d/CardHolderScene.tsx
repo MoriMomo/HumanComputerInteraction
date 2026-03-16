@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, Float } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -101,30 +101,34 @@ function SceneContent({
 
     return (
         <>
-            {/* Darker cinematic look for product focus */}
-            <ambientLight intensity={0.2} />
+            <ambientLight intensity={0.3} />
 
             <hemisphereLight
-                args={["#6f5c45", "#0c0b0a", 0.16]}
+                args={["#8f9ca8", "#111821", 0.2]}
             />
 
             <directionalLight
-                position={[3.2, 4.2, 2.6]}
-                intensity={0.42}
-                castShadow={false}
+                position={[3.1, 4.3, 2.4]}
+                intensity={0.7}
+                castShadow
+                shadow-mapSize-width={1024}
+                shadow-mapSize-height={1024}
+                shadow-camera-near={0.5}
+                shadow-camera-far={20}
+                shadow-bias={-0.00008}
             />
 
             <directionalLight
-                position={[-2.6, 1.8, -3.2]}
-                intensity={0.14}
+                position={[-2.8, 2.1, -3.1]}
+                intensity={0.24}
                 castShadow={false}
             />
 
             <pointLight
                 ref={rimLightRef}
                 position={[1.9, 0.95, -1.6]}
-                color="#f4cf9f"
-                intensity={0.42}
+                color="#c3d1dc"
+                intensity={0.36}
                 distance={6}
                 decay={2.2}
             />
@@ -132,29 +136,45 @@ function SceneContent({
             <pointLight
                 ref={rimFillRef}
                 position={[-1.6, 0.7, 1.4]}
-                color="#7e6a56"
-                intensity={0.2}
+                color="#6e7f8f"
+                intensity={0.18}
                 distance={5}
                 decay={2.4}
             />
 
-            {/* Darker reflections with lightweight environment */}
             <Environment
-                preset="city"
+                preset="studio"
                 background={false}
-                blur={0.7}
-                resolution={64}
+                blur={0.55}
+                resolution={128}
             />
 
-            {/* 3D Model */}
-            <CardHolderModel
-                color={color}
-                autoRotate={autoRotate}
-                renderMode={renderMode}
-                modelRotation={modelRotation}
-                modelOffset={modelOffset}
-                modelScaleMultiplier={modelScaleMultiplier}
+            <ContactShadows
+                position={[0, -1.18, 0]}
+                opacity={0.36}
+                scale={8}
+                blur={2.4}
+                far={4}
+                resolution={512}
+                color="#273240"
             />
+
+            {/* Antigravity-style motion layer for premium showroom feel */}
+            <Float
+                speed={1.4}
+                rotationIntensity={0.22}
+                floatIntensity={0.2}
+                floatingRange={[-0.08, 0.08]}
+            >
+                <CardHolderModel
+                    color={color}
+                    autoRotate={autoRotate}
+                    renderMode={renderMode}
+                    modelRotation={modelRotation}
+                    modelOffset={modelOffset}
+                    modelScaleMultiplier={modelScaleMultiplier}
+                />
+            </Float>
 
             {/* Controls */}
             <OrbitControls
@@ -183,7 +203,7 @@ export default function CardHolderScene({
     cameraLookAt = [0, 0, 0],
     introFromPosition = [4, 3, 6],
     introDuration = 1.4,
-    modelRotation = [0, 0, 0],
+    modelRotation = [Math.PI / 2, 0, 0],
     modelOffset = [0, 0, 0],
     modelScaleMultiplier = 1,
 }: CardHolderSceneProps) {
@@ -197,10 +217,11 @@ export default function CardHolderScene({
                     far: 50,
                 }}
                 onCreated={({ gl }) => {
-                    gl.shadowMap.enabled = false;
+                    gl.shadowMap.enabled = true;
+                    gl.shadowMap.type = THREE.PCFSoftShadowMap;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
-                    gl.toneMappingExposure = 0.72;
+                    gl.toneMappingExposure = 0.85;
                 }}
                 dpr={1}
                 gl={{
@@ -211,7 +232,7 @@ export default function CardHolderScene({
                     depth: true,
                     preserveDrawingBuffer: false,
                 }}
-                shadows={false}
+                shadows
             >
                 <Suspense fallback={null}>
                     <SceneContent
