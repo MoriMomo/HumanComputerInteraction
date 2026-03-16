@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import gsap from "gsap";
+import { useEffect, useMemo, useRef, useCallback } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 interface ReactiveBackgroundProps {
     color?: string;
     blockCount?: number;
     opacity?: number;
+    mode?: "fixed" | "absolute";
 }
 
 interface ReactiveBlocksProps {
@@ -20,99 +20,96 @@ interface ReactiveBlocksProps {
 function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const materialRef = useRef<THREE.MeshBasicMaterial>(null);
+    const { size, viewport } = useThree();
 
-    const pointerRef = useRef({ x: 0, y: 0 });
-    const scrollRef = useRef({ value: 0 });
-
-    const dummy = useMemo(() => new THREE.Object3D(), []);
+    const pointerRef = useRef({ x: -1000, y: -1000 });
+    const dummyRef = useRef(new THREE.Object3D());
     const colorBase = useMemo(() => new THREE.Color(color), [color]);
+    const defaultColor = useMemo(() => new THREE.Color(color).multiplyScalar(0.3), [color]);
 
     const total = blockCount * blockCount;
-    const span = 8;
+
+    // Calculate cell size based on viewport
+    const span = Math.max(viewport.width, viewport.height) * 1.2;
     const cell = span / blockCount;
 
+    // Pre-calculate positions
     const positions = useMemo(() => {
-        const next: Array<{ x: number; y: number; row: number; col: number }> = [];
-
+        const next: Float32Array[] = [];
         for (let i = 0; i < total; i += 1) {
             const row = Math.floor(i / blockCount);
             const col = i % blockCount;
-
             const x = -span / 2 + col * cell + cell * 0.5;
             const y = span / 2 - row * cell - cell * 0.5;
-
-            next.push({ x, y, row, col });
+            next.push(new Float32Array([x, y, row, col]));
         }
-
         return next;
     }, [blockCount, cell, span, total]);
 
-    useEffect(() => {
-        const onPointerMove = (event: MouseEvent) => {
-            const nx = (event.clientX / window.innerWidth - 0.5) * 2;
-            const ny = (event.clientY / window.innerHeight - 0.5) * 2;
-
-            gsap.to(pointerRef.current, {
-                x: nx,
-                y: ny,
-                duration: 0.8,
-                ease: "power2.out",
-                overwrite: true,
-            });
-        };
-
-        const onScroll = () => {
-            const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-            const progress = window.scrollY / max;
-
-            gsap.to(scrollRef.current, {
-                value: progress,
-                duration: 0.5,
-                ease: "power2.out",
-                overwrite: true,
-            });
-        };
-
-        onScroll();
-
-        window.addEventListener("mousemove", onPointerMove, { passive: true });
-        window.addEventListener("scroll", onScroll, { passive: true });
-
-        return () => {
-            window.removeEventListener("mousemove", onPointerMove);
-            window.removeEventListener("scroll", onScroll);
-        };
+    // Handle mouse movement
+    const handlePointerMove = useCallback((event: PointerEvent) => {
+        pointerRef.current.x = event.clientX;
+        pointerRef.current.y = event.clientY;
     }, []);
 
-    useFrame(({ clock }) => {
+    useEffect(() => {
+        window.addEventListener("pointermove", handlePointerMove, { passive: true });
+        return () => window.removeEventListener("pointermove", handlePointerMove);
+    }, [handlePointerMove]);
+
+    useFrame(() => {
         const mesh = meshRef.current;
         const material = materialRef.current;
         if (!mesh || !material) return;
 
-        const t = clock.elapsedTime;
+        const dummy = dummyRef.current;
         const pointer = pointerRef.current;
-        const scroll = scrollRef.current.value;
 
-        material.opacity = opacity * (0.65 + scroll * 0.8);
+        // Convert screen coords to world coords
+        const worldX = (pointer.x / window.innerWidth) * viewport.width - viewport.width / 2;
+        const worldY = -(pointer.y / window.innerHeight) * viewport.height + viewport.height / 2;
 
         for (let i = 0; i < positions.length; i += 1) {
-            const { x, y, row, col } = positions[i];
+            const pos = positions[i];
+            const x = pos[0];
+            const y = pos[1];
+            const row = pos[2];
+            const col = pos[3];
 
-            const wave = 0.5 + 0.5 * Math.sin(t * 0.9 + row * 0.48 + col * 0.32 + scroll * 8);
-            const scale = 0.62 + wave * 0.45;
-            const z = wave * 0.28;
+            // Calculate distance from mouse
+            const dx = x - worldX;
+            const dy = y - worldY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
 
-            const px = x + pointer.x * (col % 2 === 0 ? 0.28 : -0.28);
-            const py = y + pointer.y * (row % 2 === 0 ? 0.28 : -0.28);
+            // Only animate blocks near cursor (performance optimization)
+            const influenceRadius = cell * 2.5;
 
-            dummy.position.set(px, py, z);
-            dummy.scale.set(cell * scale, cell * scale, 1);
+            if (distance < influenceRadius) {
+                // Block is near mouse - animate it
+                const influence = 1 - distance / influenceRadius;
+                const scale = 0.6 + influence * 0.6;
+                const z = influence * 0.3;
+                const alpha = opacity * (0.4 + influence * 0.6);
+
+                dummy.position.set(x, y, z);
+                dummy.scale.set(cell * scale, cell * scale, 1);
+                dummy.rotation.z = influence * 0.2 * (col % 2 === 0 ? 1 : -1);
+
+                // Brighter color when hovered
+                const hoverColor = colorBase.clone().multiplyScalar(0.6 + influence * 0.6);
+                mesh.setColorAt(i, hoverColor);
+            } else {
+                // Block is far from mouse - reset to default
+                dummy.position.set(x, y, 0);
+                dummy.scale.set(cell * 0.6, cell * 0.6, 1);
+                dummy.rotation.z = 0;
+
+                // Dim color when not hovered
+                mesh.setColorAt(i, defaultColor);
+            }
+
             dummy.updateMatrix();
-
             mesh.setMatrixAt(i, dummy.matrix);
-
-            const c = colorBase.clone().multiplyScalar(0.55 + wave * 0.7);
-            mesh.setColorAt(i, c);
         }
 
         mesh.instanceMatrix.needsUpdate = true;
@@ -122,7 +119,14 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
     return (
         <instancedMesh ref={meshRef} args={[undefined, undefined, total]}>
             <planeGeometry args={[1, 1]} />
-            <meshBasicMaterial ref={materialRef} transparent toneMapped={false} />
+            <meshBasicMaterial
+                ref={materialRef}
+                transparent
+                toneMapped={false}
+                depthWrite={false}
+                opacity={opacity}
+                blending={THREE.AdditiveBlending}
+            />
         </instancedMesh>
     );
 }
@@ -130,20 +134,33 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
 export default function ReactiveBackground({
     color = "#34d399",
     blockCount = 12,
-    opacity = 0.14,
+    opacity = 0.15,
+    mode = "absolute",
 }: ReactiveBackgroundProps) {
+    const positionClass = mode === "fixed" ? "fixed" : "absolute";
+
     return (
         <div
             aria-hidden
-            className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+            className={`${positionClass} inset-0 z-0 pointer-events-none overflow-hidden`}
         >
             <Canvas
                 orthographic
-                camera={{ position: [0, 0, 10], zoom: 75 }}
+                camera={{ position: [0, 0, 10], zoom: 100 }}
                 dpr={[1, 1.5]}
-                gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+                gl={{
+                    antialias: false,
+                    alpha: true,
+                    powerPreference: "high-performance",
+                    preserveDrawingBuffer: false,
+                }}
+                performance={{ min: 0.5 }}
             >
-                <ReactiveBlocks color={color} blockCount={blockCount} opacity={opacity} />
+                <ReactiveBlocks
+                    color={color}
+                    blockCount={blockCount}
+                    opacity={opacity}
+                />
             </Canvas>
         </div>
     );

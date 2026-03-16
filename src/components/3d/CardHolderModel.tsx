@@ -6,7 +6,7 @@ import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
 
-const GLB_MODEL = "/satset 3d/glb/lock.glb";
+const GLB_MODEL = "/satset3d/glb/bener-compressed.glb";
 
 interface CardHolderModelProps {
     color?: string;
@@ -23,29 +23,32 @@ export default function CardHolderModel({
     renderMode = "normal",
     modelRotation = [0, 0, 0],
     modelOffset = [0, 0, 0],
-    modelScaleMultiplier = 2,
+    modelScaleMultiplier = 4,
 }: CardHolderModelProps) {
     const animatedGroupRef = useRef<THREE.Group>(null);
     const rotationVelocityRef = useRef(0);
+    const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
     const [isHovered, setIsHovered] = useState(false);
 
     const model = useGLTF(GLB_MODEL) as GLTF;
 
-    const { modelGroup, baseScale, meshes } = useMemo(() => {
+    // OPTIMIZED: Clone and setup model only once
+    const { modelGroup, baseScale } = useMemo(() => {
         const group = new THREE.Group();
-        const meshList: THREE.Mesh[] = [];
-
         const clonedScene = model.scene.clone(true);
 
         clonedScene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-                meshList.push(child);
+                // PERFORMANCE: Disable shadows unless needed
+                child.castShadow = false;
+                child.receiveShadow = false;
+
+                // PERFORMANCE: Enable frustum culling
+                child.frustumCulled = true;
+
+                group.add(child);
             }
         });
-
-        group.add(clonedScene);
 
         const box = new THREE.Box3().setFromObject(group);
         let normalizedScale = 1;
@@ -62,74 +65,73 @@ export default function CardHolderModel({
         return {
             modelGroup: group,
             baseScale: normalizedScale,
-            meshes: meshList,
         };
     }, [model]);
 
-    const sharedMaterial = useMemo(() => {
-        const isGlass = renderMode === "glass";
-
-        switch (renderMode) {
-            case "wireframe":
-                return new THREE.MeshStandardMaterial({
-                    color,
-                    wireframe: true,
-                    roughness: 0.38,
-                    metalness: 0.48,
-                    envMapIntensity: 1.1,
-                });
-
-            case "glass":
-                return new THREE.MeshStandardMaterial({
-                    color,
-                    transparent: true,
-                    opacity: 0.56,
-                    roughness: 0.08,
-                    metalness: 0.12,
-                    envMapIntensity: 1.55,
-                });
-
-            default:
-                return new THREE.MeshStandardMaterial({
-                    color,
-                    roughness: isGlass ? 0.08 : 0.28,
-                    metalness: isGlass ? 0.12 : 0.46,
-                    envMapIntensity: 1.08,
-                });
-        }
-    }, [color, renderMode]);
-
+    // OPTIMIZED: Create material once, update properties instead of recreating
     useEffect(() => {
-        meshes.forEach((mesh) => {
-            mesh.material = sharedMaterial;
+        if (!materialRef.current) {
+            materialRef.current = new THREE.MeshStandardMaterial({
+                color,
+                roughness: 0.28,
+                metalness: 0.46,
+                envMapIntensity: 1.08,
+            });
+        }
+
+        const material = materialRef.current;
+        const isGlass = renderMode === "glass";
+        const isWire = renderMode === "wireframe";
+
+        // Update existing material instead of creating new one
+        material.color.set(color);
+        material.wireframe = isWire;
+        material.transparent = isGlass;
+        material.opacity = isGlass ? 0.56 : 1;
+        material.roughness = isGlass ? 0.08 : 0.28;
+        material.metalness = isGlass ? 0.12 : 0.46;
+        material.envMapIntensity = isGlass ? 1.55 : 1.08;
+        material.needsUpdate = true;
+
+        // Apply material to all meshes once
+        modelGroup.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.material = material;
+            }
         });
 
+        // Cleanup on unmount only
         return () => {
-            sharedMaterial.dispose();
+            if (materialRef.current) {
+                materialRef.current.dispose();
+            }
         };
-    }, [meshes, sharedMaterial]);
+    }, [color, renderMode, modelGroup]);
 
+    // OPTIMIZED: Simplified frame loop
     useFrame((state, delta) => {
         const group = animatedGroupRef.current;
-        if (!group) return;
+        if (!group || !autoRotate) return;
+
+        // Cap delta to prevent huge jumps on lag spikes
+        const clampedDelta = Math.min(delta, 0.1);
 
         const hoverBoost = isHovered ? 1.42 : 1;
-        const targetVelocity = autoRotate ? 0.58 * hoverBoost : 0;
+        const targetVelocity = 0.58 * hoverBoost;
 
+        // Smooth interpolation
         rotationVelocityRef.current = THREE.MathUtils.lerp(
             rotationVelocityRef.current,
             targetVelocity,
-            Math.min(1, delta * 2.4)
+            clampedDelta * 2.4
         );
 
-        group.rotation.y += rotationVelocityRef.current * delta;
+        group.rotation.y += rotationVelocityRef.current * clampedDelta;
     });
 
-    // In CardHolderModel.tsx
     return (
         <group
-            // FIX: Apply the user's rotation, but force -90deg (PI/2) on X-axis to stand up
-            rotation={[modelRotation[0] + Math.PI / 2, modelRotation[1], modelRotation[2]]}
+            rotation={modelRotation}
             position={modelOffset}
         >
             <group
@@ -142,7 +144,6 @@ export default function CardHolderModel({
             </group>
         </group>
     );
-
 }
 
 useGLTF.preload(GLB_MODEL);

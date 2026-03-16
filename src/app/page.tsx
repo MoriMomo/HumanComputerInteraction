@@ -95,7 +95,7 @@ export default function Home() {
       <div className="relative z-10">
         <Navbar />
         <div className="relative w-full">
-          <HeroSection activeColor={activeColor} show3DModel={ENABLE_3D_MODEL} />
+          <HeroSection activeColor={activeColor} show3DModel={true} />
         </div>
 
         <StatsSection />

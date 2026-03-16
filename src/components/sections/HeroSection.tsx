@@ -42,10 +42,21 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
         () => {
             const sectionEl = containerRef.current;
             if (!sectionEl) return;
+            const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
             gsap.set(".hero-title, .hero-kicker, .hero-top-right, .hero-canvas, .hero-meta, .hero-rail", {
                 clearProps: "all",
             });
+
+            if (prefersReducedMotion) {
+                gsap.set(".hero-title, .hero-kicker, .hero-top-right, .hero-canvas, .hero-meta, .hero-rail", {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    clearProps: "transform,opacity,visibility",
+                });
+                return;
+            }
 
             const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
@@ -143,7 +154,7 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
             ref={containerRef}
             className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-[#0f141c] via-[#131b24] to-[#0f141c]"
         >
-            <ReactiveBackground color="#3b82f6" blockCount={10} opacity={0.08} />
+            <ReactiveBackground color="#3b82f6" blockCount={9} opacity={0.06} mode="absolute" />
 
             {/* Grid overlay */}
             <div
@@ -168,8 +179,7 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
             />
 
             {/* Horizontal dividers */}
-            <div aria-hidden className="absolute top-1/3 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-            <div aria-hidden className="absolute top-2/3 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+            <div aria-hidden className="absolute top-1/2 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Main Content - COMPACT LAYOUT */}
             <div className="relative z-20 min-h-screen flex flex-col justify-between pt-20 pb-8 md:pt-24 md:pb-10 px-8 md:px-16 max-w-480 mx-auto">
@@ -184,37 +194,51 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                         <p className="hero-kicker text-xs uppercase tracking-[0.35em] text-white/60 mt-3">
                             Office Utility. Refined.
                         </p>
+                        <div className="mt-6 flex items-center gap-3">
+                            <a
+                                href="#shop"
+                                className="inline-flex items-center justify-center rounded-full h-11 px-6 bg-white/14 border border-white/30 text-white text-sm font-semibold tracking-wide hover:bg-white/20 transition-colors"
+                            >
+                                Shop Collection
+                            </a>
+                            <a
+                                href="#features"
+                                className="inline-flex items-center justify-center rounded-full h-11 px-6 border border-white/24 text-white/86 text-sm font-medium hover:text-white hover:border-white/40 transition-colors"
+                            >
+                                See Features
+                            </a>
+                        </div>
                     </div>
 
                     <div className="hero-top-right hidden md:block max-w-xs text-right">
-                        <p className="text-xs text-white/76 leading-relaxed">
+                        <p className="text-xs text-white/85 leading-relaxed">
                             A compact carry object tuned for meetings, desks, and daily professional movement.
                         </p>
                     </div>
                 </div>
 
                 {/* Canvas - COMPACT, centered */}
-                <div className="hero-canvas flex items-center justify-center py-3 md:py-4 min-h-[30vh] md:min-h-[36vh]">
-                    <div className="relative w-full max-w-xl md:max-w-2xl aspect-5/4 md:aspect-4/3">
+                <div className="hero-canvas flex items-center justify-center py-4 md:py-6 min-h-[40vh] md:min-h-[50vh]">
+                    <div className="relative w-full max-w-2xl md:max-w-4xl aspect-16/10 md:aspect-video">
                         <div
                             aria-hidden
                             className={`absolute inset-[10%] rounded-full blur-3xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-full h-full">
+                            <div className="w-full h-full ">
                                 {show3DModel ? (
                                     <CardHolderScene
                                         color={activeColor}
                                         autoRotate={true}
                                         renderMode="normal"
                                         enableZoom={false}
-                                        cameraPosition={[0.18, 0.05, 3.35]}
+                                        cameraPosition={[0.18, 0.05, 2.85]}
                                         cameraLookAt={[0, 0.02, 0]}
                                         introFromPosition={[0.95, 1.45, 4.9]}
                                         introDuration={1.15}
                                         modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.22, 0]}
                                         modelOffset={[0, -0.03, 0]}
-                                        modelScaleMultiplier={1.04}
+                                        modelScaleMultiplier={1.05}
                                         className="w-full h-full"
                                     />
                                 ) : (
@@ -247,10 +271,10 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                     </div>
 
                     <div className="hero-top-right hidden md:block max-w-xs text-right">
-                        <p className="text-xs uppercase tracking-[0.2em] text-white/45 mb-2">
+                        <p className="text-xs uppercase tracking-[0.2em] text-white/58 mb-2">
                             Compact Work Carry Format
                         </p>
-                        <p className="text-sm text-white/74">
+                        <p className="text-sm text-white/84">
                             Precision-built for cards, cash, and daily essentials.
                         </p>
                     </div>
@@ -259,16 +283,16 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                 {/* Bottom Rail */}
                 <div className="hero-rail flex items-center justify-between pt-4 border-t border-white/10 mt-4 flex-wrap gap-y-2.5">
                     <div className="flex gap-8 md:gap-12 flex-wrap">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Utility Profile</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Slim Desk Carry</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Focus</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Utility Profile</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Slim Desk Carry</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Focus</span>
                     </div>
                     <div className="flex gap-8 md:gap-12 flex-wrap md:justify-end">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Surface</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/45">Graphite, Steel, Sand</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Surface</span>
+                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Graphite, Steel, Sand</span>
                     </div>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }

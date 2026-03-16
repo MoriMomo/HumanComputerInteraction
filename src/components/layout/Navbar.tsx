@@ -165,12 +165,12 @@ export default function Navbar() {
                                     onClick={closeMenu}
                                     className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${activeSection === link.href.slice(1)
                                         ? "text-white"
-                                        : "text-white/50 hover:text-white/80"
+                                        : "text-white/68 hover:text-white/88"
                                         }`}
                                 >
                                     {link.label}
                                     {activeSection === link.href.slice(1) && (
-                                        <span className="absolute inset-0 rounded-full bg-white/10" />
+                                        <span className="absolute inset-0 rounded-full bg-white/14 ring-1 ring-white/30" />
                                     )}
                                 </a>
                             ))}
@@ -235,7 +235,7 @@ export default function Navbar() {
                                     onClick={closeMenu}
                                     className="menu-link flex items-center justify-between py-6 border-b border-white/10 group"
                                 >
-                                    <span className="text-3xl font-light text-white/70 group-hover:text-white transition-colors duration-300">
+                                    <span className="text-3xl font-light text-white/78 group-hover:text-white transition-colors duration-300">
                                         {link.label}
                                     </span>
                                     <svg

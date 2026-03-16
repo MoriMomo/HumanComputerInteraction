@@ -212,7 +212,7 @@ export default function FeaturesSection() {
 
                 // Grid subtle float
                 gsap.to(".feat-grid", {
-                    y: -20,
+                    y: -12,
                     ease: "none",
                     scrollTrigger: {
                         trigger: sectionEl,
@@ -275,7 +275,7 @@ export default function FeaturesSection() {
                             detail-oriented.
                         </span>
                     </h2>
-                    <p className="feat-subtitle text-lg text-white/50 max-w-2xl leading-relaxed">
+                    <p className="feat-subtitle text-lg text-white/62 max-w-2xl leading-relaxed">
                         Every element purposefully designed. Nothing added without reason.
                         Nothing removed without consideration.
                     </p>
@@ -325,7 +325,7 @@ export default function FeaturesSection() {
                                 <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
                                     {feature.title}
                                 </h3>
-                                <p className="text-white/50 text-sm leading-relaxed group-hover:text-white/70 transition-colors duration-300">
+                                <p className="text-white/62 text-sm leading-relaxed group-hover:text-white/76 transition-colors duration-300">
                                     {feature.description}
                                 </p>
 
@@ -346,7 +346,7 @@ export default function FeaturesSection() {
 
                 {/* Bottom CTA */}
                 <div className="mt-24 md:mt-32 text-center">
-                    <p className="text-white/40 text-sm mb-6">
+                    <p className="text-white/52 text-sm mb-6">
                         Every feature verified through real-world testing
                     </p>
                     <a

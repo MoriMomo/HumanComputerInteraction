@@ -91,12 +91,13 @@ export default function MaterialSection({
         () => {
             const sectionEl = sectionRef.current;
             if (!sectionEl) return;
+            const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
             // Reset any stale inline styles from prior hot-reloads/route changes.
             gsap.set(".showcase-entry, .showcase-panel, .showcase-shell, .showcase-orb, .showcase-stage", { clearProps: "all" });
 
             // If already in viewport, keep content visible and skip intro animation.
-            if (ScrollTrigger.isInViewport(sectionEl, 0.1)) {
+            if (ScrollTrigger.isInViewport(sectionEl, 0.1) || prefersReducedMotion) {
                 gsap.set(".showcase-entry, .showcase-panel, .showcase-shell, .showcase-stage", {
                     y: 0,
                     autoAlpha: 1,

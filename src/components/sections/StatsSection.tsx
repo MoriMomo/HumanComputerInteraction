@@ -47,12 +47,13 @@ export default function StatsSection({
         () => {
             const sectionEl = sectionRef.current;
             if (!sectionEl) return;
+            const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
             gsap.set(".stats-title, .stats-subtitle, .stats-row, .stats-image", {
                 clearProps: "all",
             });
 
-            if (ScrollTrigger.isInViewport(sectionEl, 0.1)) {
+            if (ScrollTrigger.isInViewport(sectionEl, 0.1) || prefersReducedMotion) {
                 gsap.set(".stats-title, .stats-subtitle, .stats-row, .stats-image", {
                     y: 0,
                     autoAlpha: 1,
@@ -161,13 +162,13 @@ export default function StatsSection({
 
                 <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0">
                     <div className="max-w-xl">
-                        <p className="stats-subtitle mb-4 text-xs font-semibold tracking-[0.28em] text-white/40 uppercase">
+                        <p className="stats-subtitle mb-4 text-xs font-semibold tracking-[0.28em] text-white/52 uppercase">
                             Performance Snapshot
                         </p>
                         <h2 className="stats-title text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
                             {title}
                         </h2>
-                        <p className="stats-subtitle mt-5 mb-10 max-w-md text-lg text-white/58">
+                        <p className="stats-subtitle mt-5 mb-10 max-w-md text-lg text-white/68">
                             {subtitle}
                         </p>
 
@@ -182,23 +183,23 @@ export default function StatsSection({
                                             <span className="text-4xl font-light tracking-tight text-white md:text-5xl">
                                                 {stat.value}
                                             </span>
-                                            <span className="text-[11px] tracking-[0.26em] text-white/40 uppercase transition-colors group-hover:text-white/66">
+                                            <span className="text-[11px] tracking-[0.26em] text-white/52 uppercase transition-colors group-hover:text-white/72">
                                                 {stat.label}
                                             </span>
                                         </div>
-                                        <p className="mt-2 text-sm leading-relaxed text-white/52 md:hidden">
+                                        <p className="mt-2 text-sm leading-relaxed text-white/62 md:hidden">
                                             {stat.description}
                                         </p>
                                     </div>
 
-                                    <p className="hidden max-w-xs text-right text-sm text-white/52 transition-colors group-hover:text-white/72 md:block">
+                                    <p className="hidden max-w-xs text-right text-sm text-white/62 transition-colors group-hover:text-white/78 md:block">
                                         {stat.description}
                                     </p>
                                 </div>
                             ))}
                         </div>
 
-                        <p className="stats-row mt-7 max-w-md text-xs leading-relaxed text-white/30">
+                        <p className="stats-row mt-7 max-w-md text-xs leading-relaxed text-white/45">
                             Specifications are validated through internal tests and partner verification flows before release.
                         </p>
                     </div>

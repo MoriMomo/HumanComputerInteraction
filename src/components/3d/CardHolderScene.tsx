@@ -186,8 +186,8 @@ function SceneContent({
                 maxDistance={8.5}
                 enableDamping={true}
                 dampingFactor={0.07}
-                maxPolarAngle={Math.PI / 1.75}
-                minPolarAngle={Math.PI / 3.4}
+                minPolarAngle={0}
+                maxPolarAngle={Math.PI}
             />
         </>
     );
@@ -218,7 +218,7 @@ export default function CardHolderScene({
                 }}
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = true;
-                    gl.shadowMap.type = THREE.PCFSoftShadowMap;
+                    gl.shadowMap.type = THREE.PCFShadowMap;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
                     gl.toneMappingExposure = 0.85;
@@ -232,7 +232,7 @@ export default function CardHolderScene({
                     depth: true,
                     preserveDrawingBuffer: false,
                 }}
-                shadows
+                shadows={{ type: THREE.PCFShadowMap }}
             >
                 <Suspense fallback={null}>
                     <SceneContent
