@@ -155,6 +155,40 @@ section {
   background: linear-gradient(to bottom, rgba(148, 164, 179, 0.16), transparent 80%);
 }
 
+.feat-grid-overlay {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.loading-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.loading-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  animation: bounce 1s infinite;
+}
+
+.loading-dot-1 {
+  animation-delay: 0ms;
+}
+
+.loading-dot-2 {
+  animation-delay: 150ms;
+}
+
+.loading-dot-3 {
+  animation-delay: 300ms;
+}
+
 @keyframes hero-vertical-loop {
   from {
     transform: translateY(0);
@@ -171,6 +205,19 @@ section {
 
 .hero-carousel:hover .hero-carousel-track {
   animation-play-state: paused;
+}
+
+.hero-canvas,
+.feat-card,
+.stats-image,
+.shop-card {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.will-change-auto {
+  will-change: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

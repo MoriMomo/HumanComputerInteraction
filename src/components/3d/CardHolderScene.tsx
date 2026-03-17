@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, Float } from "@react-three/drei";
+import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -18,6 +18,7 @@ interface CardHolderSceneProps {
     cameraLookAt?: [number, number, number];
     introFromPosition?: [number, number, number];
     introDuration?: number;
+    isActive?: boolean;
     modelRotation?: [number, number, number];
     modelOffset?: [number, number, number];
     modelScaleMultiplier?: number;
@@ -32,6 +33,7 @@ interface SceneContentProps {
     cameraLookAt: [number, number, number];
     introFromPosition: [number, number, number];
     introDuration: number;
+    isActive: boolean;
     modelRotation: [number, number, number];
     modelOffset: [number, number, number];
     modelScaleMultiplier: number;
@@ -46,11 +48,12 @@ function SceneContent({
     cameraLookAt,
     introFromPosition,
     introDuration,
+    isActive,
     modelRotation,
     modelOffset,
     modelScaleMultiplier,
 }: SceneContentProps) {
-    const { camera } = useThree();
+    const { camera, invalidate } = useThree();
     const controlsRef = useRef<OrbitControlsImpl | null>(null);
     const hasAnimatedRef = useRef(false);
     const rimLightRef = useRef<THREE.PointLight | null>(null);
@@ -85,7 +88,17 @@ function SceneContent({
         };
     }, [camera, cameraLookAt, cameraPosition, introDuration, introFromPosition]);
 
+    useEffect(() => {
+        if (isActive) {
+            invalidate();
+        }
+    }, [invalidate, isActive]);
+
     useFrame((state) => {
+        if (!isActive) {
+            return;
+        }
+
         const t = state.clock.getElapsedTime();
 
         if (rimLightRef.current) {
@@ -168,7 +181,7 @@ function SceneContent({
             >
                 <CardHolderModel
                     color={color}
-                    autoRotate={autoRotate}
+                    autoRotate={autoRotate && isActive}
                     renderMode={renderMode}
                     modelRotation={modelRotation}
                     modelOffset={modelOffset}
@@ -179,6 +192,7 @@ function SceneContent({
             {/* Controls */}
             <OrbitControls
                 ref={controlsRef}
+                enabled={isActive}
                 enableZoom={enableZoom}
                 enablePan={false}
                 target={cameraLookAt}
@@ -203,13 +217,18 @@ export default function CardHolderScene({
     cameraLookAt = [0, 0, 0],
     introFromPosition = [4, 3, 6],
     introDuration = 1.4,
+    isActive = true,
     modelRotation = [Math.PI / 2, 0, 0],
     modelOffset = [0, 0, 0],
     modelScaleMultiplier = 1,
 }: CardHolderSceneProps) {
+    const [maxDpr, setMaxDpr] = useState(1.35);
+
     return (
         <div className={`w-full h-full relative ${className}`}>
             <Canvas
+                className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
+                frameloop={isActive ? "always" : "never"}
                 camera={{
                     position: cameraPosition,
                     fov: 45,
@@ -223,7 +242,7 @@ export default function CardHolderScene({
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
                     gl.toneMappingExposure = 0.85;
                 }}
-                dpr={1}
+                dpr={[1, maxDpr]}
                 gl={{
                     antialias: true,
                     alpha: true,
@@ -232,8 +251,14 @@ export default function CardHolderScene({
                     depth: true,
                     preserveDrawingBuffer: false,
                 }}
+                performance={{ min: 0.6 }}
                 shadows={{ type: THREE.PCFShadowMap }}
             >
+                <PerformanceMonitor
+                    flipflops={3}
+                    onDecline={() => setMaxDpr(1)}
+                    onIncline={() => setMaxDpr(1.35)}
+                />
                 <Suspense fallback={null}>
                     <SceneContent
                         color={color}
@@ -244,6 +269,7 @@ export default function CardHolderScene({
                         cameraLookAt={cameraLookAt}
                         introFromPosition={introFromPosition}
                         introDuration={introDuration}
+                        isActive={isActive}
                         modelRotation={modelRotation}
                         modelOffset={modelOffset}
                         modelScaleMultiplier={modelScaleMultiplier}

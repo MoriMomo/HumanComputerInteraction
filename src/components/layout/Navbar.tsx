@@ -124,7 +124,7 @@ export default function Navbar() {
             <nav
                 ref={navRef}
                 className={`fixed top-0 left-0 right-0 z-100 transition-all duration-700 ${scrolled
-                    ? "bg-[#0a0f16]/92 backdrop-blur-2xl border-b border-white/8 shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
+                    ? "bg-[#0a0f16]/96 border-b border-white/8 shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
                     : "bg-linear-to-b from-[#0a0f16]/80 to-transparent"
                     }`}
             >
@@ -224,7 +224,7 @@ export default function Navbar() {
                     ref={menuRef}
                     id={MOBILE_MENU_ID}
                     aria-label="Mobile navigation"
-                    className="fixed inset-0 top-20 z-99 bg-[#0a0f16]/98 backdrop-blur-2xl md:hidden"
+                    className="fixed inset-0 top-20 z-99 bg-[#0a0f16]/98 md:hidden"
                 >
                     <div className="max-w-lg mx-auto px-6 py-12">
                         <div className="flex flex-col gap-2">

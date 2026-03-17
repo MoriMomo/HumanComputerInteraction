@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useScroll } from "@/contexts/ScrollProvider";
 import ReactiveBackground from "@/components/ui/ReactiveBackground";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -37,6 +38,31 @@ const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
 
 export default function HeroSection({ activeColor, show3DModel = true }: HeroSectionProps) {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isInView, setIsInView] = useState(true);
+    const { isScrolling } = useScroll();
+
+    useEffect(() => {
+        const sectionEl = containerRef.current;
+        if (!sectionEl) {
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsInView(entry.isIntersecting);
+            },
+            {
+                threshold: 0.1,
+                rootMargin: "-100px 0px -100px 0px",
+            }
+        );
+
+        observer.observe(sectionEl);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     useGSAP(
         () => {
@@ -144,6 +170,16 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                     scrub: true,
                 },
             });
+
+            ScrollTrigger.create({
+                trigger: sectionEl,
+                start: "top bottom",
+                end: "bottom top",
+                onEnter: () => setIsInView(true),
+                onEnterBack: () => setIsInView(true),
+                onLeave: () => setIsInView(false),
+                onLeaveBack: () => setIsInView(false),
+            });
         },
         { scope: containerRef }
     );
@@ -154,7 +190,15 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
             ref={containerRef}
             className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-[#0f141c] via-[#131b24] to-[#0f141c]"
         >
-            <ReactiveBackground color="#3b82f6" blockCount={9} opacity={0.06} mode="absolute" />
+            {isInView && (
+                <ReactiveBackground
+                    color="#3b82f6"
+                    blockCount={9}
+                    opacity={0.06}
+                    mode="absolute"
+                    active={!isScrolling}
+                />
+            )}
 
             {/* Grid overlay */}
             <div
@@ -229,7 +273,8 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                                 {show3DModel ? (
                                     <CardHolderScene
                                         color={activeColor}
-                                        autoRotate={true}
+                                        autoRotate={isInView && !isScrolling}
+                                        isActive={isInView}
                                         renderMode="normal"
                                         enableZoom={false}
                                         cameraPosition={[0.18, 0.05, 2.85]}

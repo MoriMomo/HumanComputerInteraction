@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { LoadingProvider } from "@/contexts/LoadingProvider";
+import { ScrollProvider } from "@/contexts/ScrollProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,13 +32,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
+        <link
+          rel="preload"
+          href="/satset3d/glb/bener-compressed.glb"
+          as="fetch"
+          type="model/gltf-binary"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4"
+          as="video"
+          type="video/mp4"
+        />
       </head>
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
-        {children}
+        <LoadingProvider>
+          <ScrollProvider>{children}</ScrollProvider>
+        </LoadingProvider>
       </body>
     </html>
   );

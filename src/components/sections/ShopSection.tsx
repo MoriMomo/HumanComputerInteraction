@@ -192,7 +192,7 @@ export default function ShopSection() {
                         return (
                             <div
                                 key={product.id}
-                                className={`shop-card relative flex flex-col overflow-hidden rounded-[1.9rem] border bg-white/78 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${isPopular
+                                className={`shop-card relative flex flex-col overflow-hidden rounded-[1.9rem] border bg-white/92 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${isPopular
                                     ? "border-primary/30 shadow-lg shadow-slate-800/10"
                                     : "border-white/70"
                                     }`}

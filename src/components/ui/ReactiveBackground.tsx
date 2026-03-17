@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 interface ReactiveBackgroundProps {
+    active?: boolean;
     color?: string;
     blockCount?: number;
     opacity?: number;
@@ -12,15 +13,16 @@ interface ReactiveBackgroundProps {
 }
 
 interface ReactiveBlocksProps {
+    active: boolean;
     color: string;
     blockCount: number;
     opacity: number;
 }
 
-function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
+function ReactiveBlocks({ active, color, blockCount, opacity }: ReactiveBlocksProps) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const materialRef = useRef<THREE.MeshBasicMaterial>(null);
-    const { size, viewport } = useThree();
+    const { viewport } = useThree();
 
     const pointerRef = useRef({ x: -1000, y: -1000 });
     const dummyRef = useRef(new THREE.Object3D());
@@ -37,11 +39,10 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
     const positions = useMemo(() => {
         const next: Float32Array[] = [];
         for (let i = 0; i < total; i += 1) {
-            const row = Math.floor(i / blockCount);
             const col = i % blockCount;
             const x = -span / 2 + col * cell + cell * 0.5;
-            const y = span / 2 - row * cell - cell * 0.5;
-            next.push(new Float32Array([x, y, row, col]));
+            const y = span / 2 - Math.floor(i / blockCount) * cell - cell * 0.5;
+            next.push(new Float32Array([x, y, col]));
         }
         return next;
     }, [blockCount, cell, span, total]);
@@ -53,11 +54,17 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
     }, []);
 
     useEffect(() => {
+        if (!active) {
+            return;
+        }
+
         window.addEventListener("pointermove", handlePointerMove, { passive: true });
         return () => window.removeEventListener("pointermove", handlePointerMove);
-    }, [handlePointerMove]);
+    }, [active, handlePointerMove]);
 
     useFrame(() => {
+        if (!active) return;
+
         const mesh = meshRef.current;
         const material = materialRef.current;
         if (!mesh || !material) return;
@@ -73,8 +80,7 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
             const pos = positions[i];
             const x = pos[0];
             const y = pos[1];
-            const row = pos[2];
-            const col = pos[3];
+            const col = pos[2];
 
             // Calculate distance from mouse
             const dx = x - worldX;
@@ -89,7 +95,6 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
                 const influence = 1 - distance / influenceRadius;
                 const scale = 0.6 + influence * 0.6;
                 const z = influence * 0.3;
-                const alpha = opacity * (0.4 + influence * 0.6);
 
                 dummy.position.set(x, y, z);
                 dummy.scale.set(cell * scale, cell * scale, 1);
@@ -132,19 +137,46 @@ function ReactiveBlocks({ color, blockCount, opacity }: ReactiveBlocksProps) {
 }
 
 export default function ReactiveBackground({
+    active = true,
     color = "#34d399",
     blockCount = 12,
     opacity = 0.15,
     mode = "absolute",
 }: ReactiveBackgroundProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(true);
     const positionClass = mode === "fixed" ? "fixed" : "absolute";
+    const shouldAnimate = active && isVisible;
+
+    useEffect(() => {
+        const containerEl = containerRef.current;
+        if (!containerEl) {
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
+
+        observer.observe(containerEl);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     return (
         <div
+            ref={containerRef}
             aria-hidden
             className={`${positionClass} inset-0 z-0 pointer-events-none overflow-hidden`}
         >
             <Canvas
+                className="gpu-canvas"
+                frameloop={shouldAnimate ? "always" : "never"}
                 orthographic
                 camera={{ position: [0, 0, 10], zoom: 100 }}
                 dpr={[1, 1.5]}
@@ -157,6 +189,7 @@ export default function ReactiveBackground({
                 performance={{ min: 0.5 }}
             >
                 <ReactiveBlocks
+                    active={shouldAnimate}
                     color={color}
                     blockCount={blockCount}
                     opacity={opacity}

@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Draggable } from "gsap/all";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Draggable);
+
+const AUTO_SCROLL_MS = 3200;
 
 const FEATURES = [
     {
@@ -60,38 +63,89 @@ const FEATURES = [
 
 export default function FeaturesSection() {
     const sectionRef = useRef<HTMLElement>(null);
-    const gridRef = useRef<HTMLDivElement>(null);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
+    const isDraggingRef = useRef(false);
+    const isHoveringRef = useRef(false);
+    const currentSlideRef = useRef(0);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        currentSlideRef.current = currentSlide;
+    }, [currentSlide]);
+
+    // Memoized slide navigation
+    const goToSlide = useCallback((index: number) => {
+        const track = trackRef.current;
+        const carousel = carouselRef.current;
+        if (!track || !carousel) return;
+
+        const clampedIndex = Math.max(0, Math.min(index, FEATURES.length - 1));
+        const slideWidth = carousel.clientWidth;
+        setCurrentSlide(clampedIndex);
+
+        gsap.to(track, {
+            x: -slideWidth * clampedIndex,
+            duration: 0.6,
+            ease: "power3.inOut",
+            overwrite: "auto",
+        });
+    }, []);
+
+    const nextSlide = useCallback(() => {
+        goToSlide((currentSlide + 1) % FEATURES.length);
+    }, [currentSlide, goToSlide]);
+
+    const prevSlide = useCallback(() => {
+        goToSlide((currentSlide - 1 + FEATURES.length) % FEATURES.length);
+    }, [currentSlide, goToSlide]);
 
     useGSAP(
         () => {
             const sectionEl = sectionRef.current;
-            const gridEl = gridRef.current;
+            const carouselEl = carouselRef.current;
+            const trackEl = trackRef.current;
             const headerEl = headerRef.current;
 
-            if (!sectionEl || !gridEl || !headerEl) return;
+            if (!sectionEl || !carouselEl || !trackEl || !headerEl) return;
 
             const ctx = gsap.context(() => {
+                const selector = gsap.utils.selector(sectionRef);
+                const animatedTargets = ".feat-title-line, .feat-subtitle, .feat-card-slide";
                 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-                // Clear any stale styles
-                gsap.set([".feat-title-line", ".feat-subtitle", ".feat-card", ".feat-icon", ".feat-stat-badge"], {
+                ScrollTrigger.getAll().forEach((trigger) => {
+                    const triggerElement = trigger.vars.trigger;
+
+                    if (
+                        triggerElement === sectionEl ||
+                        triggerElement === headerEl ||
+                        triggerElement === carouselEl
+                    ) {
+                        trigger.kill();
+                    }
+                });
+
+                Draggable.get(trackEl)?.kill();
+
+                // Clear stale styles
+                gsap.set(selector(animatedTargets), {
                     clearProps: "all",
                 });
 
                 if (ScrollTrigger.isInViewport(sectionEl, 0.15) || prefersReducedMotion) {
-                    gsap.set([".feat-title-line", ".feat-subtitle", ".feat-card", ".feat-icon", ".feat-stat-badge"], {
+                    gsap.set(selector(animatedTargets), {
                         y: 0,
                         autoAlpha: 1,
-                        scale: 1,
                         clearProps: "transform,opacity,visibility",
                     });
                     return;
                 }
 
-                // Title lines animation
+                // Header animations
                 gsap.fromTo(
-                    ".feat-title-line",
+                    selector(".feat-title-line"),
                     { y: 60, autoAlpha: 0 },
                     {
                         y: 0,
@@ -107,9 +161,8 @@ export default function FeaturesSection() {
                     }
                 );
 
-                // Subtitle fade
                 gsap.fromTo(
-                    ".feat-subtitle",
+                    selector(".feat-subtitle"),
                     { y: 40, autoAlpha: 0 },
                     {
                         y: 0,
@@ -125,108 +178,90 @@ export default function FeaturesSection() {
                     }
                 );
 
-                // Cards stagger animation
+                // Carousel slide animations
                 gsap.fromTo(
-                    ".feat-card",
-                    { y: 80, autoAlpha: 0, scale: 0.94 },
+                    selector(".feat-card-slide"),
+                    { x: 100, autoAlpha: 0 },
                     {
-                        y: 0,
+                        x: 0,
                         autoAlpha: 1,
-                        scale: 1,
-                        stagger: 0.1,
-                        duration: 0.9,
+                        stagger: 0.15,
+                        duration: 0.8,
                         ease: "power3.out",
                         scrollTrigger: {
-                            trigger: gridEl,
+                            trigger: carouselEl,
                             start: "top 80%",
                             once: true,
                         },
                     }
                 );
 
-                // Icons with bounce
-                gsap.fromTo(
-                    ".feat-icon",
-                    { scale: 0, rotation: -30, autoAlpha: 0 },
-                    {
-                        scale: 1,
-                        rotation: 0,
-                        autoAlpha: 1,
-                        duration: 0.6,
-                        ease: "back.out(1.7)",
-                        stagger: 0.1,
-                        delay: 0.3,
-                        scrollTrigger: {
-                            trigger: gridEl,
-                            start: "top 78%",
-                            once: true,
-                        },
-                    }
-                );
-
-                // Stat badges pop
-                gsap.fromTo(
-                    ".feat-stat-badge",
-                    { scale: 0, autoAlpha: 0 },
-                    {
-                        scale: 1,
-                        autoAlpha: 1,
-                        duration: 0.5,
-                        ease: "power3.out",
-                        stagger: 0.1,
-                        delay: 0.5,
-                        scrollTrigger: {
-                            trigger: gridEl,
-                            start: "top 78%",
-                            once: true,
-                        },
-                    }
-                );
-
-                // Orb parallax
-                gsap.to(".feat-orb-1", {
-                    xPercent: 15,
-                    yPercent: 20,
-                    scale: 1.2,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 2,
+                // Draggable carousel
+                const [draggable] = Draggable.create(trackEl, {
+                    type: "x",
+                    bounds: {
+                        minX: -carouselEl.clientWidth * (FEATURES.length - 1),
+                        maxX: 0,
+                    },
+                    inertia: true,
+                    edgeResistance: 0.65,
+                    throwProps: true,
+                    onDragStart: () => {
+                        isDraggingRef.current = true;
+                    },
+                    onDragEnd: function () {
+                        isDraggingRef.current = false;
+                        const slideWidth = carouselEl.clientWidth;
+                        const currentIndex = Math.round(-this.x / slideWidth);
+                        goToSlide(currentIndex);
                     },
                 });
 
-                gsap.to(".feat-orb-2", {
-                    xPercent: -12,
-                    yPercent: -15,
-                    scale: 1.3,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 2.5,
-                    },
-                });
+                // Update slide on window resize
+                const handleResize = () => {
+                    const slideWidth = carouselEl.clientWidth;
+                    gsap.set(trackEl, { x: -slideWidth * currentSlideRef.current });
+                };
 
-                // Grid subtle float
-                gsap.to(".feat-grid", {
-                    y: -12,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 1.5,
-                    },
-                });
+                window.addEventListener("resize", handleResize);
+
+                return () => {
+                    window.removeEventListener("resize", handleResize);
+                    draggable.kill();
+                };
             }, sectionRef);
 
             return () => ctx.revert();
         },
         { scope: sectionRef }
     );
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeydown = (e: KeyboardEvent) => {
+            if (e.key === "ArrowRight") nextSlide();
+            if (e.key === "ArrowLeft") prevSlide();
+        };
+        window.addEventListener("keydown", handleKeydown);
+        return () => window.removeEventListener("keydown", handleKeydown);
+    }, [nextSlide, prevSlide]);
+
+    // Auto-scroll from left to right; pause while user interacts.
+    useEffect(() => {
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (prefersReducedMotion) return;
+
+        const intervalId = window.setInterval(() => {
+            const sectionEl = sectionRef.current;
+            if (!sectionEl) return;
+            if (isDraggingRef.current || isHoveringRef.current) return;
+            if (!ScrollTrigger.isInViewport(sectionEl, 0.2)) return;
+
+            goToSlide((currentSlide + 1) % FEATURES.length);
+        }, AUTO_SCROLL_MS);
+
+        return () => window.clearInterval(intervalId);
+    }, [currentSlide, goToSlide]);
 
     return (
         <section
@@ -241,25 +276,25 @@ export default function FeaturesSection() {
                 className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent"
             />
 
-            {/* Ambient orbs */}
+            {/* Ambient orbs - Reduced blur for performance */}
             <div
                 aria-hidden
-                className="feat-orb-1 pointer-events-none absolute left-[5%] top-[15%] h-72 w-72 rounded-full bg-linear-to-br from-[#6f8ea9]/20 to-[#8caec7]/12 blur-3xl"
+                className="feat-orb-1 pointer-events-none absolute left-[5%] top-[15%] h-72 w-72 rounded-full bg-linear-to-br from-[#6f8ea9]/20 to-[#8caec7]/12 blur-2xl"
             />
             <div
                 aria-hidden
-                className="feat-orb-2 pointer-events-none absolute right-[8%] top-[40%] h-96 w-96 rounded-full bg-linear-to-br from-[#758595]/18 to-[#9ba9b5]/10 blur-3xl"
+                className="feat-orb-2 pointer-events-none absolute right-[8%] top-[40%] h-96 w-96 rounded-full bg-linear-to-br from-[#758595]/18 to-[#9ba9b5]/10 blur-2xl"
             />
 
             {/* Subtle grid pattern */}
             <div
                 aria-hidden
-                className="pointer-events-none absolute inset-0 opacity-[0.03] [background:linear-gradient(rgba(255,255,255,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.3)_1px,transparent_1px)] bg-size-[80px_80px]"
+                className="feat-grid-overlay pointer-events-none absolute inset-0 opacity-[0.03]"
             />
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-20 relative z-10">
                 {/* Header */}
-                <div ref={headerRef} className="mb-28 md:mb-36 max-w-4xl">
+                <div ref={headerRef} className="mb-16 md:mb-24 max-w-4xl">
                     <div className="flex items-center gap-4 mb-8">
                         <div className="w-12 h-px bg-linear-to-r from-white/60 to-transparent" />
                         <p className="text-xs font-semibold tracking-[0.35em] text-white/60 uppercase">
@@ -281,66 +316,109 @@ export default function FeaturesSection() {
                     </p>
                 </div>
 
-                {/* Feature Cards Grid */}
+                {/* Carousel Container */}
                 <div
-                    ref={gridRef}
-                    className="feat-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                    ref={carouselRef}
+                    className="relative overflow-hidden cursor-grab touch-pan-y active:cursor-grabbing"
+                    onPointerEnter={() => {
+                        isHoveringRef.current = true;
+                    }}
+                    onPointerLeave={() => {
+                        isHoveringRef.current = false;
+                    }}
                 >
-                    {FEATURES.map((feature) => (
-                        <div
-                            key={feature.title}
-                            className="feat-card group relative rounded-4xl p-8 md:p-10 bg-[#0f1620]/60 backdrop-blur-sm border border-white/8 hover:border-white/18 transition-all duration-500 cursor-default overflow-hidden"
-                            tabIndex={0}
-                            role="article"
-                            aria-label={feature.title}
-                        >
-                            {/* Gradient overlay on hover */}
+                    {/* Track */}
+                    <div
+                        ref={trackRef}
+                        className="flex"
+                    >
+                        {FEATURES.map((feature) => (
                             <div
-                                aria-hidden
-                                className={`absolute inset-0 bg-linear-to-br ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}
-                            />
+                                key={feature.title}
+                                className="feat-card-slide feat-card group relative mx-2 basis-full shrink-0 overflow-hidden rounded-4xl border border-white/8 bg-[#101924]/88 p-8 transition-all duration-500 hover:border-white/18 md:mx-3 md:p-10"
+                                tabIndex={0}
+                                role="article"
+                                aria-label={feature.title}
+                            >
+                                {/* Gradient overlay on hover */}
+                                <div
+                                    aria-hidden
+                                    className={`absolute inset-0 bg-linear-to-br ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}
+                                />
 
-                            {/* Glow effect */}
-                            <div
-                                aria-hidden
-                                className={`absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-3xl bg-linear-to-br ${feature.glowClass}`}
-                            />
+                                {/* Glow effect */}
+                                <div
+                                    aria-hidden
+                                    className={`absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-3xl bg-linear-to-br ${feature.glowClass}`}
+                                />
 
-                            {/* Stat badge */}
-                            <div className="absolute top-0 right-0 px-4 py-2 rounded-full bg-white/8 border border-white/10">
-                                <span className="feat-stat-badge text-sm font-semibold text-white/80">
-                                    {feature.stat}
-                                </span>
-                            </div>
-
-                            <div className="relative z-10">
-                                {/* Icon */}
-                                <div className="feat-icon-wrapper w-14 h-14 rounded-2xl bg-linear-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-white/20 transition-all duration-400">
-                                    <span className="material-symbols-outlined text-2xl text-white/80 feat-icon group-hover:text-white transition-colors">
-                                        {feature.icon}
+                                {/* Stat badge */}
+                                <div className="absolute top-0 right-0 px-4 py-2 rounded-full bg-white/8 border border-white/10">
+                                    <span className="feat-stat-badge text-sm font-semibold text-white/80">
+                                        {feature.stat}
                                     </span>
                                 </div>
 
-                                {/* Content */}
-                                <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-white/62 text-sm leading-relaxed group-hover:text-white/76 transition-colors duration-300">
-                                    {feature.description}
-                                </p>
+                                <div className="relative z-10">
+                                    {/* Icon */}
+                                    <div className="feat-icon-wrapper mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-linear-to-br from-white/10 to-white/5 transition-all duration-400 group-hover:scale-110 group-hover:border-white/20">
+                                        <span className="material-symbols-outlined text-2xl text-white/80 feat-icon group-hover:text-white transition-colors">
+                                            {feature.icon}
+                                        </span>
+                                    </div>
 
-                                {/* Bottom accent line */}
+                                    {/* Content */}
+                                    <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-white/62 text-sm leading-relaxed group-hover:text-white/76 transition-colors duration-300">
+                                        {feature.description}
+                                    </p>
+
+                                    {/* Bottom accent line */}
+                                    <div
+                                        className="absolute bottom-0 left-8 right-8 h-px bg-linear-to-r from-transparent via-white/40 to-transparent scale-x-0 origin-center transition-transform duration-500 group-hover:scale-x-100"
+                                    />
+                                </div>
+
+                                {/* Corner accent */}
                                 <div
-                                    className="absolute bottom-0 left-8 right-8 h-px bg-linear-to-r from-transparent via-white/40 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"
+                                    aria-hidden
+                                    className="absolute bottom-0 right-0 w-24 h-24 rounded-tl-full bg-linear-to-tl from-white/3 to-transparent pointer-events-none"
                                 />
                             </div>
+                        ))}
+                    </div>
 
-                            {/* Corner accent */}
-                            <div
-                                aria-hidden
-                                className="absolute bottom-0 right-0 w-24 h-24 bg-linear-to-tl from-white/3 to-transparent rounded-tl-full pointer-events-none"
-                            />
-                        </div>
+                    {/* Navigation Arrows */}
+                    <button
+                        onClick={prevSlide}
+                        className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 z-20"
+                        aria-label="Previous feature"
+                    >
+                        <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button
+                        onClick={nextSlide}
+                        className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 z-20"
+                        aria-label="Next feature"
+                    >
+                        <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+
+                {/* Pagination Dots */}
+                <div className="flex justify-center gap-3 mt-8">
+                    {FEATURES.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => goToSlide(index)}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index
+                                ? "w-8 bg-white"
+                                : "bg-white/30 hover:bg-white/50"
+                                }`}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
                     ))}
                 </div>
 

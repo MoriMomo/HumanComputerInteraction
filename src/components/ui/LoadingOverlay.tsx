@@ -1,118 +1,272 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { preloadAssets } from "@/lib/assets";
 
 interface LoadingOverlayProps {
-    progressValue?: number;
+    minimumDuration?: number;
+    onComplete?: () => void;
 }
 
-export default function LoadingOverlay({ progressValue }: LoadingOverlayProps = {}) {
-    const [simulatedProgress, setSimulatedProgress] = useState(0);
+function getStatus(progress: number) {
+    if (progress < 30) {
+        return "Initializing";
+    }
 
-    const progress =
-        typeof progressValue === "number"
-            ? Math.min(Math.max(progressValue, 0), 100)
-            : simulatedProgress;
+    if (progress < 60) {
+        return "Loading Assets";
+    }
 
-    useEffect(() => {
-        if (typeof progressValue === "number") {
+    if (progress < 90) {
+        return "Preparing Experience";
+    }
+
+    if (progress < 100) {
+        return "Finalizing";
+    }
+
+    return "Ready";
+}
+
+export default function LoadingOverlay({
+    minimumDuration = 2500,
+    onComplete,
+}: LoadingOverlayProps) {
+    const [progress, setProgress] = useState(0);
+    const [status, setStatus] = useState("Initializing");
+    const [isVisible, setIsVisible] = useState(true);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const startTimeRef = useRef(0);
+    const completionTimeoutRef = useRef<number | null>(null);
+    const isCompletingRef = useRef(false);
+    const progressTweenRef = useRef({ value: 0 });
+    const topProgressRef = useRef<HTMLDivElement>(null);
+    const railProgressRef = useRef<HTMLDivElement>(null);
+
+    const animateProgress = useCallback((nextProgress: number) => {
+        const clampedProgress = Math.min(100, Math.max(0, nextProgress));
+
+        gsap.to(progressTweenRef.current, {
+            value: clampedProgress,
+            duration: 0.45,
+            ease: "power2.out",
+            overwrite: true,
+            onUpdate: () => {
+                const roundedProgress = Math.round(progressTweenRef.current.value);
+                setProgress(roundedProgress);
+                setStatus(getStatus(roundedProgress));
+            },
+        });
+    }, []);
+
+    const completeLoading = useCallback(() => {
+        if (isCompletingRef.current) {
             return;
         }
 
-        const progressInterval = window.setInterval(() => {
-            setSimulatedProgress((prev) => {
-                if (prev >= 96) {
-                    return 96;
+        isCompletingRef.current = true;
+        animateProgress(100);
+        setStatus("Complete");
+        const scopedSelector = gsap.utils.selector(containerRef);
+
+        const timeline = gsap.timeline({
+            onComplete: () => {
+                setIsVisible(false);
+                onComplete?.();
+            },
+        });
+
+        timeline
+            .to(containerRef.current, {
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.inOut",
+            })
+            .to(
+                scopedSelector(".loading-content"),
+                {
+                    y: -50,
+                    opacity: 0,
+                    duration: 0.6,
+                    ease: "power3.in",
+                },
+                "-=0.6"
+            )
+            .to(
+                scopedSelector(".loading-bar-fill"),
+                {
+                    scaleX: 1.2,
+                    opacity: 0,
+                    duration: 0.4,
+                    ease: "power2.in",
+                },
+                "-=0.8"
+            );
+    }, [animateProgress, onComplete]);
+
+    useEffect(() => {
+        gsap.set(topProgressRef.current, { scaleX: progress / 100, transformOrigin: "left center" });
+        gsap.set(railProgressRef.current, { scaleX: progress / 100, transformOrigin: "left center" });
+    }, [progress]);
+
+    useEffect(() => {
+        let isCancelled = false;
+        let settleIntervalId: number | null = null;
+
+        startTimeRef.current = Date.now();
+
+        const finishWhenAllowed = () => {
+            const elapsed = Date.now() - startTimeRef.current;
+            const remaining = Math.max(0, minimumDuration - elapsed);
+
+            if (remaining === 0) {
+                completeLoading();
+                return;
+            }
+
+            completionTimeoutRef.current = window.setTimeout(() => {
+                if (!isCancelled) {
+                    completeLoading();
                 }
-                return Math.min(96, prev + Math.random() * 6);
+            }, remaining);
+        };
+
+        void preloadAssets(({ completed, total }) => {
+            if (isCancelled) {
+                return;
+            }
+
+            animateProgress(Math.round((completed / total) * 100));
+        }).finally(() => {
+            if (isCancelled) {
+                return;
+            }
+
+            animateProgress(100);
+            finishWhenAllowed();
+        });
+
+        settleIntervalId = window.setInterval(() => {
+            if (isCancelled || isCompletingRef.current) {
+                return;
+            }
+
+            setProgress((previous) => {
+                if (previous >= 95) {
+                    return previous;
+                }
+
+                const next = previous + 1;
+                setStatus(getStatus(next));
+                return next;
             });
-        }, 150);
+        }, 140);
 
         return () => {
-            window.clearInterval(progressInterval);
+            isCancelled = true;
+
+            if (completionTimeoutRef.current !== null) {
+                window.clearTimeout(completionTimeoutRef.current);
+            }
+
+            if (settleIntervalId !== null) {
+                window.clearInterval(settleIntervalId);
+            }
         };
-    }, [progressValue]);
+    }, [animateProgress, completeLoading, minimumDuration]);
+
+    useGSAP(
+        () => {
+            if (!containerRef.current) {
+                return;
+            }
+
+            gsap.set(".loading-content", { y: 30, opacity: 0 });
+            gsap.set(".loading-bar", { scaleX: 0, transformOrigin: "left center" });
+
+            const timeline = gsap.timeline({ delay: 0.2 });
+
+            timeline
+                .to(".loading-content", {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power3.out",
+                })
+                .to(
+                    ".loading-bar",
+                    {
+                        scaleX: 1,
+                        duration: 1.2,
+                        ease: "power3.inOut",
+                    },
+                    "-=0.6"
+                );
+        },
+        { scope: containerRef }
+    );
+
+    if (!isVisible) {
+        return null;
+    }
 
     return (
         <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-stone-900 via-neutral-900 to-stone-950 transition-opacity duration-500 ease-out ${progress >= 100 ? "pointer-events-none opacity-0" : "pointer-events-auto opacity-100"}`}
+            ref={containerRef}
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-[#0a0f16]"
         >
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -inset-2.5 opacity-50">
-                    <div className="absolute left-1/4 top-1/4 h-96 w-96 animate-pulse rounded-full bg-amber-900/20 blur-3xl" />
+            <div className="absolute inset-0 bg-linear-to-br from-[#0a0f16] via-[#131b24] to-[#0a0f16]" />
+
+            <div className="loading-grid absolute inset-0 opacity-[0.03]" />
+
+            <div className="absolute top-0 left-0 right-0 h-1 overflow-hidden bg-white/5">
+                <div
+                    ref={topProgressRef}
+                    className="loading-bar-fill h-full origin-left bg-linear-to-r from-white/20 via-white/60 to-white/20"
+                />
+            </div>
+
+            <div className="loading-content relative z-10 px-6 text-center">
+                <div className="mb-8">
+                    <h1 className="text-6xl font-bold tracking-tight text-white md:text-8xl">
+                        SatSet
+                    </h1>
+                    <p className="text-xs uppercase tracking-[0.35em] text-white/40">
+                        Office Utility. Refined.
+                    </p>
+                </div>
+
+                <div className="mb-6">
+                    <span className="text-5xl font-light tabular-nums text-white/80 md:text-7xl">
+                        {progress.toString().padStart(2, "0")}
+                    </span>
+                    <span className="text-xl text-white/40">%</span>
+                </div>
+
+                <div className="relative mx-auto mb-6 h-px w-64 overflow-hidden bg-white/10 md:w-80">
                     <div
-                        className="absolute bottom-1/4 right-1/4 h-96 w-96 animate-pulse rounded-full bg-stone-800/20 blur-3xl [animation-delay:1s]"
+                        ref={railProgressRef}
+                        className="loading-bar absolute left-0 top-0 h-full bg-linear-to-r from-transparent via-white/60 to-transparent"
                     />
+                </div>
+
+                <p className="text-sm uppercase tracking-[0.25em] text-white/40">
+                    {status}
+                </p>
+
+                <div className="mt-8 flex justify-center gap-2">
+                    <div className="loading-dot loading-dot-1" />
+                    <div className="loading-dot loading-dot-2" />
+                    <div className="loading-dot loading-dot-3" />
                 </div>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center space-y-8 px-4">
-                <div className="space-y-2 text-center animate-[fadeIn_0.8s_ease-out]">
-                    <h1 className="text-5xl font-black tracking-tight md:text-7xl">
-                        <span className="bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600 bg-clip-text text-transparent">
-                            SatSet
-                        </span>
-                    </h1>
-                    <p className="text-sm font-medium tracking-wider text-stone-400 md:text-base animate-[fadeIn_0.8s_ease-out_0.2s_both]">
-                        PREMIUM CARD HOLDER
-                    </p>
-                </div>
-
-                <div className="relative h-32 w-32 animate-[fadeIn_0.8s_ease-out]">
-                    <div className="absolute inset-0 rounded-full border-4 border-stone-800" />
-
-                    <svg className="absolute inset-0 h-full w-full -rotate-90">
-                        <circle
-                            cx="64"
-                            cy="64"
-                            r="60"
-                            stroke="url(#gradient)"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeDasharray={377}
-                            strokeDashoffset={377 - (377 * Math.min(progress, 100)) / 100}
-                            className="transition-all duration-300 ease-out"
-                            strokeLinecap="round"
-                        />
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#00FAFF" />
-                                <stop offset="50%" stopColor="#39FF14" />
-                                <stop offset="100%" stopColor="#00FAFF" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-gradient-to-br from-cyan-200 to-cyan-500 bg-clip-text text-3xl font-bold text-transparent">
-                            {Math.round(Math.min(progress, 100))}%
-                        </div>
-                    </div>
-
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/10 to-emerald-500/10 blur-xl animate-pulse" />
-                </div>
-
-                <div className="space-y-3 text-center">
-                    <p className="text-sm font-medium text-stone-400">
-                        {progress < 30 && "Preparing Experience..."}
-                        {progress >= 30 && progress < 60 && "Loading Assets..."}
-                        {progress >= 60 && progress < 90 && "Almost Ready..."}
-                        {progress >= 90 && progress < 100 && "Finalizing..."}
-                        {progress >= 100 && "Ready!"}
-                    </p>
-
-                    <div className="flex justify-center space-x-1">
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400" />
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:150ms]" />
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-cyan-400 [animation-delay:300ms]" />
-                    </div>
-                </div>
-
-                <div className="absolute bottom-12 text-center">
-                    <p className="text-xs uppercase tracking-widest text-stone-600">
-                        Define Your Carry. Snap Your World.
-                    </p>
-                </div>
+            <div className="absolute bottom-8 left-0 right-0 text-center">
+                <p className="text-xs uppercase tracking-widest text-white/30">
+                    Define Your Carry. Snap Your World.
+                </p>
             </div>
         </div>
     );
