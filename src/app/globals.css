@@ -38,6 +38,22 @@
   --z-nav: 100;
 }
 
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
 body {
   background: var(--color-background-light);
   color: var(--color-charcoal);
@@ -211,7 +227,6 @@ section {
 .feat-card,
 .stats-image,
 .shop-card {
-  will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -235,7 +250,6 @@ section {
 .gpu-layer {
   transform: translateZ(0);
   backface-visibility: hidden;
-  will-change: transform;
 }
 
 .gpu-canvas {
@@ -268,17 +282,16 @@ section {
   }
 
   .feat-card {
-    will-change: transform, opacity;
     transform: translateZ(0);
     backface-visibility: hidden;
   }
 
   .feat-icon {
-    will-change: transform, opacity;
+    will-change: auto;
   }
 
   .feat-orb {
-    will-change: transform;
+    will-change: auto;
   }
 }
 

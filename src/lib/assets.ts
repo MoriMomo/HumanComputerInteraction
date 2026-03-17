@@ -51,11 +51,13 @@ export async function preloadAssets(
                 return;
             }
 
+            const source = asset.src;
+
             if (asset.kind === "fetch") {
-                const response = await fetch(asset.src, { cache: "force-cache" });
+                const response = await fetch(source, { cache: "force-cache" });
 
                 if (!response.ok) {
-                    throw new Error(`Failed to preload ${asset.src}`);
+                    throw new Error(`Failed to preload ${source}`);
                 }
 
                 await response.arrayBuffer();
@@ -67,8 +69,8 @@ export async function preloadAssets(
                     const image = new Image();
 
                     image.onload = () => resolve();
-                    image.onerror = () => reject(new Error(`Failed to preload ${asset.src}`));
-                    image.src = asset.src;
+                    image.onerror = () => reject(new Error(`Failed to preload ${source}`));
+                    image.src = source;
                 });
                 return;
             }
@@ -93,9 +95,9 @@ export async function preloadAssets(
                     };
                     video.onerror = () => {
                         cleanup();
-                        reject(new Error(`Failed to preload ${asset.src}`));
+                        reject(new Error(`Failed to preload ${source}`));
                     };
-                    video.src = asset.src;
+                    video.src = source;
                     video.load();
                 });
             }

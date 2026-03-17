@@ -349,7 +349,7 @@ export default function FeaturesSection() {
                                 {/* Glow effect */}
                                 <div
                                     aria-hidden
-                                    className={`absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-3xl bg-linear-to-br ${feature.glowClass}`}
+                                    className={`absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-2xl bg-linear-to-br ${feature.glowClass}`}
                                 />
 
                                 {/* Stat badge */}

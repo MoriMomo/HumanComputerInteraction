@@ -222,7 +222,31 @@ export default function CardHolderScene({
     modelOffset = [0, 0, 0],
     modelScaleMultiplier = 1,
 }: CardHolderSceneProps) {
-    const [maxDpr, setMaxDpr] = useState(1.35);
+    const [maxDpr, setMaxDpr] = useState(1.5);
+    const [isLowPowerDevice, setIsLowPowerDevice] = useState(false);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 768px), (pointer: coarse)");
+        const updateLowPowerMode = () => {
+            setIsLowPowerDevice(mediaQuery.matches);
+        };
+
+        updateLowPowerMode();
+
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", updateLowPowerMode);
+
+            return () => {
+                mediaQuery.removeEventListener("change", updateLowPowerMode);
+            };
+        }
+
+        mediaQuery.addListener(updateLowPowerMode);
+
+        return () => {
+            mediaQuery.removeListener(updateLowPowerMode);
+        };
+    }, []);
 
     return (
         <div className={`w-full h-full relative ${className}`}>
@@ -244,7 +268,7 @@ export default function CardHolderScene({
                 }}
                 dpr={[1, maxDpr]}
                 gl={{
-                    antialias: true,
+                    antialias: !isLowPowerDevice,
                     alpha: true,
                     powerPreference: "high-performance",
                     stencil: false,
@@ -257,7 +281,7 @@ export default function CardHolderScene({
                 <PerformanceMonitor
                     flipflops={3}
                     onDecline={() => setMaxDpr(1)}
-                    onIncline={() => setMaxDpr(1.35)}
+                    onIncline={() => setMaxDpr(1.5)}
                 />
                 <Suspense fallback={null}>
                     <SceneContent

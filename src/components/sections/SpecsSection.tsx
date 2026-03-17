@@ -139,7 +139,7 @@ export default function SpecsSection() {
             />
             <div
                 aria-hidden
-                className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-[#93a2b0]/10 blur-3xl"
+                className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-[#93a2b0]/10 blur-2xl"
             />
 
             <div className="max-w-350 mx-auto px-4 md:px-10 lg:px-20">

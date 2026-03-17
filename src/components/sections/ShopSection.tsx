@@ -166,7 +166,7 @@ export default function ShopSection() {
             />
             <div
                 aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute left-[10%] top-20 h-52 w-52 rounded-full bg-[#9ba9b5]/12 blur-3xl"
+                className="shop-orb section-orb pointer-events-none absolute left-[10%] top-20 h-52 w-52 rounded-full bg-[#9ba9b5]/12 blur-2xl"
             />
             <div className="mx-auto max-w-7xl px-4 md:px-10 lg:px-20">
                 {/* Label + title */}

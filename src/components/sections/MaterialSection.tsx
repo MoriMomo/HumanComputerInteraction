@@ -194,7 +194,7 @@ export default function MaterialSection({
             />
             <div
                 aria-hidden
-                className="showcase-orb section-orb pointer-events-none absolute right-[8%] top-24 h-64 w-64 rounded-full bg-[#aebbc7]/18 blur-3xl"
+                className="showcase-orb section-orb pointer-events-none absolute right-[8%] top-24 h-64 w-64 rounded-full bg-[#aebbc7]/18 blur-2xl"
             />
             <div className="max-w-350 mx-auto px-4 md:px-8 lg:px-10">
                 <div className="showcase-shell ambient-panel rounded-4xl border border-white/55 px-3 py-3 shadow-[0_28px_80px_rgba(53,70,86,0.12)] md:px-4 md:py-4">

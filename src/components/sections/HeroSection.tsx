@@ -209,11 +209,11 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
             {/* Background glows */}
             <div
                 aria-hidden
-                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(188,201,214,0.22),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(133,146,160,0.18),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(106,120,134,0.16),transparent_50%)] blur-3xl"
+                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(188,201,214,0.22),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(133,146,160,0.18),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(106,120,134,0.16),transparent_50%)] blur-2xl"
             />
             <div
                 aria-hidden
-                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-[#d9e1e7]/12 blur-3xl"
+                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-[#d9e1e7]/12 blur-2xl"
             />
 
             {/* Bottom fade to dark – matches StatsSection bg */}
@@ -266,7 +266,7 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                     <div className="relative w-full max-w-2xl md:max-w-4xl aspect-16/10 md:aspect-video">
                         <div
                             aria-hidden
-                            className={`absolute inset-[10%] rounded-full blur-3xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
+                            className={`absolute inset-[10%] rounded-full blur-2xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-full h-full ">
