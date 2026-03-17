@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,8 +21,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "SatSet Executive Showcase",
-  description: "Discover the intersection of minimalist design and premium functionality.",
+  title: "SatSet - Office Utility, Refined",
+  description: "Premium carry objects for the modern professional.",
 };
 
 export default function RootLayout({
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="antialiased">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -54,9 +55,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${playfair.variable} antialiased`}>
-        <LoadingProvider>
-          <ScrollProvider>{children}</ScrollProvider>
-        </LoadingProvider>
+        <AuthProvider>
+          <LoadingProvider>
+            <ScrollProvider>{children}</ScrollProvider>
+          </LoadingProvider>
+        </AuthProvider>
       </body>
     </html>
   );

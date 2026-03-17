@@ -59,6 +59,24 @@ body {
   color: var(--color-charcoal);
   line-height: 1.7;
   letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+.page-content {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.page-content.loaded {
+  opacity: 1;
+}
+
+.loading-overlay-active {
+  pointer-events: all;
+}
+
+.loading-overlay-inactive {
+  pointer-events: none;
 }
 
 @layer base {
@@ -298,6 +316,18 @@ section {
 .feat-card:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
+}
+
+.material-controls > * {
+  transition: all 0.3s ease;
+}
+
+.material-controls > *:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.material-viewer canvas {
+  transition: opacity 0.5s ease;
 }
 
 ::-webkit-scrollbar {

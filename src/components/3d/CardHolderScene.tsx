@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor } from "@react-three/drei";
+import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor, Preload } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -11,6 +11,7 @@ import CardHolderModel from "./CardHolderModel";
 interface CardHolderSceneProps {
     color?: string;
     autoRotate?: boolean;
+    show3DModel?: boolean;
     className?: string;
     renderMode?: "normal" | "glass" | "wireframe";
     enableZoom?: boolean;
@@ -27,6 +28,7 @@ interface CardHolderSceneProps {
 interface SceneContentProps {
     color: string;
     autoRotate: boolean;
+    show3DModel: boolean;
     renderMode: "normal" | "glass" | "wireframe";
     enableZoom: boolean;
     cameraPosition: [number, number, number];
@@ -42,6 +44,7 @@ interface SceneContentProps {
 function SceneContent({
     color,
     autoRotate,
+    show3DModel,
     renderMode,
     enableZoom,
     cameraPosition,
@@ -162,32 +165,36 @@ function SceneContent({
                 resolution={128}
             />
 
-            <ContactShadows
-                position={[0, -1.18, 0]}
-                opacity={0.36}
-                scale={8}
-                blur={2.4}
-                far={4}
-                resolution={512}
-                color="#273240"
-            />
+            {show3DModel && (
+                <ContactShadows
+                    position={[0, -1.18, 0]}
+                    opacity={0.36}
+                    scale={8}
+                    blur={2.4}
+                    far={4}
+                    resolution={512}
+                    color="#273240"
+                />
+            )}
 
             {/* Antigravity-style motion layer for premium showroom feel */}
-            <Float
-                speed={1.4}
-                rotationIntensity={0.22}
-                floatIntensity={0.2}
-                floatingRange={[-0.08, 0.08]}
-            >
-                <CardHolderModel
-                    color={color}
-                    autoRotate={autoRotate && isActive}
-                    renderMode={renderMode}
-                    modelRotation={modelRotation}
-                    modelOffset={modelOffset}
-                    modelScaleMultiplier={modelScaleMultiplier}
-                />
-            </Float>
+            {show3DModel && (
+                <Float
+                    speed={1.4}
+                    rotationIntensity={0.22}
+                    floatIntensity={0.2}
+                    floatingRange={[-0.08, 0.08]}
+                >
+                    <CardHolderModel
+                        color={color}
+                        autoRotate={autoRotate && isActive}
+                        renderMode={renderMode}
+                        modelRotation={modelRotation}
+                        modelOffset={modelOffset}
+                        modelScaleMultiplier={modelScaleMultiplier}
+                    />
+                </Float>
+            )}
 
             {/* Controls */}
             <OrbitControls
@@ -210,6 +217,7 @@ function SceneContent({
 export default function CardHolderScene({
     color = "#B48A63",
     autoRotate = true,
+    show3DModel = true,
     className = "",
     renderMode = "normal",
     enableZoom = true,
@@ -284,9 +292,11 @@ export default function CardHolderScene({
                     onIncline={() => setMaxDpr(1.5)}
                 />
                 <Suspense fallback={null}>
+                    <Preload all />
                     <SceneContent
                         color={color}
                         autoRotate={autoRotate}
+                        show3DModel={show3DModel}
                         renderMode={renderMode}
                         enableZoom={enableZoom}
                         cameraPosition={cameraPosition}

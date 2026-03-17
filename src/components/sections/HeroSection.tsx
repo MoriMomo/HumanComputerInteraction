@@ -13,8 +13,8 @@ gsap.registerPlugin(ScrollTrigger);
 const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="w-10 h-10 rounded-full border-2 border-white/45 border-t-transparent animate-spin" />
+        <div className="w-full h-full flex items-center justify-center rounded-3xl border border-white/12 bg-[#111820]">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-white/58">Preparing 3D Scene</p>
         </div>
     ),
 });
@@ -32,11 +32,16 @@ const GLOW_CLASS: Record<string, string> = {
 interface HeroSectionProps {
     activeColor: string;
     show3DModel?: boolean;
+    loadingComplete?: boolean;
 }
 
 const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
 
-export default function HeroSection({ activeColor, show3DModel = true }: HeroSectionProps) {
+export default function HeroSection({
+    activeColor,
+    show3DModel = true,
+    loadingComplete = true,
+}: HeroSectionProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isInView, setIsInView] = useState(true);
     const { isScrolling } = useScroll();
@@ -270,10 +275,11 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-full h-full ">
-                                {show3DModel ? (
+                                {show3DModel && loadingComplete ? (
                                     <CardHolderScene
                                         color={activeColor}
                                         autoRotate={isInView && !isScrolling}
+                                        show3DModel={true}
                                         isActive={isInView}
                                         renderMode="normal"
                                         enableZoom={false}
@@ -289,10 +295,10 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                                 ) : (
                                     <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-[#1c2631] via-[#1a2430] to-[#141b24] flex items-center justify-center">
                                         <div className="text-center px-6">
-                                            <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
-                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Disabled</p>
+                                            <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Loading</p>
+                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">Preparing 3D Preview</p>
                                             <p className="mt-3 max-w-md text-sm text-white/64 leading-relaxed">
-                                                Focusing on layout and storefront refinement. Interactive product model is temporarily turned off.
+                                                Finishing asset initialization so the model appears instantly.
                                             </p>
                                         </div>
                                     </div>

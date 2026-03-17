@@ -12,11 +12,21 @@ import MaterialSection from "@/components/sections/MaterialSection";
 import ShopSection from "@/components/sections/ShopSection";
 import StatsSection from "@/components/sections/StatsSection";
 
-const ENABLE_3D_MODEL = false;
+const ENABLE_3D_MODEL = true;
 
 export default function Home() {
   const [activeColor, setActiveColor] = useState("#8E9AA6");
   const { isLoading, stopLoading } = useLoading();
+  const [loadingComplete, setLoadingComplete] = useState(() => !isLoading);
+  const [contentVisible, setContentVisible] = useState(() => !isLoading);
+
+  const handleLoadingComplete = () => {
+    stopLoading();
+    setLoadingComplete(true);
+    window.setTimeout(() => {
+      setContentVisible(true);
+    }, 100);
+  };
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "development" || typeof PerformanceObserver === "undefined") {
@@ -42,38 +52,42 @@ export default function Home() {
     };
   }, []);
 
-  if (isLoading) {
-    return (
-      <main className="relative min-h-screen bg-[#0a0f16]">
-        <LoadingOverlay minimumDuration={2500} onComplete={stopLoading} />
-      </main>
-    );
-  }
-
   return (
-    <div className="page-shell text-charcoal font-sans min-h-screen relative overflow-x-hidden">
-      <div className="relative z-10">
-        <Navbar />
-        <div className="relative w-full">
-          <HeroSection activeColor={activeColor} show3DModel={true} />
+    <main className="relative min-h-screen bg-[#0a0f16]">
+      {isLoading && (
+        <LoadingOverlay minimumDuration={2500} onComplete={handleLoadingComplete} />
+      )}
+
+      <div
+        className={`page-content ${contentVisible ? "loaded" : ""} relative z-10`}
+      >
+        <div className="page-shell text-charcoal font-sans min-h-screen relative overflow-x-hidden">
+          <Navbar />
+          <div className="relative w-full">
+            <HeroSection
+              activeColor={activeColor}
+              show3DModel={loadingComplete}
+              loadingComplete={loadingComplete}
+            />
+          </div>
+
+          <StatsSection />
+
+          <MaterialSection
+            activeColor={activeColor}
+            onColorChange={setActiveColor}
+            show3DModel={ENABLE_3D_MODEL && loadingComplete}
+          />
+
+          <FeaturesSection />
+
+          <ShopSection />
+
+          <Footer />
         </div>
-
-        <StatsSection />
-
-        <MaterialSection
-          activeColor={activeColor}
-          onColorChange={setActiveColor}
-          show3DModel={ENABLE_3D_MODEL}
-        />
-
-        <FeaturesSection />
-
-        <ShopSection />
-
-        <Footer />
       </div>
 
       {process.env.NODE_ENV === "development" && <GPUMonitor />}
-    </div>
+    </main>
   );
 }
