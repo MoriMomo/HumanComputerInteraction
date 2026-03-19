@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
 
-const GLB_MODEL = "/satset3d/glb/bener-compressed.glb";
+const GLB_MODEL = "/satset3d/glb/bener-final.glb";
 
 interface CardHolderModelProps {
     color?: string;
@@ -27,29 +27,50 @@ export default function CardHolderModel({
 }: CardHolderModelProps) {
     const animatedGroupRef = useRef<THREE.Group>(null);
     const rotationVelocityRef = useRef(0);
-    const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
+    const materialsRef = useRef<Map<string, THREE.MeshStandardMaterial>>(new Map());
     const [isHovered, setIsHovered] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    const model = useGLTF(GLB_MODEL) as GLTF;
+    // Load model
+    const { scene } = useGLTF(GLB_MODEL) as unknown as GLTF & {
+        nodes: { [key: string]: THREE.Mesh };
+        materials: { [key: string]: THREE.Material };
+    };
 
-    // OPTIMIZED: Clone and setup model only once
+    const { gl } = useThree();
+
+    // Properly clone and setup all meshes
     const { modelGroup, baseScale } = useMemo(() => {
         const group = new THREE.Group();
-        const clonedScene = model.scene.clone(true);
-
+        
+        // Clone the entire scene
+        const clonedScene = scene.clone(true);
+        
         clonedScene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                // PERFORMANCE: Disable shadows unless needed
-                child.castShadow = false;
-                child.receiveShadow = false;
-
-                // PERFORMANCE: Enable frustum culling
-                child.frustumCulled = true;
-
-                group.add(child);
+                // Ensure geometry is valid
+                if (child.geometry) {
+                    // Fix normals (prevent inside-out rendering)
+                    child.geometry.computeVertexNormals();
+                    
+                    // PERFORMANCE: Disable shadows
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    
+                    // PERFORMANCE: Enable frustum culling
+                    child.frustumCulled = true;
+                    
+                    // Ensure double-sided rendering
+                    if (child.material) {
+                        child.material.side = THREE.DoubleSide;
+                    }
+                    
+                    group.add(child.clone());
+                }
             }
         });
 
+        // Better bounding box calculation
         const box = new THREE.Box3().setFromObject(group);
         let normalizedScale = 1;
 
@@ -58,76 +79,139 @@ export default function CardHolderModel({
             const size = box.getSize(new THREE.Vector3());
             const maxDim = Math.max(size.x, size.y, size.z);
 
+            // Center the model at origin
             group.position.set(-center.x, -center.y, -center.z);
-            normalizedScale = maxDim > 0 ? 2.5 / maxDim : 1;
+            
+            // Scale to fit view
+            normalizedScale = maxDim > 0 ? 2.0 / maxDim : 1;
+            
+            console.log("Model bounding box:", {
+                center: center.toArray(),
+                size: size.toArray(),
+                maxDim,
+                normalizedScale,
+            });
         }
+
+        setIsLoaded(true);
 
         return {
             modelGroup: group,
             baseScale: normalizedScale,
         };
-    }, [model]);
+    }, [scene]);
 
-    // OPTIMIZED: Create material once, update properties instead of recreating
+    const getMaterial = useCallback(
+        (mode: NonNullable<CardHolderModelProps["renderMode"]>, nextColor: string) => {
+            const key = `${mode}-${nextColor}`;
+
+            if (!materialsRef.current.has(key)) {
+                const isGlass = mode === "glass";
+                const isWire = mode === "wireframe";
+
+                materialsRef.current.set(
+                    key,
+                    new THREE.MeshStandardMaterial({
+                        color: new THREE.Color(nextColor),
+                        wireframe: isWire,
+                        transparent: isGlass,
+                        opacity: isGlass ? 0.56 : 1,
+                        roughness: isGlass ? 0.08 : 0.28,
+                        metalness: isGlass ? 0.12 : 0.46,
+                        envMapIntensity: isGlass ? 1.55 : 1.08,
+                        side: THREE.DoubleSide,
+                        polygonOffset: true,
+                        polygonOffsetFactor: 1,
+                        polygonOffsetUnits: 1,
+                    })
+                );
+            }
+
+            return materialsRef.current.get(key)!;
+        },
+        []
+    );
+
+    // Apply materials to all meshes
     useEffect(() => {
-        if (!materialRef.current) {
-            materialRef.current = new THREE.MeshStandardMaterial({
-                color,
-                roughness: 0.28,
-                metalness: 0.46,
-                envMapIntensity: 1.08,
-            });
+        if (!isLoaded) return;
+        
+        const material = getMaterial(renderMode, color);
+
+        modelGroup.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.geometry) {
+                child.material = material;
+                child.material.needsUpdate = true;
+            }
+        });
+    }, [color, getMaterial, modelGroup, renderMode, isLoaded]);
+
+    // Cleanup materials
+    useEffect(() => {
+        const materialCache = materialsRef.current;
+        return () => {
+            materialCache.forEach((material) => material.dispose());
+            materialCache.clear();
+        };
+    }, []);
+
+    // PERFORMANCE: Reduce DPR on mobile
+    useEffect(() => {
+        const initialPixelRatio = gl.getPixelRatio();
+        const isMobile = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+
+        if (isMobile) {
+            gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         }
 
-        const material = materialRef.current;
-        const isGlass = renderMode === "glass";
-        const isWire = renderMode === "wireframe";
+        return () => {
+            gl.setPixelRatio(initialPixelRatio);
+        };
+    }, [gl]);
 
-        // Update existing material instead of creating new one
-        material.color.set(color);
-        material.wireframe = isWire;
-        material.transparent = isGlass;
-        material.opacity = isGlass ? 0.56 : 1;
-        material.roughness = isGlass ? 0.08 : 0.28;
-        material.metalness = isGlass ? 0.12 : 0.46;
-        material.envMapIntensity = isGlass ? 1.55 : 1.08;
-        material.needsUpdate = true;
+    // Debug model stats
+    useEffect(() => {
+        if (process.env.NODE_ENV !== "development" || !isLoaded) return;
 
-        // Apply material to all meshes once
+        let totalVertices = 0;
+        let totalTriangles = 0;
+        let meshCount = 0;
+
         modelGroup.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-                child.material = material;
+            if (child instanceof THREE.Mesh && child.geometry) {
+                meshCount++;
+                const positions = child.geometry.attributes.position;
+                if (positions) {
+                    totalVertices += positions.count;
+                    totalTriangles += Math.round(positions.count / 3);
+                }
             }
         });
 
-        // Cleanup on unmount only
-        return () => {
-            if (materialRef.current) {
-                materialRef.current.dispose();
-            }
-        };
-    }, [color, renderMode, modelGroup]);
+        console.log(`🎯 Model Stats: ${meshCount} meshes, ${totalVertices.toLocaleString()} vertices, ${totalTriangles.toLocaleString()} triangles`);
+    }, [modelGroup, isLoaded]);
 
-    // OPTIMIZED: Simplified frame loop
+    // Animation loop
     useFrame((state, delta) => {
         const group = animatedGroupRef.current;
         if (!group || !autoRotate) return;
 
-        // Cap delta to prevent huge jumps on lag spikes
         const clampedDelta = Math.min(delta, 0.1);
+        const hoverBoost = isHovered ? 1.5 : 1;
+        const targetVelocity = 0.5 * hoverBoost;
 
-        const hoverBoost = isHovered ? 1.42 : 1;
-        const targetVelocity = 0.58 * hoverBoost;
-
-        // Smooth interpolation
         rotationVelocityRef.current = THREE.MathUtils.lerp(
             rotationVelocityRef.current,
             targetVelocity,
-            clampedDelta * 2.4
+            clampedDelta * 3
         );
 
         group.rotation.y += rotationVelocityRef.current * clampedDelta;
     });
+
+    if (!isLoaded) {
+        return null;
+    }
 
     return (
         <group

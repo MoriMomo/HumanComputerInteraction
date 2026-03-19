@@ -47,7 +47,7 @@ export default function LoadingOverlay({
     const totalAssetsRef = useRef(0);
 
     const criticalAssets = useRef<string[]>([
-        "/satset3d/glb/bener-compressed.glb",
+        "/satset3d/glb/bener-final.glb",
         "/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4",
     ]);
 

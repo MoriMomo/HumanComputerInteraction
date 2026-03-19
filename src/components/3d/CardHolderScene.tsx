@@ -117,73 +117,37 @@ function SceneContent({
 
     return (
         <>
-            <ambientLight intensity={0.3} />
-
-            <hemisphereLight
-                args={["#8f9ca8", "#111821", 0.2]}
-            />
-
-            <directionalLight
-                position={[3.1, 4.3, 2.4]}
-                intensity={0.7}
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-                shadow-camera-near={0.5}
-                shadow-camera-far={20}
-                shadow-bias={-0.00008}
-            />
-
-            <directionalLight
-                position={[-2.8, 2.1, -3.1]}
-                intensity={0.24}
-                castShadow={false}
-            />
-
-            <pointLight
-                ref={rimLightRef}
-                position={[1.9, 0.95, -1.6]}
-                color="#c3d1dc"
-                intensity={0.36}
-                distance={6}
-                decay={2.2}
-            />
-
-            <pointLight
-                ref={rimFillRef}
-                position={[-1.6, 0.7, 1.4]}
-                color="#6e7f8f"
-                intensity={0.18}
-                distance={5}
-                decay={2.4}
-            />
-
             <Environment
                 preset="studio"
                 background={false}
-                blur={0.55}
-                resolution={128}
+                blur={0.8}
+                // @ts-expect-error Property intensity is added in newer versions of drei
+                intensity={1.5}
             />
+
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow={false} />
+            <directionalLight position={[-5, -5, -5]} intensity={0.8} color="#93c5fd" />
+            <directionalLight position={[0, 5, 0]} intensity={0.5} />
 
             {show3DModel && (
                 <ContactShadows
-                    position={[0, -1.18, 0]}
-                    opacity={0.36}
-                    scale={8}
-                    blur={2.4}
-                    far={4}
-                    resolution={512}
-                    color="#273240"
+                    position={[0, -2, 0]}
+                    opacity={0.4}
+                    scale={20}
+                    blur={3}
+                    far={6}
+                    color="#000000"
                 />
             )}
 
-            {/* Antigravity-style motion layer for premium showroom feel */}
+            {/* Premium floating animation layer */}
             {show3DModel && (
                 <Float
-                    speed={1.4}
-                    rotationIntensity={0.22}
-                    floatIntensity={0.2}
-                    floatingRange={[-0.08, 0.08]}
+                    speed={1.8}
+                    rotationIntensity={0.25}
+                    floatIntensity={0.25}
+                    floatingRange={[-0.1, 0.1]}
                 >
                     <CardHolderModel
                         color={color}
@@ -196,7 +160,7 @@ function SceneContent({
                 </Float>
             )}
 
-            {/* Controls */}
+            {/* Premium orbit controls */}
             <OrbitControls
                 ref={controlsRef}
                 enabled={isActive}
@@ -206,7 +170,7 @@ function SceneContent({
                 minDistance={2.2}
                 maxDistance={8.5}
                 enableDamping={true}
-                dampingFactor={0.07}
+                dampingFactor={0.08}
                 minPolarAngle={0}
                 maxPolarAngle={Math.PI}
             />
@@ -221,14 +185,14 @@ export default function CardHolderScene({
     className = "",
     renderMode = "normal",
     enableZoom = true,
-    cameraPosition = [3, 2, 5],
+    cameraPosition = [0, 0, 10],
     cameraLookAt = [0, 0, 0],
-    introFromPosition = [4, 3, 6],
+    introFromPosition = [1.8, 2.2, 12],
     introDuration = 1.4,
     isActive = true,
     modelRotation = [Math.PI / 2, 0, 0],
     modelOffset = [0, 0, 0],
-    modelScaleMultiplier = 1,
+    modelScaleMultiplier = 4,
 }: CardHolderSceneProps) {
     const [maxDpr, setMaxDpr] = useState(1.5);
     const [isLowPowerDevice, setIsLowPowerDevice] = useState(false);
@@ -261,35 +225,39 @@ export default function CardHolderScene({
             <Canvas
                 className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
                 frameloop={isActive ? "always" : "never"}
+                orthographic
                 camera={{
                     position: cameraPosition,
-                    fov: 45,
+                    zoom: 90,
                     near: 0.1,
-                    far: 50,
+                    far: 1000,
                 }}
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = true;
                     gl.shadowMap.type = THREE.PCFShadowMap;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
-                    gl.toneMappingExposure = 0.85;
+                    gl.toneMappingExposure = 1.2;
                 }}
                 dpr={[1, maxDpr]}
                 gl={{
-                    antialias: !isLowPowerDevice,
+                    antialias: true,
                     alpha: true,
                     powerPreference: "high-performance",
                     stencil: false,
                     depth: true,
                     preserveDrawingBuffer: false,
+                    toneMapping: THREE.ACESFilmicToneMapping,
+                    toneMappingExposure: 1.2,
                 }}
-                performance={{ min: 0.6 }}
+                performance={{ min: 0.5 }}
                 shadows={{ type: THREE.PCFShadowMap }}
+                style={{ pointerEvents: enableZoom && isActive ? "auto" : "none" }}
             >
                 <PerformanceMonitor
                     flipflops={3}
                     onDecline={() => setMaxDpr(1)}
-                    onIncline={() => setMaxDpr(1.5)}
+                    onIncline={() => setMaxDpr(isLowPowerDevice ? 1.2 : 1.8)}
                 />
                 <Suspense fallback={null}>
                     <Preload all />

@@ -9,6 +9,15 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { PRODUCTS } from "@/data/products";
 
+const SWATCH_BG_CLASS: Record<string, string> = {
+    "#59636E": "bg-[#59636E]",
+    "#1C1C1E": "bg-[#1C1C1E]",
+    "#8E9AA6": "bg-[#8E9AA6]",
+    "#BCA782": "bg-[#BCA782]",
+    "#3C2F24": "bg-[#3C2F24]",
+    "#8A683A": "bg-[#8A683A]",
+};
+
 export default function ProductDetailPage() {
     const { slug } = useParams<{ slug: string }>();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -79,7 +88,7 @@ export default function ProductDetailPage() {
                                 {/* Selected colour swatch overlay */}
                                 <div
                                     aria-hidden
-                                    className="absolute bottom-6 left-6 w-10 h-10 rounded-full border-2 border-white/25 shadow-lg"
+                                    className={`absolute bottom-6 left-6 w-10 h-10 rounded-full border-2 border-white/25 shadow-lg ${SWATCH_BG_CLASS[selectedColor] ?? "bg-swatch-steel"}`}
                                     data-swatch={selectedColor}
                                 />
                             </div>
@@ -109,11 +118,11 @@ export default function ProductDetailPage() {
                                             key={hex}
                                             onClick={() => setSelectedColor(hex)}
                                             aria-label={`Select colour ${hex}`}
-                                            style={{ backgroundColor: hex }}
+                                            type="button"
                                             className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${selectedColor === hex
-                                                    ? "border-white scale-110 ring-2 ring-white/30"
-                                                    : "border-white/20 hover:border-white/45"
-                                                }`}
+                                                ? "border-white scale-110 ring-2 ring-white/30"
+                                                : "border-white/20 hover:border-white/45"
+                                                } ${SWATCH_BG_CLASS[hex] ?? "bg-swatch-steel"}`}
                                         />
                                     ))}
                                 </div>

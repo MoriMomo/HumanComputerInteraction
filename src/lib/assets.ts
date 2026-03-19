@@ -9,7 +9,7 @@ export const CRITICAL_ASSETS: AssetDescriptor[] = [
     {
         id: "card-holder-model",
         kind: "fetch",
-        src: "/satset3d/glb/bener-compressed.glb",
+        src: "/satset3d/glb/bener-final.glb",
     },
     {
         id: "card-holder-scene-module",

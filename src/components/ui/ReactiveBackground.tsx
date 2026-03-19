@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -122,7 +122,7 @@ function ReactiveBlocks({ active, color, blockCount, opacity }: ReactiveBlocksPr
     });
 
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, total]}>
+        <instancedMesh ref={meshRef} args={[null as unknown as THREE.BufferGeometry, null as unknown as THREE.Material, total]}>
             <planeGeometry args={[1, 1]} />
             <meshBasicMaterial
                 ref={materialRef}
@@ -188,12 +188,14 @@ export default function ReactiveBackground({
                 }}
                 performance={{ min: 0.5 }}
             >
-                <ReactiveBlocks
-                    active={shouldAnimate}
-                    color={color}
-                    blockCount={blockCount}
-                    opacity={opacity}
-                />
+                <Suspense fallback={null}>
+                    <ReactiveBlocks
+                        active={shouldAnimate}
+                        color={color}
+                        blockCount={blockCount}
+                        opacity={opacity}
+                    />
+                </Suspense>
             </Canvas>
         </div>
     );

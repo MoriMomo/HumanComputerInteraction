@@ -1,20 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
+import { Skeleton3DViewer } from "../ui/Skeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
-    loading: () => (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-        </div>
-    ),
+    loading: () => <Skeleton3DViewer />,
 });
 
 export const SWATCHES = [
@@ -32,6 +29,15 @@ const RENDER_MODES = [
     { id: "wireframe", label: "Wireframe", icon: "view_in_ar" },
 ];
 
+const SWATCH_BG_CLASS: Record<string, string> = {
+    "#59636E": "bg-[#59636E]",
+    "#1C1C1E": "bg-[#1C1C1E]",
+    "#8E9AA6": "bg-[#8E9AA6]",
+    "#BCA782": "bg-[#BCA782]",
+    "#3C2F24": "bg-[#3C2F24]",
+    "#8A683A": "bg-[#8A683A]",
+};
+
 interface MaterialSectionProps {
     activeColor: string;
     onColorChange: (hex: string) => void;
@@ -45,7 +51,17 @@ export default function MaterialSection({
 }: MaterialSectionProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
+    const [isViewerReady, setIsViewerReady] = useState(false);
     const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
+
+    // Preload and ready the 3D viewer
+    useEffect(() => {
+        if (!show3DModel) return;
+        const timer = setTimeout(() => {
+            setIsViewerReady(true);
+        }, 600);
+        return () => clearTimeout(timer);
+    }, [show3DModel]);
 
     useGSAP(
         () => {
@@ -137,7 +153,11 @@ export default function MaterialSection({
             className="relative py-32 md:py-40 bg-[#0a0f16] overflow-hidden"
         >
             <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
-            <div aria-hidden className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.02] blur-3xl" />
+            <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
+
+            {/* Animated ambient orbs */}
+            <div aria-hidden className="absolute top-1/4 right-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+            <div aria-hidden className="absolute bottom-1/4 left-0 w-80 h-80 bg-blue-500/3 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
                 <div className="text-center mb-16 md:mb-20">
@@ -154,14 +174,14 @@ export default function MaterialSection({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#0f1620]/40 border border-white/[0.08] rounded-2xl p-6">
+                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
                             <p className="text-white/50 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/[0.08] rounded-2xl p-6">
+                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Performance</h3>
                             <div className="flex items-center gap-2 text-white/50 text-sm">
                                 <span className="w-2 h-2 rounded-full bg-green-500/60" />
@@ -173,14 +193,14 @@ export default function MaterialSection({
                             <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#0a0f16] font-medium hover:bg-white/90 transition-colors text-sm">
                                 Customize
                             </button>
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/[0.08] border border-white/[0.12] text-white font-medium hover:bg-white/[0.12] transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-medium hover:bg-white/12 transition-colors text-sm">
                                 Add to Cart
                             </button>
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-[600px] rounded-3xl overflow-hidden border border-white/[0.08] bg-linear-to-br from-[#0f1620] to-[#0a0f16]">
-                        {show3DModel ? (
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/8 bg-linear-to-br from-[#0f1620] to-[#0a0f16]">
+                        {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
                                 autoRotate={true}
@@ -204,7 +224,7 @@ export default function MaterialSection({
                     </div>
 
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#0f1620]/40 border border-white/[0.08] rounded-2xl p-6">
+                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Render Mode
                             </p>
@@ -214,8 +234,8 @@ export default function MaterialSection({
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
                                         className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
-                                                ? "bg-white/[0.12] text-white border border-white/[0.15]"
-                                                : "bg-transparent text-white/50 border border-transparent hover:bg-white/[0.06]"
+                                            ? "bg-white/12 text-white border border-white/15"
+                                            : "bg-transparent text-white/50 border border-transparent hover:bg-white/6"
                                             }`}
                                     >
                                         <span className="flex items-center gap-2">
@@ -230,7 +250,7 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/[0.08] rounded-2xl p-6">
+                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Material Color
                             </p>
@@ -239,11 +259,11 @@ export default function MaterialSection({
                                     <button
                                         key={swatch.id}
                                         onClick={() => onColorChange(swatch.hex)}
+                                        type="button"
                                         className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                                ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f1620]"
-                                                : "hover:scale-105"
-                                            }`}
-                                        style={{ backgroundColor: swatch.hex }}
+                                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f1620]"
+                                            : "hover:scale-105"
+                                            } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
                                         aria-label={`Select ${swatch.label}`}
                                     >
                                         {activeColor === swatch.hex && (
@@ -260,7 +280,7 @@ export default function MaterialSection({
                             <p className="text-white/40 text-xs mt-1">{activeSwatch.description}</p>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/[0.08] rounded-2xl p-6">
+                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
                                 Input: Active
                             </p>

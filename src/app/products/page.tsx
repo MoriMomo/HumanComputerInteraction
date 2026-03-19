@@ -13,6 +13,15 @@ gsap.registerPlugin(ScrollTrigger);
 
 const COLOR_PREVIEW_COUNT = 3;
 
+const SWATCH_BG_CLASS: Record<string, string> = {
+    "#59636E": "bg-[#59636E]",
+    "#1C1C1E": "bg-[#1C1C1E]",
+    "#8E9AA6": "bg-[#8E9AA6]",
+    "#BCA782": "bg-[#BCA782]",
+    "#3C2F24": "bg-[#3C2F24]",
+    "#8A683A": "bg-[#8A683A]",
+};
+
 export default function ProductsPage() {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -104,9 +113,8 @@ export default function ProductsPage() {
                                         {product.colors.slice(0, COLOR_PREVIEW_COUNT).map((hex) => (
                                             <span
                                                 key={hex}
-                                                className="w-4 h-4 rounded-full border border-white/20 ring-1 ring-white/5"
+                                                className={`w-4 h-4 rounded-full border border-white/20 ring-1 ring-white/5 ${SWATCH_BG_CLASS[hex] ?? "bg-swatch-steel"}`}
                                                 aria-label={hex}
-                                                style={{ backgroundColor: hex }}
                                             />
                                         ))}
                                         {product.colors.length > COLOR_PREVIEW_COUNT && (

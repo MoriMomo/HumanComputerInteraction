@@ -42,14 +42,14 @@ export default function RootLayout({
         />
         <link
           rel="preload"
-          href="/satset3d/glb/bener-compressed.glb"
+          href="/satset3d/glb/bener-final.glb"
           as="fetch"
           type="model/gltf-binary"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4"
+          href="/video/vecteezy-workers-optimized.mp4"
           as="video"
           type="video/mp4"
         />

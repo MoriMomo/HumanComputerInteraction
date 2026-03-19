@@ -126,23 +126,16 @@ export default function SpecsSection() {
         <section
             id="specs"
             ref={sectionRef}
-            className="relative -mt-8 overflow-hidden bg-[linear-gradient(180deg,#26313b_0%,#1a2128_14%,#151b21_100%)] py-30 text-white"
+            className="relative py-32 md:py-40 overflow-hidden bg-[#0a0f16] text-white"
         >
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-0 h-24 section-seam-dark"
-            />
-            {/* Decorative arc */}
-            <div
-                aria-hidden
-                className="blob-bronze pointer-events-none absolute top-[-30%] left-[-10%] w-[60vw] h-[60vw] rounded-full opacity-[0.04]"
-            />
-            <div
-                aria-hidden
-                className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-[#93a2b0]/10 blur-2xl"
-            />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
 
-            <div className="max-w-350 mx-auto px-4 md:px-10 lg:px-20">
+            {/* Animated ambient gradient orbs */}
+            <div aria-hidden className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-3xl animate-pulse" />
+            <div aria-hidden className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-purple-500/3 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
+            <div aria-hidden className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-[#3b4a5a]/12 blur-3xl" />
+
+            <div className="relative z-10 max-w-350 mx-auto px-6 md:px-12 lg:px-20">
                 {/* Label + title */}
                 <p className="specs-title text-xs font-semibold tracking-[0.25em] text-primary uppercase mb-4">
                     Technical Specifications
@@ -163,7 +156,7 @@ export default function SpecsSection() {
                                 <span data-counter={i}>0</span>
                                 <span className="text-primary">{stat.suffix}</span>
                             </p>
-                            <p className="text-sm text-gray-400 tracking-widest uppercase font-medium">
+                            <p className="text-sm text-white/40 tracking-widest uppercase font-medium">
                                 {stat.label}
                             </p>
                         </div>
@@ -175,9 +168,9 @@ export default function SpecsSection() {
                     {specs.map(({ label, value }) => (
                         <div
                             key={label}
-                            className="spec-row flex items-start justify-between py-5 border-b border-white/10 gap-8"
+                            className="spec-row flex items-start justify-between py-5 border-b border-white/10 gap-8 transition-all duration-300 hover:border-white/20"
                         >
-                            <span className="text-sm text-gray-400 font-medium tracking-wide shrink-0 w-36">
+                            <span className="text-sm text-white/50 font-medium tracking-wide shrink-0 w-36">
                                 {label}
                             </span>
                             <span className="text-sm text-white font-medium text-right">{value}</span>
