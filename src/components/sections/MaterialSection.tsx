@@ -167,23 +167,23 @@ export default function MaterialSection({
                     <h2 className="material-title text-4xl md:text-6xl font-bold text-white mb-6">
                         Product Material Studio
                     </h2>
-                    <p className="material-subtitle text-white/60 text-lg max-w-2xl mx-auto">
+                    <p className="material-subtitle text-white/72 text-lg max-w-2xl mx-auto">
                         Review finishes, rotate the chassis, and compare which surface looks most at home in your workspace.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
-                            <p className="text-white/50 text-sm leading-relaxed">
+                            <p className="text-white/68 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Performance</h3>
-                            <div className="flex items-center gap-2 text-white/50 text-sm">
+                            <div className="flex items-center gap-2 text-white/70 text-sm">
                                 <span className="w-2 h-2 rounded-full bg-green-500/60" />
                                 60 FPS | High Fidelity
                             </div>
@@ -193,13 +193,13 @@ export default function MaterialSection({
                             <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#0a0f16] font-medium hover:bg-white/90 transition-colors text-sm">
                                 Customize
                             </button>
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/8 border border-white/12 text-white font-medium hover:bg-white/12 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/18 text-white/92 font-medium hover:bg-white/16 transition-colors text-sm">
                                 Add to Cart
                             </button>
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/8 bg-linear-to-br from-[#0f1620] to-[#0a0f16]">
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#0f1620] via-[#111a26] to-[#0b121a]">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -220,11 +220,11 @@ export default function MaterialSection({
                             </div>
                         )}
 
-                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#0a0f16]/20 via-transparent to-[#0a0f16]/20 pointer-events-none" />
+                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#0a0f16]/36 via-transparent to-[#0a0f16]/28 pointer-events-none" />
                     </div>
 
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Render Mode
                             </p>
@@ -235,7 +235,7 @@ export default function MaterialSection({
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
                                         className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
                                             ? "bg-white/12 text-white border border-white/15"
-                                            : "bg-transparent text-white/50 border border-transparent hover:bg-white/6"
+                                            : "bg-transparent text-white/76 border border-transparent hover:bg-white/8"
                                             }`}
                                     >
                                         <span className="flex items-center gap-2">
@@ -250,7 +250,7 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Material Color
                             </p>
@@ -276,15 +276,15 @@ export default function MaterialSection({
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-white/60 text-sm">{activeSwatch.label}</p>
-                            <p className="text-white/40 text-xs mt-1">{activeSwatch.description}</p>
+                            <p className="text-white/76 text-sm">{activeSwatch.label}</p>
+                            <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
                         </div>
 
-                        <div className="bg-[#0f1620]/40 border border-white/8 rounded-2xl p-6">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
                                 Input: Active
                             </p>
-                            <div className="space-y-2 text-xs text-white/50">
+                            <div className="space-y-2 text-xs text-white/66">
                                 <p>Render Tier: High</p>
                                 <p>Camera: Orbit + Zoom</p>
                                 <p>Material: {renderMode}</p>

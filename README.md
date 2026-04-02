@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Project Guide
+
+- [MCP Playbook](./MCP_PLAYBOOK.md): Practical workflow for when and how to use MCP in this repo.
+
 ## Getting Started
 
 First, run the development server:

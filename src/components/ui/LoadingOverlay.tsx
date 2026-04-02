@@ -48,7 +48,6 @@ export default function LoadingOverlay({
 
     const criticalAssets = useRef<string[]>([
         "/satset3d/glb/bener-final.glb",
-        "/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4",
     ]);
 
     const animateProgress = useCallback((nextProgress: number) => {
@@ -96,7 +95,11 @@ export default function LoadingOverlay({
             detach?.();
         };
 
-        const assets = criticalAssets.current;
+        const isMobile = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+        const assets = [
+            ...criticalAssets.current,
+            isMobile ? "/video/vecteezy-workers-mobile.mp4" : "/video/vecteezy-workers-optimized.mp4",
+        ];
         totalAssetsRef.current += assets.length;
 
         assets.forEach((src) => {
@@ -118,10 +121,10 @@ export default function LoadingOverlay({
                     video.load();
                 };
 
-                video.preload = "auto";
+                video.preload = "metadata";
                 video.muted = true;
                 video.playsInline = true;
-                video.oncanplaythrough = onDone;
+                video.onloadedmetadata = onDone;
                 video.onerror = onDone;
                 video.src = src;
                 video.load();

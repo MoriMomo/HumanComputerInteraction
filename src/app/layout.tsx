@@ -47,17 +47,24 @@ export default function RootLayout({
           type="model/gltf-binary"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          href="/video/vecteezy-workers-optimized.mp4"
-          as="video"
-          type="video/mp4"
-        />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${playfair.variable} antialiased`}
+      >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only fixed left-4 top-4 z-[10000] rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0a0f16]"
+        >
+          Skip to main content
+        </a>
         <AuthProvider>
           <LoadingProvider>
-            <ScrollProvider>{children}</ScrollProvider>
+            <ScrollProvider>
+              <div id="main-content" tabIndex={-1}>
+                {children}
+              </div>
+            </ScrollProvider>
           </LoadingProvider>
         </AuthProvider>
       </body>

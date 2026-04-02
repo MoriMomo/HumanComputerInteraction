@@ -186,11 +186,11 @@ export default function Navbar() {
 
                         {/* Right - CTA */}
                         <Link
-                            href="/#shop"
+                            href="/auth/login"
                             onClick={closeMenu}
                             className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
                         >
-                            <span className="relative z-10">Buy Now</span>
+                            <span className="relative z-10">Log in</span>
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                         </Link>
 
@@ -199,7 +199,7 @@ export default function Navbar() {
                             <button
                                 className="md:hidden relative w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                                 onClick={toggleMenu}
-                                aria-label="Toggle menu"
+                                aria-label="Close menu"
                                 aria-controls={MOBILE_MENU_ID}
                                 aria-expanded="true"
                             >
@@ -212,7 +212,7 @@ export default function Navbar() {
                             <button
                                 className="md:hidden relative w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                                 onClick={toggleMenu}
-                                aria-label="Toggle menu"
+                                aria-label="Open menu"
                                 aria-controls={MOBILE_MENU_ID}
                                 aria-expanded="false"
                             >
@@ -231,6 +231,8 @@ export default function Navbar() {
                 <div
                     ref={menuRef}
                     id={MOBILE_MENU_ID}
+                    role="dialog"
+                    aria-modal="true"
                     aria-label="Mobile navigation"
                     className="fixed inset-0 top-20 z-99 bg-[#0a0f16]/98 md:hidden"
                 >
@@ -265,11 +267,11 @@ export default function Navbar() {
 
                         <div className="menu-cta mt-10">
                             <Link
-                                href="/#shop"
+                                href="/auth/login"
                                 onClick={closeMenu}
                                 className="block w-full py-4 rounded-2xl bg-white text-[#0a0f16] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300"
                             >
-                                Buy Now
+                                Log in
                             </Link>
                             <p className="text-center text-white/40 text-sm mt-6">
                                 Free shipping on orders over $100

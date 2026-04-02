@@ -101,12 +101,12 @@ export default function ShopSection() {
                 {
                     y: 0,
                     opacity: 1,
-                    duration: 0.8,
+                    duration: 1,
                     ease: "power3.out",
                     immediateRender: false,
                     scrollTrigger: {
                         trigger: sectionEl,
-                        start: "top 92%",
+                        start: "top 86%",
                         once: true,
                     },
                 }
@@ -119,12 +119,12 @@ export default function ShopSection() {
                     y: 0,
                     opacity: 1,
                     stagger: 0.15,
-                    duration: 0.9,
+                    duration: 1.1,
                     ease: "power3.out",
                     immediateRender: false,
                     scrollTrigger: {
                         trigger: sectionEl,
-                        start: "top 90%",
+                        start: "top 85%",
                         once: true,
                     },
                 }

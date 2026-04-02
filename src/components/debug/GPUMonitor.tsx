@@ -1,13 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { detectGPU, type GPUInfo } from "@/lib/gpu-detector";
 
+const defaultGPUInfo: GPUInfo = {
+    hasWebGL: false,
+    hasWebGL2: false,
+    renderer: "none",
+    vendor: "none",
+    maxTextureSize: 0,
+    preferredPowerMode: "default",
+};
+
 export default function GPUMonitor() {
-    const [gpuInfo] = useState<GPUInfo>(() => detectGPU());
+    const [mounted, setMounted] = useState(false);
     const [fps, setFps] = useState(0);
 
+    const gpuInfo = useMemo(
+        () => (mounted ? detectGPU() : defaultGPUInfo),
+        [mounted]
+    );
+
     useEffect(() => {
+        const mountRaf = window.requestAnimationFrame(() => {
+            setMounted(true);
+        });
+
         let frameCount = 0;
         let rafId = 0;
         let lastTime = performance.now();
@@ -28,6 +46,7 @@ export default function GPUMonitor() {
         rafId = window.requestAnimationFrame(measureFPS);
 
         return () => {
+            window.cancelAnimationFrame(mountRaf);
             window.cancelAnimationFrame(rafId);
         };
     }, []);

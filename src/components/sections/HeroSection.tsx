@@ -33,6 +33,7 @@ interface HeroSectionProps {
     activeColor: string;
     show3DModel?: boolean;
     loadingComplete?: boolean;
+    on3DReady?: () => void;
 }
 
 const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
@@ -41,6 +42,7 @@ export default function HeroSection({
     activeColor,
     show3DModel = true,
     loadingComplete = true,
+    on3DReady,
 }: HeroSectionProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isInView, setIsInView] = useState(true);
@@ -290,6 +292,7 @@ export default function HeroSection({
                                         modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.22, 0]}
                                         modelOffset={[0, 0, 0]}
                                         modelScaleMultiplier={4}
+                                        onModelReady={on3DReady}
                                         className="w-full h-full"
                                     />
                                 ) : (

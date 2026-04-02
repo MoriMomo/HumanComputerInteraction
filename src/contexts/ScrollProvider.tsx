@@ -21,17 +21,19 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const lenis = new Lenis({
-            duration: 1.05,
+            duration: 1.2,
             easing: (value: number) => Math.min(1, 1.001 - Math.pow(2, -10 * value)),
             orientation: "vertical",
             gestureOrientation: "vertical",
             smoothWheel: true,
             syncTouch: false,
             wheelMultiplier: 1,
-            touchMultiplier: 1.5,
+            touchMultiplier: 2,
             infinite: false,
             autoRaf: false,
         });
+
+        let rafId = 0;
 
         const handleScroll = () => {
             setScrollSignal((previous) => previous + 1);
@@ -43,18 +45,18 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
         };
 
         const tick = (time: number) => {
-            lenis.raf(time * 1000);
+            lenis.raf(time);
+            rafId = window.requestAnimationFrame(tick);
         };
 
         lenis.on("scroll", handleScroll);
         ScrollTrigger.addEventListener("refresh", handleRefresh);
-        gsap.ticker.add(tick);
-        gsap.ticker.lagSmoothing(0);
+        rafId = window.requestAnimationFrame(tick);
         ScrollTrigger.refresh();
 
         return () => {
             ScrollTrigger.removeEventListener("refresh", handleRefresh);
-            gsap.ticker.remove(tick);
+            window.cancelAnimationFrame(rafId);
             lenis.destroy();
         };
     }, []);
