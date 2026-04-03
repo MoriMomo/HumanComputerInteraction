@@ -44,7 +44,7 @@ Recommended flow:
 3. Ask MCP-enabled assistant for batch updates across all page files, for example:
    - unify spacing and section rhythm on all marketing pages
    - update heading style system across showcase, products, about, blog
-4. Run lint after each batch.
+4. Run lint after each batch.w
 5. Review visual output in dev server.
 
 Good MCP tasks in this workflow:
