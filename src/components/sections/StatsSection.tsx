@@ -260,7 +260,7 @@ export default function StatsSection({
                     />
 
                     {(!isVideoLoaded || videoStalled) && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0f16]">
+                        <div className="absolute inset-0 flex items-center justify-center bg-[#0a0f16]" aria-hidden="true">
                             <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin" />
                         </div>
                     )}
@@ -280,32 +280,28 @@ export default function StatsSection({
                             {subtitle}
                         </p>
 
-                        <div>
+                        <dl>
                             {STATS.map((stat) => (
                                 <div
                                     key={stat.label}
-                                    className="stats-row group flex items-start justify-between gap-6 border-b border-white/10 py-7 last:border-0"
+                                    className="stats-row border-b border-white/10 py-7 last:border-0"
                                 >
-                                    <div>
-                                        <div className="flex items-baseline gap-4">
+                                    <div className="group flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-6 transition-transform duration-500 ease-out hover:translate-x-2">
+                                        <dt className="flex items-baseline gap-4">
                                             <span className="text-4xl font-light tracking-tight text-white md:text-5xl">
                                                 {stat.value}
                                             </span>
                                             <span className="text-[11px] tracking-[0.26em] text-white/52 uppercase transition-colors group-hover:text-white/72">
                                                 {stat.label}
                                             </span>
-                                        </div>
-                                        <p className="mt-2 text-sm leading-relaxed text-white/62 md:hidden">
+                                        </dt>
+                                        <dd className="max-w-xs text-sm leading-relaxed text-white/62 transition-colors group-hover:text-white/80 md:text-right">
                                             {stat.description}
-                                        </p>
+                                        </dd>
                                     </div>
-
-                                    <p className="hidden max-w-xs text-right text-sm text-white/62 transition-colors group-hover:text-white/78 md:block">
-                                        {stat.description}
-                                    </p>
                                 </div>
                             ))}
-                        </div>
+                        </dl>
 
                         <p className="stats-row mt-7 max-w-md text-xs leading-relaxed text-white/45">
                             Specifications are validated through internal tests and partner verification flows before release.

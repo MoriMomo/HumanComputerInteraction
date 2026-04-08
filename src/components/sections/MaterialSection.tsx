@@ -207,11 +207,13 @@ export default function MaterialSection({
                                 show3DModel={true}
                                 renderMode={renderMode}
                                 enableZoom={true}
-                                cameraPosition={[0.1, 0.06, 3.5]}
-                                cameraLookAt={[0, 0.02, 0]}
+                                cameraPosition={[0, 0, 8]}
+                                cameraLookAt={[0, 0, 0]}
+                                introFromPosition={[1.8, 2.2, 12]}
+                                introDuration={1.15}
                                 modelRotation={[Math.PI / 2, 0.2, 0]}
-                                modelOffset={[0, -0.02, 0]}
-                                modelScaleMultiplier={1}
+                                modelOffset={[0, 0, 0]}
+                                modelScaleMultiplier={4}
                                 className="w-full h-full"
                             />
                         ) : (

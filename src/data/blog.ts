@@ -47,6 +47,86 @@ Cable management is not cosmetic. A desk with tangled cables creates low-level v
 
 The desk organiser is not optional equipment for a serious professional. It is infrastructure — the difference between a space that prepares you to work and one that quietly drains you from the moment you sit down.`,
     },
+    {
+        slug: "how-we-test-daily-carry",
+        title: "How We Test Everyday Carry Objects",
+        excerpt: "Behind the scenes of fit checks, drop tests, and surface wear trials in our product process.",
+        date: "February 22, 2026",
+        readTime: "6 min read",
+        content: `Most product failures are not dramatic. They are small points of friction repeated a thousand times: a corner that catches fabric, a finish that fingerprints too easily, a latch that feels vague in one hand.
+
+Our test process starts with use-case maps, not machinery. We simulate commute, desk, pocket, bag, and one-handed retrieval. Each scenario has measurable pass and fail criteria.
+
+Then we run durability checks: repeated insertions, edge wear, and controlled drops from desk and pocket height. The goal is not to survive abuse. The goal is to remain reliable during normal life.
+
+Surface treatment is tested under light, sweat, and friction. If a finish looks perfect only in studio conditions, it is not production-ready.
+
+The final stage is silent confidence: if you can use the object without thinking about it, the design has done its job.`,
+    },
+    {
+        slug: "why-weight-distribution-matters",
+        title: "Why Weight Distribution Matters More Than Total Weight",
+        excerpt: "A lighter object is not always better. Balance and center of mass define comfort in daily use.",
+        date: "February 15, 2026",
+        readTime: "5 min read",
+        content: `People often ask for lighter products, but weight alone is a poor metric. The key variable is where that weight sits relative to your hand and pocket orientation.
+
+An object with a poor center of mass will feel heavier because it creates torque. You compensate with extra grip force, and fatigue increases over time.
+
+In compact carry items, we shift density toward the center and reduce edge concentration. This keeps the object stable during retrieval and reduces rotational slip.
+
+Even small geometry changes can improve perceived comfort dramatically. A one-millimeter adjustment at the edge can reduce pressure points over an entire day.
+
+Designing for balance means designing for repetition: the 200th interaction should feel as easy as the first.`,
+    },
+    {
+        slug: "rfid-myths-and-real-utility",
+        title: "RFID Shielding: Myths and Real Utility",
+        excerpt: "What RFID protection actually does, where it helps, and how to avoid false security assumptions.",
+        date: "February 8, 2026",
+        readTime: "6 min read",
+        content: `RFID shielding is often marketed as total digital protection. In reality, it solves one specific issue: blocking short-range scans of contactless cards in close proximity.
+
+It does not replace account monitoring, two-factor authentication, or sensible spending alerts. Security is layered, and physical shielding is one layer only.
+
+When designed correctly, RFID protection should not compromise usability. You should still access the card you need quickly without awkward extraction steps.
+
+Material choice matters. Shielding performance depends on coverage, thickness, and enclosure geometry, not just the presence of metal.
+
+The best implementation is invisible in daily use. You do not think about it, but it is doing its job in the background.`,
+    },
+    {
+        slug: "finish-selection-for-long-term-use",
+        title: "Choosing a Finish for Long-Term Use",
+        excerpt: "A practical guide to matte, satin, and darker finishes based on wear patterns and handling style.",
+        date: "January 30, 2026",
+        readTime: "5 min read",
+        content: `Finish is not only visual preference. It directly affects fingerprint visibility, scratch perception, and how the object ages over time.
+
+Lighter matte finishes tend to hide micro-abrasions well and maintain a clean appearance under frequent handling. Darker tones create stronger contrast and can reveal edge wear sooner.
+
+Satin finishes usually sit in the middle: they look more refined than flat matte while still controlling glare and surface noise.
+
+Your environment matters too. If your object spends most of its day in a bag with keys and adapters, abrasion profile changes significantly.
+
+The right finish is the one that matches your real usage pattern, not the one that looks perfect on day one.`,
+    },
+    {
+        slug: "designing-for-one-handed-use",
+        title: "Designing for One-Handed Use",
+        excerpt: "How subtle geometry and texture choices make products faster and safer when used with one hand.",
+        date: "January 24, 2026",
+        readTime: "4 min read",
+        content: `One-handed interaction is where product ergonomics are exposed. If grip transitions are unclear, users compensate with awkward wrist angles and slower movement.
+
+We design around thumb reach, edge indexing, and friction zones so orientation is obvious by touch. The object should communicate direction without visual confirmation.
+
+Actuation force must be predictable. Too soft feels unstable; too firm creates fatigue. The ideal force profile is deliberate, not stiff.
+
+Texture is used as guidance, not decoration. Strategic micro-texture can improve confidence during fast retrieval and reduce accidental slips.
+
+When one-handed use feels natural, users gain speed without feeling rushed. That is the benchmark.`,
+    },
 ];
 
 export type BlogPost = (typeof BLOG_POSTS)[number];

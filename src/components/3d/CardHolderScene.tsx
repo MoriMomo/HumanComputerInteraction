@@ -2,7 +2,19 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor, Preload } from "@react-three/drei";
+import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor, Preload, Html, useProgress } from "@react-three/drei";
+
+function CanvasLoader() {
+    const { progress } = useProgress();
+    return (
+        <Html center zIndexRange={[100, 0]} className="pointer-events-none">
+            <div className="flex flex-col items-center justify-center pointer-events-none select-none w-[120px]">
+                <div className="w-8 h-8 rounded-full border border-white/20 border-t-white/80 animate-spin mb-3" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-medium">{progress.toFixed(0)}%</p>
+            </div>
+        </Html>
+    );
+}
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -290,7 +302,7 @@ export default function CardHolderScene({
                     onDecline={() => setMaxDpr(1)}
                     onIncline={() => setMaxDpr(energySaving ? 1.1 : 1.35)}
                 />
-                <Suspense fallback={null}>
+                <Suspense fallback={<CanvasLoader />}>
                     <Preload all />
                     <SceneContent
                         color={color}
