@@ -3,11 +3,11 @@
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
+import LoadingLink from "@/components/ui/LoadingLink";
 import { PRODUCTS } from "@/data/products";
 
 const SWATCH_BG_CLASS: Record<string, string> = {
@@ -69,13 +69,13 @@ export default function ProductDetailPage() {
                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40">
                         <div className="detail-visual">
-                            <Link
+                            <LoadingLink
                                 href="/products"
                                 className="inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-white/80"
                             >
                                 <span className="material-symbols-outlined text-base">arrow_back</span>
                                 All Products
-                            </Link>
+                            </LoadingLink>
 
                             <div className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
                                 <ProductImagePlaceholder
@@ -170,12 +170,12 @@ export default function ProductDetailPage() {
                                 >
                                     {addedToCart ? "Added to Cart ✓" : "Add to Cart"}
                                 </button>
-                                <Link
+                                <LoadingLink
                                     href="/products"
                                     className="inline-flex items-center justify-center rounded-full border border-white/12 px-8 py-4 text-sm font-medium text-white/78 transition-colors hover:border-white/24 hover:bg-white/6 hover:text-white"
                                 >
                                     Continue shopping
-                                </Link>
+                                </LoadingLink>
                             </div>
                         </div>
                     </div>

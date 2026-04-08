@@ -3,10 +3,10 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import LoadingLink from "@/components/ui/LoadingLink";
 import { BLOG_POSTS } from "@/data/blog";
 
 export default function BlogPostPage() {
@@ -46,13 +46,13 @@ export default function BlogPostPage() {
                 <section className="relative overflow-hidden border-b border-white/8">
                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.14),transparent_24%),radial-gradient(circle_at_75%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
                     <div className="relative mx-auto max-w-5xl px-6 pb-16 pt-36 md:px-12 lg:pt-40">
-                        <Link
+                        <LoadingLink
                             href="/blog"
                             className="inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-white/80"
                         >
                             <span className="material-symbols-outlined text-base">arrow_back</span>
                             Journal
-                        </Link>
+                        </LoadingLink>
 
                         <div className="mt-8 flex flex-wrap items-center gap-3 text-xs text-white/38">
                             <span className="post-header-text rounded-full border border-white/12 bg-white/6 px-3 py-1 uppercase tracking-[0.24em] text-white/56">
@@ -111,7 +111,7 @@ export default function BlogPostPage() {
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {related.map((p) => (
-                                <Link key={p.slug} href={`/blog/${p.slug}`}>
+                                <LoadingLink key={p.slug} href={`/blog/${p.slug}`}>
                                     <article className="group overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/64 p-8 transition-all duration-400 hover:-translate-y-1 hover:border-white/22">
                                         <div className="flex items-center gap-3 text-xs text-white/38 mb-3">
                                             <span>{p.date}</span>
@@ -123,7 +123,7 @@ export default function BlogPostPage() {
                                         </h3>
                                         <p className="text-white/50 text-sm leading-7 line-clamp-2">{p.excerpt}</p>
                                     </article>
-                                </Link>
+                                </LoadingLink>
                             ))}
                         </div>
                     </section>

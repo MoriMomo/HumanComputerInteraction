@@ -71,6 +71,10 @@ body {
   opacity: 1;
 }
 
+
+.loading-overlay-root {
+  z-index: 9999;
+}
 .loading-overlay-active {
   pointer-events: all;
 }

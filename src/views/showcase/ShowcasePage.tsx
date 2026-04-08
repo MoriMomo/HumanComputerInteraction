@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { useLoading } from "@/contexts/LoadingProvider";
 import GPUMonitor from "@/components/debug/GPUMonitor";
 import Footer from "@/components/layout/Footer";
@@ -16,23 +15,19 @@ const ENABLE_3D_MODEL = true;
 
 export default function ShowcasePage() {
   const [activeColor, setActiveColor] = useState("#8E9AA6");
-  const { isLoading, stopLoading } = useLoading();
-  const [loadingComplete, setLoadingComplete] = useState(() => !isLoading);
+  const { isLoading } = useLoading();
   const [threeReady, setThreeReady] = useState(() => !ENABLE_3D_MODEL);
   const [assetsReady, setAssetsReady] = useState(() => !isLoading);
   const [contentVisible, setContentVisible] = useState(() => !isLoading);
 
-  const handleLoadingComplete = useCallback(() => {
-    stopLoading();
-    setLoadingComplete(true);
-  }, [stopLoading]);
+  const loadingComplete = !isLoading;
 
   const handle3DReady = useCallback(() => {
     setThreeReady(true);
   }, []);
 
   useEffect(() => {
-    if (!loadingComplete) {
+    if (isLoading) {
       return;
     }
 
@@ -43,10 +38,10 @@ export default function ShowcasePage() {
     return () => {
       window.clearTimeout(fallbackTimer);
     };
-  }, [loadingComplete]);
+  }, [isLoading]);
 
   useEffect(() => {
-    if (!loadingComplete) {
+    if (isLoading) {
       return;
     }
 
@@ -59,7 +54,7 @@ export default function ShowcasePage() {
     return () => {
       window.clearTimeout(revealTimer);
     };
-  }, [loadingComplete]);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!threeReady && ENABLE_3D_MODEL) {
@@ -101,10 +96,6 @@ export default function ShowcasePage() {
 
   return (
     <main className="relative min-h-screen bg-[#0a0f16]">
-      {isLoading && (
-        <LoadingOverlay minimumDuration={2500} onComplete={handleLoadingComplete} />
-      )}
-
       <div
         className={`page-content ${contentVisible ? "loaded" : ""} relative z-10`}
       >

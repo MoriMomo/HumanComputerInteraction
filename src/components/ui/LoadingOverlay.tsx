@@ -57,7 +57,6 @@ export default function LoadingOverlay({
             value: clampedProgress,
             duration: 0.45,
             ease: "power2.out",
-            overwrite: true,
             onUpdate: () => {
                 const roundedProgress = Math.round(progressTweenRef.current.value);
                 setProgress(roundedProgress);
@@ -340,7 +339,7 @@ export default function LoadingOverlay({
     return (
         <div
             ref={containerRef}
-            className={`fixed inset-0 z-9999 flex items-center justify-center bg-[#0a0f16] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
+            className={`loading-overlay-root fixed inset-0 flex items-center justify-center bg-[#0a0f16] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
         >
             <div className="absolute inset-0 bg-linear-to-br from-[#0a0f16] via-[#131b24] to-[#0a0f16]" />
 

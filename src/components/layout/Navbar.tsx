@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LoadingLink from "@/components/ui/LoadingLink";
 
 const NAV_LINKS = [
     { label: "Showcase", href: "/#showcase" },
@@ -142,7 +142,7 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="flex items-center justify-between h-20">
                         {/* Left - Brand */}
-                        <Link
+                        <LoadingLink
                             href="/"
                             className="group flex items-center gap-3"
                             onClick={closeMenu}
@@ -165,7 +165,7 @@ export default function Navbar() {
                             <span className="text-xl font-semibold text-white tracking-tight group-hover:text-white/90 transition-colors">
                                 SatSet
                             </span>
-                        </Link>
+                        </LoadingLink>
 
                         {/* Center - Desktop Nav */}
                         <div className="hidden md:flex items-center gap-1">
@@ -174,25 +174,25 @@ export default function Navbar() {
                                 const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${active ? "text-white" : "text-white/68 hover:text-white/88"
                                     }`;
                                 return (
-                                    <Link key={link.label} href={link.href} onClick={closeMenu} className={cls}>
+                                    <LoadingLink key={link.label} href={link.href} onClick={closeMenu} className={cls}>
                                         {link.label}
                                         {active && (
                                             <span className="absolute inset-0 rounded-full bg-white/14 ring-1 ring-white/30" />
                                         )}
-                                    </Link>
+                                    </LoadingLink>
                                 );
                             })}
                         </div>
 
                         {/* Right - CTA */}
-                        <Link
+                        <LoadingLink
                             href="/auth/login"
                             onClick={closeMenu}
                             className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
                         >
                             <span className="relative z-10">Log in</span>
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        </Link>
+                        </LoadingLink>
 
                         {/* Mobile Menu Toggle */}
                         {menuOpen ? (
@@ -239,7 +239,7 @@ export default function Navbar() {
                     <div className="max-w-lg mx-auto px-6 py-12">
                         <div className="flex flex-col gap-2">
                             {NAV_LINKS.map((link) => (
-                                <Link
+                                <LoadingLink
                                     key={link.label}
                                     href={link.href}
                                     onClick={closeMenu}
@@ -261,18 +261,18 @@ export default function Navbar() {
                                             d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
                                         />
                                     </svg>
-                                </Link>
+                                </LoadingLink>
                             ))}
                         </div>
 
                         <div className="menu-cta mt-10">
-                            <Link
+                            <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
                                 className="block w-full py-4 rounded-2xl bg-white text-[#0a0f16] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300"
                             >
                                 Log in
-                            </Link>
+                            </LoadingLink>
                             <p className="text-center text-white/40 text-sm mt-6">
                                 Free shipping on orders over $100
                             </p>

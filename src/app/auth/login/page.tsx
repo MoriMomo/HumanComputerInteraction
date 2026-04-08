@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
+import LoadingLink from "@/components/ui/LoadingLink";
 import { useAuth } from "@/contexts/AuthProvider";
 import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
 
@@ -72,12 +72,12 @@ export default function LoginPage() {
                                     <p className="text-xs uppercase tracking-[0.35em] text-[#7a8591]">SatSet</p>
                                     <p className="mt-2 text-sm text-[#55606d]">Use your account to enter</p>
                                 </div>
-                                <Link
+                                <LoadingLink
                                     href="/auth/signup"
                                     className="rounded-full border border-[#d6dce2] bg-white px-4 py-2 text-sm font-medium text-[#24303d] transition-colors hover:bg-[#eef2f4]"
                                 >
                                     Sign up
-                                </Link>
+                                </LoadingLink>
                             </div>
 
                             <h2 className="font-serif text-4xl font-bold tracking-tight text-[#0f1720] sm:text-5xl">
@@ -162,9 +162,9 @@ export default function LoginPage() {
 
                                 <p className="pt-2 text-sm text-[#66707d]">
                                     Don&apos;t have an account?{" "}
-                                    <Link href="/auth/signup" className="font-medium text-[#0f1720] underline underline-offset-4">
+                                    <LoadingLink href="/auth/signup" className="font-medium text-[#0f1720] underline underline-offset-4">
                                         Create one
-                                    </Link>
+                                    </LoadingLink>
                                 </p>
                             </form>
                         </div>

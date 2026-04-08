@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
+import LoadingLink from "@/components/ui/LoadingLink";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { BLOG_POSTS } from "@/data/blog";
@@ -103,7 +103,7 @@ export default function BlogPage() {
                 </section>
 
                 <section className="mx-auto max-w-7xl px-6 pb-8 pt-14 md:px-12 lg:px-20">
-                    <Link href={`/blog/${featured.slug}`}>
+                    <LoadingLink href={`/blog/${featured.slug}`}>
                         <article className="blog-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/68 transition-all duration-500 hover:border-white/22">
                             <div
                                 aria-hidden
@@ -137,7 +137,7 @@ export default function BlogPage() {
                                 </div>
                             </div>
                         </article>
-                    </Link>
+                    </LoadingLink>
                 </section>
 
                 <section className="blog-grid mx-auto max-w-7xl px-6 pb-20 md:px-12 lg:px-20">
@@ -153,7 +153,7 @@ export default function BlogPage() {
 
                     <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                         {rest.map((post) => (
-                            <Link href={`/blog/${post.slug}`} key={post.slug}>
+                            <LoadingLink href={`/blog/${post.slug}`} key={post.slug}>
                                 <article className="blog-card group cursor-pointer overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/62 transition-all duration-500 hover:-translate-y-1 hover:border-white/22">
                                     <div className="relative aspect-video border-b border-white/8 bg-linear-to-br from-white/10 to-white/2">
                                         <div className="absolute inset-0 office-grid opacity-[0.06]" />
@@ -175,7 +175,7 @@ export default function BlogPage() {
                                         </p>
                                     </div>
                                 </article>
-                            </Link>
+                            </LoadingLink>
                         ))}
                     </div>
                 </section>

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -8,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
+import LoadingLink from "@/components/ui/LoadingLink";
 import { PRODUCTS } from "@/data/products";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -138,7 +138,7 @@ export default function ProductsPage() {
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {PRODUCTS.map((product) => (
-                            <Link href={`/products/${product.slug}`} key={product.slug}>
+                            <LoadingLink href={`/products/${product.slug}`} key={product.slug}>
                                 <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#111826]">
                                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -190,7 +190,7 @@ export default function ProductsPage() {
                                         </span>
                                     </div>
                                 </div>
-                            </Link>
+                            </LoadingLink>
                         ))}
                     </div>
                 </section>

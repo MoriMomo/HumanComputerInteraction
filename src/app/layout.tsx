@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { Suspense } from "react";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
 import { AuthProvider } from "@/contexts/AuthProvider";
+import GlobalLoadingLayer from "@/components/ui/GlobalLoadingLayer";
+import RouteLoadingManager from "@/components/ui/RouteLoadingManager";
 import "./globals.css";
 
 const inter = Inter({
@@ -54,13 +57,17 @@ export default function RootLayout({
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only fixed left-4 top-4 z-[10000] rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0a0f16]"
+          className="sr-only focus:not-sr-only fixed left-4 top-4 z-10000 rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0a0f16]"
         >
           Skip to main content
         </a>
         <AuthProvider>
           <LoadingProvider>
             <ScrollProvider>
+              <Suspense fallback={null}>
+                <RouteLoadingManager />
+              </Suspense>
+              <GlobalLoadingLayer />
               <div id="main-content" tabIndex={-1}>
                 {children}
               </div>
