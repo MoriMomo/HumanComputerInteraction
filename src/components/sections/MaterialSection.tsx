@@ -1,74 +1,42 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
+import { Skeleton3DViewer } from "../ui/Skeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
-    loading: () => (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        </div>
-    ),
+    loading: () => <Skeleton3DViewer />,
 });
 
 export const SWATCHES = [
-    {
-        id: "graphite",
-        label: "Graphite",
-        hex: "#59636E",
-        toneClass: "bg-[#59636E]",
-        description: "Muted graphite anodized finish with a boardroom-ready matte tone.",
-    },
-    {
-        id: "midnight",
-        label: "Onyx",
-        hex: "#1C1C1E",
-        toneClass: "bg-[#2f3138]",
-        description: "Low-glare black finish designed for a discreet executive look.",
-    },
-    {
-        id: "steel",
-        label: "Steel",
-        hex: "#8E9AA6",
-        toneClass: "bg-[#d9dbdf]",
-        description: "Cool brushed alloy tone with a precise technical character.",
-    },
-    {
-        id: "sand",
-        label: "Stone",
-        hex: "#BCA782",
-        toneClass: "bg-[#c3aa84]",
-        description: "Soft archival stone tone that pairs cleanly with neutral office setups.",
-    },
-    {
-        id: "espresso",
-        label: "Walnut",
-        hex: "#3C2F24",
-        toneClass: "bg-[#443327]",
-        description: "Dark walnut tone that brings a more premium desk-accessory feel.",
-    },
-    {
-        id: "champagne",
-        label: "Champagne",
-        hex: "#8A683A",
-        toneClass: "bg-[#916d3d]",
-        description: "Muted metallic champagne finish with understated warmth.",
-    },
+    { id: "graphite", label: "Graphite", hex: "#59636E", description: "Muted graphite anodized finish" },
+    { id: "onyx", label: "Onyx", hex: "#1C1C1E", description: "Low-glare black finish" },
+    { id: "steel", label: "Steel", hex: "#8E9AA6", description: "Cool brushed alloy tone" },
+    { id: "stone", label: "Stone", hex: "#BCA782", description: "Soft archival stone tone" },
+    { id: "walnut", label: "Walnut", hex: "#3C2F24", description: "Dark walnut tone" },
+    { id: "champagne", label: "Champagne", hex: "#8A683A", description: "Muted metallic champagne" },
 ];
 
 const RENDER_MODES = [
-    { id: "normal", label: "Normal (PBR)", icon: "grid_view" },
+    { id: "normal", label: "Normal", icon: "grid_view" },
     { id: "glass", label: "Glass", icon: "blur_on" },
     { id: "wireframe", label: "Wireframe", icon: "view_in_ar" },
-] as const;
+];
 
-type RenderMode = (typeof RENDER_MODES)[number]["id"];
+const SWATCH_BG_CLASS: Record<string, string> = {
+    "#59636E": "bg-[#59636E]",
+    "#1C1C1E": "bg-[#1C1C1E]",
+    "#8E9AA6": "bg-[#8E9AA6]",
+    "#BCA782": "bg-[#BCA782]",
+    "#3C2F24": "bg-[#3C2F24]",
+    "#8A683A": "bg-[#8A683A]",
+};
 
 interface MaterialSectionProps {
     activeColor: string;
@@ -76,273 +44,254 @@ interface MaterialSectionProps {
     show3DModel?: boolean;
 }
 
-const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
-
 export default function MaterialSection({
     activeColor,
     onColorChange,
     show3DModel = true,
 }: MaterialSectionProps) {
     const sectionRef = useRef<HTMLElement>(null);
-    const [renderMode, setRenderMode] = useState<RenderMode>("normal");
-    const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[2];
+    const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
+    const [isViewerReady, setIsViewerReady] = useState(false);
+    const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
+
+    // Preload and ready the 3D viewer
+    useEffect(() => {
+        if (!show3DModel) return;
+        const timer = setTimeout(() => {
+            setIsViewerReady(true);
+        }, 600);
+        return () => clearTimeout(timer);
+    }, [show3DModel]);
 
     useGSAP(
         () => {
             const sectionEl = sectionRef.current;
             if (!sectionEl) return;
-            const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-            // Reset any stale inline styles from prior hot-reloads/route changes.
-            gsap.set(".showcase-entry, .showcase-panel, .showcase-shell, .showcase-orb, .showcase-stage", { clearProps: "all" });
-
-            // If already in viewport, keep content visible and skip intro animation.
-            if (ScrollTrigger.isInViewport(sectionEl, 0.1) || prefersReducedMotion) {
-                gsap.set(".showcase-entry, .showcase-panel, .showcase-shell, .showcase-stage", {
-                    y: 0,
-                    autoAlpha: 1,
-                    clearProps: "transform,opacity,visibility,translate,rotate,scale",
+            const ctx = gsap.context(() => {
+                gsap.set(".material-title, .material-subtitle, .material-viewer, .material-controls", {
+                    clearProps: "all",
                 });
-                return;
-            }
 
-            gsap.fromTo(
-                ".showcase-entry",
-                { y: 38, autoAlpha: 0 },
-                {
-                    y: 0,
-                    autoAlpha: 1,
-                    duration: 0.9,
-                    ease: "power3.out",
-                    immediateRender: false,
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top 92%",
-                        once: true,
-                    },
-                }
-            );
+                gsap.fromTo(
+                    ".material-title",
+                    { y: 60, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        ease: "power4.out",
+                        scrollTrigger: {
+                            trigger: sectionEl,
+                            start: "top 85%",
+                            once: true,
+                        },
+                    }
+                );
 
-            gsap.fromTo(
-                ".showcase-panel",
-                { y: 24, autoAlpha: 0 },
-                {
-                    y: 0,
-                    autoAlpha: 1,
-                    stagger: 0.08,
-                    duration: 0.6,
-                    ease: "power2.out",
-                    immediateRender: false,
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top 92%",
-                        once: true,
-                    },
-                }
-            );
+                gsap.fromTo(
+                    ".material-subtitle",
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                        delay: 0.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sectionEl,
+                            start: "top 85%",
+                            once: true,
+                        },
+                    }
+                );
 
-            gsap.fromTo(
-                ".showcase-shell",
-                { y: 88, scale: 0.94, autoAlpha: 0.72 },
-                {
-                    y: 0,
-                    scale: 1,
-                    autoAlpha: 1,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: sectionEl,
-                        start: "top bottom",
-                        end: "top 36%",
-                        scrub: true,
-                    },
-                }
-            );
+                gsap.fromTo(
+                    ".material-viewer",
+                    { scale: 0.95, opacity: 0 },
+                    {
+                        scale: 1,
+                        opacity: 1,
+                        duration: 1.2,
+                        delay: 0.3,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sectionEl,
+                            start: "top 82%",
+                            once: true,
+                        },
+                    }
+                );
 
-            gsap.to(".showcase-stage", {
-                yPercent: -8,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                },
-            });
+                gsap.fromTo(
+                    ".material-controls",
+                    { y: 40, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 0.8,
+                        stagger: 0.1,
+                        delay: 0.5,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: sectionEl,
+                            start: "top 82%",
+                            once: true,
+                        },
+                    }
+                );
+            }, sectionRef);
 
-            gsap.to(".showcase-orb", {
-                xPercent: 12,
-                yPercent: -12,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                },
-            });
-
-            ScrollTrigger.refresh();
+            return () => ctx.revert();
         },
         { scope: sectionRef }
     );
 
     return (
-        <section ref={sectionRef} className="relative -mt-20 z-20 py-24 bg-transparent">
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-0 h-28 section-seam-paper"
-            />
-            <div
-                aria-hidden
-                className="showcase-orb section-orb pointer-events-none absolute right-[8%] top-24 h-64 w-64 rounded-full bg-[#aebbc7]/18 blur-2xl"
-            />
-            <div className="max-w-350 mx-auto px-4 md:px-8 lg:px-10">
-                <div className="showcase-shell ambient-panel rounded-4xl border border-white/55 px-3 py-3 shadow-[0_28px_80px_rgba(53,70,86,0.12)] md:px-4 md:py-4">
-                    <div className="showcase-panel-wrap grid grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_220px] gap-5 items-stretch">
-                        <aside className="showcase-entry flex flex-col justify-between rounded-[1.7rem] bg-[#eef2f4]/88 px-6 py-7 border border-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
-                            <div>
-                                <p className="text-[11px] tracking-[0.3em] font-semibold text-[#61707d] uppercase mb-7 flex items-center gap-2">
-                                    <span className="w-7 h-px bg-[#61707d]" />
-                                    Office Edition
-                                </p>
-                                <h3 className="font-sans font-bold text-[54px] leading-[0.98] text-[#23303c] mb-6">
-                                    Product
-                                    <br />
-                                    Material
-                                    <br />
-                                    Studio
-                                </h3>
-                                <p className="text-[15px] leading-8 text-[#66737f] max-w-60">
-                                    Review finishes, rotate the chassis, and compare which surface looks most at home in a desk-first environment.
-                                </p>
-                                <div className="mt-8 flex gap-3">
-                                    <button className="rounded-lg px-5 h-11 bg-[#23303c] text-white text-sm font-semibold hover:bg-[#1b2530] transition-colors">
-                                        ✧ Customize
-                                    </button>
-                                    <button className="rounded-lg px-5 h-11 bg-white text-[#23303c] border border-[#d4dde4] text-sm font-semibold hover:bg-[#f4f7f9] transition-colors">
-                                        🛒 Add to Cart
-                                    </button>
-                                </div>
-                            </div>
+        <section
+            ref={sectionRef}
+            className="relative py-32 md:py-40 bg-[#0a0f16] overflow-hidden"
+        >
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
+            <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
 
-                            <div className="mt-10 space-y-3">
-                                <div className="showcase-panel rounded-xl border border-[#d7dee4] bg-[#f5f7f8] p-4 shadow-sm">
-                                    <p className="text-sm font-semibold text-[#23303c] flex items-center gap-2">
-                                        ↻ Orbit Controls
-                                    </p>
-                                    <p className="text-xs text-[#6a7580] mt-1.5 leading-5">
-                                        Left click & drag to rotate. Scroll to zoom in/out.
-                                    </p>
-                                </div>
-                                <div className="showcase-panel rounded-xl border border-[#d7dee4] bg-[#f5f7f8] p-4 shadow-sm">
-                                    <p className="text-sm font-semibold text-[#23303c] flex items-center gap-2">
-                                        ⚡ Performance
-                                    </p>
-                                    <p className="text-xs text-[#5f809d] mt-1.5 leading-5">● 60 FPS | High Fidelity</p>
-                                </div>
-                            </div>
-                        </aside>
+            {/* Animated ambient orbs */}
+            <div aria-hidden className="absolute top-1/4 right-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
+            <div aria-hidden className="absolute bottom-1/4 left-0 w-80 h-80 bg-blue-500/3 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
 
-                        <div className="showcase-entry rounded-[1.9rem] border border-[#c9d4dd] bg-[#111820] p-2 shadow-[0_28px_70px_rgba(12,18,24,0.26)] min-h-150">
-                            <div className="showcase-stage relative w-full h-full rounded-xl bg-[#131b23] overflow-hidden">
-                                {show3DModel ? (
-                                    <CardHolderScene
-                                        color={activeColor}
-                                        autoRotate={true}
-                                        renderMode={renderMode}
-                                        enableZoom={true}
-                                        cameraPosition={[0.1, 0.06, 3.5]}
-                                        cameraLookAt={[0, 0.02, 0]}
-                                        introFromPosition={[0.8, 1.25, 5.15]}
-                                        introDuration={1.3}
-                                        modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.2, 0]}
-                                        modelOffset={[0, -0.02, 0]}
-                                        modelScaleMultiplier={1}
-                                        className="w-full h-full"
-                                    />
-                                ) : (
-                                    <div className="h-full w-full flex items-center justify-center px-6 text-center">
-                                        <div>
-                                            <p className="text-[11px] uppercase tracking-[0.18em] text-white/58">Material Studio</p>
-                                            <p className="mt-2 text-2xl font-semibold text-white/88">3D Viewer Paused</p>
-                                            <p className="mt-3 text-sm text-white/62 max-w-sm">
-                                                You can continue refining colors, copy, and layout while the interactive model is disabled.
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
+                <div className="text-center mb-16 md:mb-20">
+                    <p className="material-subtitle text-xs uppercase tracking-[0.35em] text-white/50 mb-4">
+                        Office Edition
+                    </p>
+                    <h2 className="material-title text-4xl md:text-6xl font-bold text-white mb-6">
+                        Product Material Studio
+                    </h2>
+                    <p className="material-subtitle text-white/72 text-lg max-w-2xl mx-auto">
+                        Review finishes, rotate the chassis, and compare which surface looks most at home in your workspace.
+                    </p>
+                </div>
 
-                                <div aria-hidden className="showcase-vignette pointer-events-none absolute inset-0" />
-                                <div aria-hidden className="showcase-top-glow pointer-events-none absolute inset-x-0 top-0 h-28" />
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
+                    <div className="material-controls space-y-4">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                            <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
+                            <p className="text-white/68 text-sm leading-relaxed">
+                                Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
+                            </p>
+                        </div>
+
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                            <h3 className="text-white font-medium mb-3">Performance</h3>
+                            <div className="flex items-center gap-2 text-white/70 text-sm">
+                                <span className="w-2 h-2 rounded-full bg-green-500/60" />
+                                60 FPS | High Fidelity
                             </div>
                         </div>
 
-                        <aside className="showcase-entry flex flex-col gap-3.5">
-                            <div className="showcase-panel rounded-[1.3rem] bg-[#d7e0e6]/88 border border-[#c5d0d8] p-4 shadow-[0_10px_24px_rgba(71,88,104,0.08)]">
-                                <p className="text-[10px] tracking-[0.26em] font-semibold uppercase text-[#40505f] mb-3">
-                                    ◇ Render Mode
-                                </p>
-                                <div className="space-y-2">
-                                    {RENDER_MODES.map((mode) => {
-                                        const active = renderMode === mode.id;
-                                        return (
-                                            <button
-                                                key={mode.id}
-                                                type="button"
-                                                onClick={() => setRenderMode(mode.id)}
-                                                className={`w-full rounded-lg h-11 px-3 flex items-center justify-between text-sm border transition-colors ${active
-                                                    ? "bg-white text-[#23303c] border-[#7d8a97]"
-                                                    : "bg-[#eef2f4] text-[#5e6b77] border-[#cfd8df] hover:bg-white"
-                                                    }`}
-                                            >
-                                                <span className="flex items-center gap-2">
-                                                    <span className="material-symbols-outlined text-base">{mode.icon}</span>
-                                                    {mode.label}
+                        <div className="flex gap-3">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#0a0f16] font-medium hover:bg-white/90 transition-colors text-sm">
+                                Customize
+                            </button>
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/18 text-white/92 font-medium hover:bg-white/16 transition-colors text-sm">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#0f1620] via-[#111a26] to-[#0b121a]">
+                        {show3DModel && isViewerReady ? (
+                            <CardHolderScene
+                                color={activeColor}
+                                autoRotate={true}
+                                show3DModel={true}
+                                renderMode={renderMode}
+                                enableZoom={true}
+                                cameraPosition={[0, 0, 8]}
+                                cameraLookAt={[0, 0, 0]}
+                                introFromPosition={[1.8, 2.2, 12]}
+                                introDuration={1.15}
+                                modelRotation={[Math.PI / 2, 0.2, 0]}
+                                modelOffset={[0, 0, 0]}
+                                modelScaleMultiplier={4}
+                                className="w-full h-full"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <p className="text-white/40 text-sm">3D Viewer Loading...</p>
+                            </div>
+                        )}
+
+                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#0a0f16]/36 via-transparent to-[#0a0f16]/28 pointer-events-none" />
+                    </div>
+
+                    <div className="material-controls space-y-4">
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
+                                Render Mode
+                            </p>
+                            <div className="space-y-2">
+                                {RENDER_MODES.map((mode) => (
+                                    <button
+                                        key={mode.id}
+                                        onClick={() => setRenderMode(mode.id as typeof renderMode)}
+                                        className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
+                                            ? "bg-white/12 text-white border border-white/15"
+                                            : "bg-transparent text-white/76 border border-transparent hover:bg-white/8"
+                                            }`}
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-base">{mode.icon}</span>
+                                            {mode.label}
+                                        </span>
+                                        {renderMode === mode.id && (
+                                            <span className="w-2 h-2 rounded-full bg-white" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
+                                Material Color
+                            </p>
+                            <div className="grid grid-cols-3 gap-3 mb-4">
+                                {SWATCHES.map((swatch) => (
+                                    <button
+                                        key={swatch.id}
+                                        onClick={() => onColorChange(swatch.hex)}
+                                        type="button"
+                                        className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
+                                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f1620]"
+                                            : "hover:scale-105"
+                                            } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
+                                        aria-label={`Select ${swatch.label}`}
+                                    >
+                                        {activeColor === swatch.hex && (
+                                            <span className="absolute inset-0 flex items-center justify-center">
+                                                <span className="material-symbols-outlined text-white text-sm drop-shadow-lg">
+                                                    check
                                                 </span>
-                                                <span className={`w-3 h-3 rounded-full border ${active ? "border-[#394754]" : "border-[#aeb8c0]"}`} />
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                            </span>
+                                        )}
+                                    </button>
+                                ))}
                             </div>
+                            <p className="text-white/76 text-sm">{activeSwatch.label}</p>
+                            <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
+                        </div>
 
-                            <div className="showcase-panel rounded-[1.3rem] bg-[#d7e0e6]/88 border border-[#c5d0d8] p-4 shadow-[0_10px_24px_rgba(71,88,104,0.08)]">
-                                <p className="text-[10px] tracking-[0.26em] font-semibold uppercase text-[#40505f] mb-3">
-                                    ◇ Material Color
-                                </p>
-                                <div className="grid grid-cols-4 gap-2.5 mb-3">
-                                    {SWATCHES.map((swatch) => {
-                                        const active = activeColor === swatch.hex;
-                                        return (
-                                            <button
-                                                key={swatch.id}
-                                                type="button"
-                                                aria-label={`Use ${swatch.label}`}
-                                                onClick={() => onColorChange(swatch.hex)}
-                                                className={`w-8 h-8 rounded-full ${swatch.toneClass} border-2 transition-transform ${active
-                                                    ? "border-white scale-110 shadow-[0_0_0_2px_rgba(70,60,50,0.75)]"
-                                                    : "border-transparent hover:scale-105"
-                                                    }`}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                                <p className="text-xs text-[#5f584f] flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-[#62707d]" />
-                                    {activeSwatch.label}
-                                </p>
+                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
+                                Input: Active
+                            </p>
+                            <div className="space-y-2 text-xs text-white/66">
+                                <p>Render Tier: High</p>
+                                <p>Camera: Orbit + Zoom</p>
+                                <p>Material: {renderMode}</p>
                             </div>
-
-                            <div className="showcase-panel rounded-[1.3rem] bg-[#d7e0e6]/88 border border-[#c5d0d8] p-4 shadow-[0_10px_24px_rgba(71,88,104,0.08)]">
-                                <p className="text-[10px] tracking-[0.26em] font-semibold uppercase text-[#40505f] mb-2">
-                                    ● Input: Active
-                                </p>
-                                <p className="text-[11px] text-[#606d79] leading-5">render_tier: high</p>
-                                <p className="text-[11px] text-[#606d79] leading-5">camera: orbit + zoom</p>
-                                <p className="text-[11px] text-[#606d79] leading-5">material: {renderMode}</p>
-                                <p className="text-[11px] text-[#606d79] leading-5 mt-1">{activeSwatch.description}</p>
-                            </div>
-                        </aside>
+                        </div>
                     </div>
                 </div>
             </div>

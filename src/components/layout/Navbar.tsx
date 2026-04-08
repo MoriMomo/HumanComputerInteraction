@@ -3,13 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const NAV_LINKS = [
-    { label: "Showcase", href: "#showcase" },
-    { label: "Features", href: "#features" },
-    { label: "Specs", href: "#specs" },
-    { label: "Shop", href: "#shop" },
+    { label: "Showcase", href: "/#showcase" },
+    { label: "Products", href: "/products" },
+    { label: "About", href: "/about" },
+    { label: "Blog", href: "/blog" },
 ];
+
+// IDs of sections to track via IntersectionObserver (home page only)
+const OBSERVED_SECTION_IDS = ["showcase"];
 
 const MOBILE_MENU_ID = "mobile-site-menu";
 
@@ -19,6 +24,12 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("");
+    const pathname = usePathname();
+
+    const isActive = (href: string) => {
+        if (href.startsWith("/#")) return activeSection === href.slice(2);
+        return pathname === href || (href.length > 1 && pathname.startsWith(href));
+    };
 
     // Initial mount animation
     useGSAP(
@@ -86,8 +97,8 @@ export default function Navbar() {
             { threshold: 0.4, rootMargin: "-120px 0px -60% 0px" }
         );
 
-        NAV_LINKS.forEach((link) => {
-            const el = document.querySelector(link.href);
+        OBSERVED_SECTION_IDS.forEach((id) => {
+            const el = document.getElementById(id);
             if (el) observer.observe(el);
         });
 
@@ -131,8 +142,8 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
                     <div className="flex items-center justify-between h-20">
                         {/* Left - Brand */}
-                        <a
-                            href="#showcase"
+                        <Link
+                            href="/"
                             className="group flex items-center gap-3"
                             onClick={closeMenu}
                         >
@@ -154,44 +165,41 @@ export default function Navbar() {
                             <span className="text-xl font-semibold text-white tracking-tight group-hover:text-white/90 transition-colors">
                                 SatSet
                             </span>
-                        </a>
+                        </Link>
 
                         {/* Center - Desktop Nav */}
                         <div className="hidden md:flex items-center gap-1">
-                            {NAV_LINKS.map((link) => (
-                                <a
-                                    key={link.label}
-                                    href={link.href}
-                                    onClick={closeMenu}
-                                    className={`relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${activeSection === link.href.slice(1)
-                                        ? "text-white"
-                                        : "text-white/68 hover:text-white/88"
-                                        }`}
-                                >
-                                    {link.label}
-                                    {activeSection === link.href.slice(1) && (
-                                        <span className="absolute inset-0 rounded-full bg-white/14 ring-1 ring-white/30" />
-                                    )}
-                                </a>
-                            ))}
+                            {NAV_LINKS.map((link) => {
+                                const active = isActive(link.href);
+                                const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${active ? "text-white" : "text-white/68 hover:text-white/88"
+                                    }`;
+                                return (
+                                    <Link key={link.label} href={link.href} onClick={closeMenu} className={cls}>
+                                        {link.label}
+                                        {active && (
+                                            <span className="absolute inset-0 rounded-full bg-white/14 ring-1 ring-white/30" />
+                                        )}
+                                    </Link>
+                                );
+                            })}
                         </div>
 
                         {/* Right - CTA */}
-                        <a
-                            href="#shop"
+                        <Link
+                            href="/auth/login"
                             onClick={closeMenu}
                             className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
                         >
-                            <span className="relative z-10">Buy Now</span>
+                            <span className="relative z-10">Log in</span>
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        </a>
+                        </Link>
 
                         {/* Mobile Menu Toggle */}
                         {menuOpen ? (
                             <button
                                 className="md:hidden relative w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                                 onClick={toggleMenu}
-                                aria-label="Toggle menu"
+                                aria-label="Close menu"
                                 aria-controls={MOBILE_MENU_ID}
                                 aria-expanded="true"
                             >
@@ -204,7 +212,7 @@ export default function Navbar() {
                             <button
                                 className="md:hidden relative w-10 h-10 flex items-center justify-center text-white/70 hover:text-white transition-colors"
                                 onClick={toggleMenu}
-                                aria-label="Toggle menu"
+                                aria-label="Open menu"
                                 aria-controls={MOBILE_MENU_ID}
                                 aria-expanded="false"
                             >
@@ -223,13 +231,15 @@ export default function Navbar() {
                 <div
                     ref={menuRef}
                     id={MOBILE_MENU_ID}
+                    role="dialog"
+                    aria-modal="true"
                     aria-label="Mobile navigation"
                     className="fixed inset-0 top-20 z-99 bg-[#0a0f16]/98 md:hidden"
                 >
                     <div className="max-w-lg mx-auto px-6 py-12">
                         <div className="flex flex-col gap-2">
                             {NAV_LINKS.map((link) => (
-                                <a
+                                <Link
                                     key={link.label}
                                     href={link.href}
                                     onClick={closeMenu}
@@ -251,18 +261,18 @@ export default function Navbar() {
                                             d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
                                         />
                                     </svg>
-                                </a>
+                                </Link>
                             ))}
                         </div>
 
                         <div className="menu-cta mt-10">
-                            <a
-                                href="#shop"
+                            <Link
+                                href="/auth/login"
                                 onClick={closeMenu}
                                 className="block w-full py-4 rounded-2xl bg-white text-[#0a0f16] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300"
                             >
-                                Buy Now
-                            </a>
+                                Log in
+                            </Link>
                             <p className="text-center text-white/40 text-sm mt-6">
                                 Free shipping on orders over $100
                             </p>

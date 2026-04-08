@@ -1,8 +1,20 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor } from "@react-three/drei";
+import { ContactShadows, Environment, Float, OrbitControls, PerformanceMonitor, Preload, Html, useProgress } from "@react-three/drei";
+
+function CanvasLoader() {
+    const { progress } = useProgress();
+    return (
+        <Html center zIndexRange={[100, 0]} className="pointer-events-none">
+            <div className="flex flex-col items-center justify-center pointer-events-none select-none w-[120px]">
+                <div className="w-8 h-8 rounded-full border border-white/20 border-t-white/80 animate-spin mb-3" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-medium">{progress.toFixed(0)}%</p>
+            </div>
+        </Html>
+    );
+}
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -11,6 +23,7 @@ import CardHolderModel from "./CardHolderModel";
 interface CardHolderSceneProps {
     color?: string;
     autoRotate?: boolean;
+    show3DModel?: boolean;
     className?: string;
     renderMode?: "normal" | "glass" | "wireframe";
     enableZoom?: boolean;
@@ -22,11 +35,13 @@ interface CardHolderSceneProps {
     modelRotation?: [number, number, number];
     modelOffset?: [number, number, number];
     modelScaleMultiplier?: number;
+    onModelReady?: () => void;
 }
 
 interface SceneContentProps {
     color: string;
     autoRotate: boolean;
+    show3DModel: boolean;
     renderMode: "normal" | "glass" | "wireframe";
     enableZoom: boolean;
     cameraPosition: [number, number, number];
@@ -37,11 +52,14 @@ interface SceneContentProps {
     modelRotation: [number, number, number];
     modelOffset: [number, number, number];
     modelScaleMultiplier: number;
+    energySaving: boolean;
+    onModelReady?: () => void;
 }
 
 function SceneContent({
     color,
     autoRotate,
+    show3DModel,
     renderMode,
     enableZoom,
     cameraPosition,
@@ -52,6 +70,8 @@ function SceneContent({
     modelRotation,
     modelOffset,
     modelScaleMultiplier,
+    energySaving,
+    onModelReady,
 }: SceneContentProps) {
     const { camera, invalidate } = useThree();
     const controlsRef = useRef<OrbitControlsImpl | null>(null);
@@ -95,7 +115,7 @@ function SceneContent({
     }, [invalidate, isActive]);
 
     useFrame((state) => {
-        if (!isActive) {
+        if (!isActive || energySaving) {
             return;
         }
 
@@ -114,82 +134,52 @@ function SceneContent({
 
     return (
         <>
-            <ambientLight intensity={0.3} />
-
-            <hemisphereLight
-                args={["#8f9ca8", "#111821", 0.2]}
-            />
-
-            <directionalLight
-                position={[3.1, 4.3, 2.4]}
-                intensity={0.7}
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-                shadow-camera-near={0.5}
-                shadow-camera-far={20}
-                shadow-bias={-0.00008}
-            />
-
-            <directionalLight
-                position={[-2.8, 2.1, -3.1]}
-                intensity={0.24}
-                castShadow={false}
-            />
-
-            <pointLight
-                ref={rimLightRef}
-                position={[1.9, 0.95, -1.6]}
-                color="#c3d1dc"
-                intensity={0.36}
-                distance={6}
-                decay={2.2}
-            />
-
-            <pointLight
-                ref={rimFillRef}
-                position={[-1.6, 0.7, 1.4]}
-                color="#6e7f8f"
-                intensity={0.18}
-                distance={5}
-                decay={2.4}
-            />
-
             <Environment
                 preset="studio"
                 background={false}
-                blur={0.55}
-                resolution={128}
+                blur={energySaving ? 0.35 : 0.8}
+                // @ts-expect-error Property intensity is added in newer versions of drei
+                intensity={energySaving ? 1.1 : 1.5}
             />
 
-            <ContactShadows
-                position={[0, -1.18, 0]}
-                opacity={0.36}
-                scale={8}
-                blur={2.4}
-                far={4}
-                resolution={512}
-                color="#273240"
-            />
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow={false} />
+            <directionalLight position={[-5, -5, -5]} intensity={0.8} color="#93c5fd" />
+            <directionalLight position={[0, 5, 0]} intensity={0.5} />
 
-            {/* Antigravity-style motion layer for premium showroom feel */}
-            <Float
-                speed={1.4}
-                rotationIntensity={0.22}
-                floatIntensity={0.2}
-                floatingRange={[-0.08, 0.08]}
-            >
-                <CardHolderModel
-                    color={color}
-                    autoRotate={autoRotate && isActive}
-                    renderMode={renderMode}
-                    modelRotation={modelRotation}
-                    modelOffset={modelOffset}
-                    modelScaleMultiplier={modelScaleMultiplier}
+            {show3DModel && (
+                <ContactShadows
+                    position={[0, -2, 0]}
+                    opacity={0.4}
+                    scale={20}
+                    blur={3}
+                    far={6}
+                    resolution={energySaving ? 256 : 512}
+                    color="#000000"
                 />
-            </Float>
+            )}
 
-            {/* Controls */}
+            {/* Premium floating animation layer */}
+            {show3DModel && (
+                <Float
+                    speed={energySaving ? 0.8 : 1.1}
+                    rotationIntensity={energySaving ? 0.04 : 0.08}
+                    floatIntensity={energySaving ? 0.06 : 0.12}
+                    floatingRange={[-0.06, 0.06]}
+                >
+                    <CardHolderModel
+                        color={color}
+                        autoRotate={autoRotate && isActive}
+                        renderMode={renderMode}
+                        modelRotation={modelRotation}
+                        modelOffset={modelOffset}
+                        modelScaleMultiplier={modelScaleMultiplier}
+                        onReady={onModelReady}
+                    />
+                </Float>
+            )}
+
+            {/* Premium orbit controls */}
             <OrbitControls
                 ref={controlsRef}
                 enabled={isActive}
@@ -198,8 +188,8 @@ function SceneContent({
                 target={cameraLookAt}
                 minDistance={2.2}
                 maxDistance={8.5}
-                enableDamping={true}
-                dampingFactor={0.07}
+                enableDamping={!energySaving}
+                dampingFactor={0.08}
                 minPolarAngle={0}
                 maxPolarAngle={Math.PI}
             />
@@ -210,83 +200,114 @@ function SceneContent({
 export default function CardHolderScene({
     color = "#B48A63",
     autoRotate = true,
+    show3DModel = true,
     className = "",
     renderMode = "normal",
     enableZoom = true,
-    cameraPosition = [3, 2, 5],
+    cameraPosition = [0, 0, 10],
     cameraLookAt = [0, 0, 0],
-    introFromPosition = [4, 3, 6],
+    introFromPosition = [1.8, 2.2, 12],
     introDuration = 1.4,
     isActive = true,
     modelRotation = [Math.PI / 2, 0, 0],
     modelOffset = [0, 0, 0],
-    modelScaleMultiplier = 1,
+    modelScaleMultiplier = 4,
+    onModelReady,
 }: CardHolderSceneProps) {
-    const [maxDpr, setMaxDpr] = useState(1.5);
+    const [maxDpr, setMaxDpr] = useState(1.25);
     const [isLowPowerDevice, setIsLowPowerDevice] = useState(false);
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 768px), (pointer: coarse)");
+        const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
         const updateLowPowerMode = () => {
             setIsLowPowerDevice(mediaQuery.matches);
         };
 
+        const updateReducedMotion = () => {
+            setPrefersReducedMotion(reducedMotionQuery.matches);
+        };
+
         updateLowPowerMode();
+        updateReducedMotion();
 
         if (typeof mediaQuery.addEventListener === "function") {
             mediaQuery.addEventListener("change", updateLowPowerMode);
+            reducedMotionQuery.addEventListener("change", updateReducedMotion);
 
             return () => {
                 mediaQuery.removeEventListener("change", updateLowPowerMode);
+                reducedMotionQuery.removeEventListener("change", updateReducedMotion);
             };
         }
 
         mediaQuery.addListener(updateLowPowerMode);
+        reducedMotionQuery.addListener(updateReducedMotion);
 
         return () => {
             mediaQuery.removeListener(updateLowPowerMode);
+            reducedMotionQuery.removeListener(updateReducedMotion);
         };
     }, []);
+
+    const energySaving = isLowPowerDevice || prefersReducedMotion;
+    const dynamicPowerPreference = energySaving ? "low-power" : "high-performance";
+    const cameraFar = energySaving ? 220 : 1000;
+
+    const dprRange = useMemo<[number, number]>(() => {
+        if (energySaving) {
+            return [1, 1.1];
+        }
+
+        return [1, maxDpr];
+    }, [energySaving, maxDpr]);
 
     return (
         <div className={`w-full h-full relative ${className}`}>
             <Canvas
                 className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
                 frameloop={isActive ? "always" : "never"}
+                orthographic
                 camera={{
                     position: cameraPosition,
-                    fov: 45,
+                    zoom: 90,
                     near: 0.1,
-                    far: 50,
+                    far: cameraFar,
                 }}
                 onCreated={({ gl }) => {
-                    gl.shadowMap.enabled = true;
-                    gl.shadowMap.type = THREE.PCFShadowMap;
+                    gl.shadowMap.enabled = false;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
-                    gl.toneMappingExposure = 0.85;
+                    gl.toneMappingExposure = energySaving ? 1 : 1.2;
                 }}
-                dpr={[1, maxDpr]}
+                dpr={dprRange}
                 gl={{
-                    antialias: !isLowPowerDevice,
+                    antialias: !energySaving,
                     alpha: true,
-                    powerPreference: "high-performance",
+                    powerPreference: dynamicPowerPreference,
                     stencil: false,
                     depth: true,
                     preserveDrawingBuffer: false,
+                    toneMapping: THREE.ACESFilmicToneMapping,
+                    toneMappingExposure: energySaving ? 1 : 1.2,
                 }}
-                performance={{ min: 0.6 }}
-                shadows={{ type: THREE.PCFShadowMap }}
+                performance={{ min: 0.35 }}
+                shadows={false}
+                style={{ pointerEvents: enableZoom && isActive ? "auto" : "none" }}
             >
                 <PerformanceMonitor
                     flipflops={3}
                     onDecline={() => setMaxDpr(1)}
-                    onIncline={() => setMaxDpr(1.5)}
+                    onIncline={() => setMaxDpr(energySaving ? 1.1 : 1.35)}
                 />
-                <Suspense fallback={null}>
+                <Suspense fallback={<CanvasLoader />}>
+                    <Preload all />
                     <SceneContent
                         color={color}
                         autoRotate={autoRotate}
+                        show3DModel={show3DModel}
                         renderMode={renderMode}
                         enableZoom={enableZoom}
                         cameraPosition={cameraPosition}
@@ -297,6 +318,8 @@ export default function CardHolderScene({
                         modelRotation={modelRotation}
                         modelOffset={modelOffset}
                         modelScaleMultiplier={modelScaleMultiplier}
+                        energySaving={energySaving}
+                        onModelReady={onModelReady}
                     />
                 </Suspense>
             </Canvas>

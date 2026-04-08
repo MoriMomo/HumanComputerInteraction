@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
+import { AuthProvider } from "@/contexts/AuthProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,8 +21,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "SatSet Executive Showcase",
-  description: "Discover the intersection of minimalist design and premium functionality.",
+  title: "SatSet - Office Utility, Refined",
+  description: "Premium carry objects for the modern professional.",
 };
 
 export default function RootLayout({
@@ -30,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="antialiased">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -41,22 +42,31 @@ export default function RootLayout({
         />
         <link
           rel="preload"
-          href="/satset3d/glb/bener-compressed.glb"
+          href="/satset3d/glb/bener-final.glb"
           as="fetch"
           type="model/gltf-binary"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          href="/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4"
-          as="video"
-          type="video/mp4"
-        />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
-        <LoadingProvider>
-          <ScrollProvider>{children}</ScrollProvider>
-        </LoadingProvider>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${playfair.variable} antialiased`}
+      >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only fixed left-4 top-4 z-[10000] rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0a0f16]"
+        >
+          Skip to main content
+        </a>
+        <AuthProvider>
+          <LoadingProvider>
+            <ScrollProvider>
+              <div id="main-content" tabIndex={-1}>
+                {children}
+              </div>
+            </ScrollProvider>
+          </LoadingProvider>
+        </AuthProvider>
       </body>
     </html>
   );

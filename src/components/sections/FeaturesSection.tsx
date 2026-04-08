@@ -310,7 +310,7 @@ export default function FeaturesSection() {
                             detail-oriented.
                         </span>
                     </h2>
-                    <p className="feat-subtitle text-lg text-white/62 max-w-2xl leading-relaxed">
+                    <p className="feat-subtitle text-lg text-white/74 max-w-2xl leading-relaxed">
                         Every element purposefully designed. Nothing added without reason.
                         Nothing removed without consideration.
                     </p>
@@ -335,7 +335,7 @@ export default function FeaturesSection() {
                         {FEATURES.map((feature) => (
                             <div
                                 key={feature.title}
-                                className="feat-card-slide feat-card group relative mx-2 basis-full shrink-0 overflow-hidden rounded-4xl border border-white/8 bg-[#101924]/88 p-8 transition-all duration-500 hover:border-white/18 md:mx-3 md:p-10"
+                                className="feat-card-slide feat-card group relative mx-2 basis-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-[#111c29]/92 p-8 transition-all duration-500 hover:border-white/22 md:mx-3 md:p-10"
                                 tabIndex={0}
                                 role="article"
                                 aria-label={feature.title}
@@ -371,7 +371,7 @@ export default function FeaturesSection() {
                                     <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
                                         {feature.title}
                                     </h3>
-                                    <p className="text-white/62 text-sm leading-relaxed group-hover:text-white/76 transition-colors duration-300">
+                                    <p className="text-white/74 text-sm leading-relaxed group-hover:text-white/88 transition-colors duration-300">
                                         {feature.description}
                                     </p>
 

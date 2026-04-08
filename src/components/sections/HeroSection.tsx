@@ -6,15 +6,15 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useScroll } from "@/contexts/ScrollProvider";
-import ReactiveBackground from "@/components/ui/ReactiveBackground";
+const ReactiveBackground = dynamic(() => import("@/components/ui/ReactiveBackground"), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="w-10 h-10 rounded-full border-2 border-white/45 border-t-transparent animate-spin" />
+        <div className="w-full h-full flex items-center justify-center rounded-3xl border border-white/12 bg-[#111820]">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-white/58">Preparing 3D Scene</p>
         </div>
     ),
 });
@@ -32,11 +32,18 @@ const GLOW_CLASS: Record<string, string> = {
 interface HeroSectionProps {
     activeColor: string;
     show3DModel?: boolean;
+    loadingComplete?: boolean;
+    on3DReady?: () => void;
 }
 
 const LOCK_MODEL_ORIENTATION_X = Math.PI / 2;
 
-export default function HeroSection({ activeColor, show3DModel = true }: HeroSectionProps) {
+export default function HeroSection({
+    activeColor,
+    show3DModel = true,
+    loadingComplete = true,
+    on3DReady,
+}: HeroSectionProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isInView, setIsInView] = useState(true);
     const { isScrolling } = useScroll();
@@ -261,38 +268,40 @@ export default function HeroSection({ activeColor, show3DModel = true }: HeroSec
                     </div>
                 </div>
 
-                {/* Canvas - COMPACT, centered */}
-                <div className="hero-canvas flex items-center justify-center py-4 md:py-6 min-h-[40vh] md:min-h-[50vh]">
-                    <div className="relative w-full max-w-2xl md:max-w-4xl aspect-16/10 md:aspect-video">
+                {/* Canvas - LARGER container for premium 3D presentation */}
+                <div className="hero-canvas flex items-center justify-center py-6 md:py-8 min-h-[40vh] md:min-h-[50vh]">
+                    <div className="relative w-full max-w-3xl md:max-w-4xl aspect-video md:aspect-video">
                         <div
                             aria-hidden
                             className={`absolute inset-[10%] rounded-full blur-2xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-full h-full ">
-                                {show3DModel ? (
+                                {show3DModel && loadingComplete ? (
                                     <CardHolderScene
                                         color={activeColor}
                                         autoRotate={isInView && !isScrolling}
+                                        show3DModel={true}
                                         isActive={isInView}
                                         renderMode="normal"
                                         enableZoom={false}
-                                        cameraPosition={[0.18, 0.05, 2.85]}
-                                        cameraLookAt={[0, 0.02, 0]}
-                                        introFromPosition={[0.95, 1.45, 4.9]}
+                                        cameraPosition={[0, 0, 8]}
+                                        cameraLookAt={[0, 0, 0]}
+                                        introFromPosition={[1.8, 2.2, 12]}
                                         introDuration={1.15}
                                         modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.22, 0]}
-                                        modelOffset={[0, -0.03, 0]}
-                                        modelScaleMultiplier={1.05}
+                                        modelOffset={[0, 0, 0]}
+                                        modelScaleMultiplier={4}
+                                        onModelReady={on3DReady}
                                         className="w-full h-full"
                                     />
                                 ) : (
                                     <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-[#1c2631] via-[#1a2430] to-[#141b24] flex items-center justify-center">
                                         <div className="text-center px-6">
                                             <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
-                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Disabled</p>
+                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Loading...</p>
                                             <p className="mt-3 max-w-md text-sm text-white/64 leading-relaxed">
-                                                Focusing on layout and storefront refinement. Interactive product model is temporarily turned off.
+                                                Finishing asset initialization so the model appears instantly.
                                             </p>
                                         </div>
                                     </div>

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { preloadAssets } from "@/lib/assets";
 
 interface LoadingOverlayProps {
     minimumDuration?: number;
@@ -44,6 +43,12 @@ export default function LoadingOverlay({
     const progressTweenRef = useRef({ value: 0 });
     const topProgressRef = useRef<HTMLDivElement>(null);
     const railProgressRef = useRef<HTMLDivElement>(null);
+    const assetsLoadedRef = useRef(0);
+    const totalAssetsRef = useRef(0);
+
+    const criticalAssets = useRef<string[]>([
+        "/satset3d/glb/bener-final.glb",
+    ]);
 
     const animateProgress = useCallback((nextProgress: number) => {
         const clampedProgress = Math.min(100, Math.max(0, nextProgress));
@@ -60,6 +65,129 @@ export default function LoadingOverlay({
             },
         });
     }, []);
+
+    const updateProgress = useCallback(() => {
+        if (totalAssetsRef.current <= 0) {
+            animateProgress(100);
+            return;
+        }
+
+        const calculated = Math.min(
+            100,
+            Math.round((assetsLoadedRef.current / totalAssetsRef.current) * 100)
+        );
+
+        animateProgress(calculated);
+    }, [animateProgress]);
+
+    const preloadAssets = useCallback(async () => {
+        const cleanupFns: Array<() => void> = [];
+        assetsLoadedRef.current = 0;
+        totalAssetsRef.current = 0;
+
+        const markLoaded = () => {
+            assetsLoadedRef.current += 1;
+            updateProgress();
+        };
+
+        const markAndDetach = (detach?: () => void) => {
+            markLoaded();
+            detach?.();
+        };
+
+        const isMobile = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+        const assets = [
+            ...criticalAssets.current,
+            isMobile ? "/video/vecteezy-workers-mobile.mp4" : "/video/vecteezy-workers-optimized.mp4",
+        ];
+        totalAssetsRef.current += assets.length;
+
+        assets.forEach((src) => {
+            if (src.endsWith(".glb") || src.endsWith(".gltf") || src.endsWith(".stl")) {
+                fetch(src, { cache: "force-cache" })
+                    .then((res) => res.arrayBuffer())
+                    .then(() => markLoaded())
+                    .catch(() => markLoaded());
+                return;
+            }
+
+            if (src.endsWith(".mp4") || src.endsWith(".webm")) {
+                const video = document.createElement("video");
+                const onDone = () => markAndDetach(cleanup);
+                const cleanup = () => {
+                    video.oncanplaythrough = null;
+                    video.onerror = null;
+                    video.removeAttribute("src");
+                    video.load();
+                };
+
+                video.preload = "metadata";
+                video.muted = true;
+                video.playsInline = true;
+                video.onloadedmetadata = onDone;
+                video.onerror = onDone;
+                video.src = src;
+                video.load();
+                return;
+            }
+
+            const image = new Image();
+            const onDone = () => markAndDetach(cleanup);
+            const cleanup = () => {
+                image.onload = null;
+                image.onerror = null;
+            };
+
+            image.onload = onDone;
+            image.onerror = onDone;
+            image.src = src;
+        });
+
+        const domImages = Array.from(document.querySelectorAll("img"));
+        const domVideos = Array.from(document.querySelectorAll("video"));
+
+        totalAssetsRef.current += domImages.length + domVideos.length;
+
+        domImages.forEach((img) => {
+            if (img.complete) {
+                markLoaded();
+                return;
+            }
+
+            const onDone = () => markAndDetach(detach);
+            const detach = () => {
+                img.removeEventListener("load", onDone);
+                img.removeEventListener("error", onDone);
+            };
+
+            img.addEventListener("load", onDone, { once: true });
+            img.addEventListener("error", onDone, { once: true });
+            cleanupFns.push(detach);
+        });
+
+        domVideos.forEach((video) => {
+            if (video.readyState >= 3) {
+                markLoaded();
+                return;
+            }
+
+            const onDone = () => markAndDetach(detach);
+            const detach = () => {
+                video.removeEventListener("canplaythrough", onDone);
+                video.removeEventListener("error", onDone);
+            };
+
+            video.addEventListener("canplaythrough", onDone, { once: true });
+            video.addEventListener("error", onDone, { once: true });
+            cleanupFns.push(detach);
+        });
+
+        updateProgress();
+
+        return () => {
+            cleanupFns.forEach((fn) => fn());
+        };
+    }, [updateProgress]);
 
     const completeLoading = useCallback(() => {
         if (isCompletingRef.current) {
@@ -114,6 +242,7 @@ export default function LoadingOverlay({
     useEffect(() => {
         let isCancelled = false;
         let settleIntervalId: number | null = null;
+        let detachTrackedListeners: (() => void) | undefined;
 
         startTimeRef.current = Date.now();
 
@@ -133,19 +262,8 @@ export default function LoadingOverlay({
             }, remaining);
         };
 
-        void preloadAssets(({ completed, total }) => {
-            if (isCancelled) {
-                return;
-            }
-
-            animateProgress(Math.round((completed / total) * 100));
-        }).finally(() => {
-            if (isCancelled) {
-                return;
-            }
-
-            animateProgress(100);
-            finishWhenAllowed();
+        void preloadAssets().then((detach) => {
+            detachTrackedListeners = detach;
         });
 
         settleIntervalId = window.setInterval(() => {
@@ -153,15 +271,20 @@ export default function LoadingOverlay({
                 return;
             }
 
-            setProgress((previous) => {
-                if (previous >= 95) {
-                    return previous;
-                }
+            if (assetsLoadedRef.current < totalAssetsRef.current) {
+                assetsLoadedRef.current += 1;
+                updateProgress();
+                return;
+            }
 
-                const next = previous + 1;
-                setStatus(getStatus(next));
-                return next;
-            });
+            if (totalAssetsRef.current > 0 && assetsLoadedRef.current >= totalAssetsRef.current) {
+                animateProgress(100);
+                finishWhenAllowed();
+                if (settleIntervalId !== null) {
+                    window.clearInterval(settleIntervalId);
+                    settleIntervalId = null;
+                }
+            }
         }, 140);
 
         return () => {
@@ -174,8 +297,10 @@ export default function LoadingOverlay({
             if (settleIntervalId !== null) {
                 window.clearInterval(settleIntervalId);
             }
+
+            detachTrackedListeners?.();
         };
-    }, [animateProgress, completeLoading, minimumDuration]);
+    }, [animateProgress, completeLoading, minimumDuration, preloadAssets, updateProgress]);
 
     useGSAP(
         () => {
@@ -215,7 +340,7 @@ export default function LoadingOverlay({
     return (
         <div
             ref={containerRef}
-            className="fixed inset-0 z-9999 flex items-center justify-center bg-[#0a0f16]"
+            className={`fixed inset-0 z-9999 flex items-center justify-center bg-[#0a0f16] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
         >
             <div className="absolute inset-0 bg-linear-to-br from-[#0a0f16] via-[#131b24] to-[#0a0f16]" />
 

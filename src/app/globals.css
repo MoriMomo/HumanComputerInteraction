@@ -59,11 +59,29 @@ body {
   color: var(--color-charcoal);
   line-height: 1.7;
   letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+.page-content {
+  opacity: 0;
+  transition: opacity 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-content.loaded {
+  opacity: 1;
+}
+
+.loading-overlay-active {
+  pointer-events: all;
+}
+
+.loading-overlay-inactive {
+  pointer-events: none;
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
   }
 
   h1,
@@ -231,6 +249,13 @@ section {
   backface-visibility: hidden;
 }
 
+.stats-image,
+.stats-video {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 .will-change-auto {
   will-change: auto;
 }
@@ -238,6 +263,12 @@ section {
 @media (prefers-reduced-motion: reduce) {
   .hero-carousel-track {
     animation: none;
+  }
+
+  .stats-image,
+  .stats-video {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -300,6 +331,18 @@ section {
   outline-offset: 4px;
 }
 
+.material-controls > * {
+  transition: all 0.3s ease;
+}
+
+.material-controls > *:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.material-viewer canvas {
+  transition: opacity 0.5s ease;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -312,4 +355,129 @@ section {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #B48A63;
+}
+
+/* ── Accessibility Enhancements ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip to main content link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Ensure buttons have proper focus states */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Enhanced contrast for interactive elements */
+button,
+a[role="button"],
+[role="link"] {
+  position: relative;
+}
+
+/* ── Mobile & Touch Optimizations ── */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  button:hover,
+  .group:hover,
+  a:hover {
+    transform: none;
+  }
+
+  /* Increase touch target size (minimum 48px) */
+  button,
+  a[role="button"],
+  input[type="button"],
+  input[type="submit"],
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Reduce animation complexity on mobile */
+  @media (max-width: 768px) {
+    .hero-carousel-track {
+      animation: none !important;
+    }
+    
+    [data-parallax] {
+      transform: none !important;
+    }
+
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  }
+}
+
+/* Better mobile spacing */
+@media (max-width: 640px) {
+  button {
+    padding: 0.75rem 1.5rem;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* ── High contrast mode support ── */
+@media (prefers-contrast: more) {
+  body {
+    color: #000;
+  }
+
+  button,
+  a {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Ensure text remains readable during font load */
+@font-face {
+  font-family: "Inter";
+  src: local("Inter"), local("Inter-Regular"), 
+       url("/fonts/inter-regular.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: local("Playfair Display"), 
+       url("/fonts/playfair-bold.woff2") format("woff2");
+  font-display: swap;
 }
