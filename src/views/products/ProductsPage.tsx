@@ -119,6 +119,10 @@ export default function ProductsPage() {
                             subtitle="Featured image slot"
                             className="products-hero-text min-h-128 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.35)]"
                             accent="from-white/10 via-white/6 to-transparent"
+                            imageSrc={featuredProduct.image?.src}
+                            imageAlt={featuredProduct.image?.alt}
+                            imagePriority
+                            imageSizes={featuredProduct.image?.sizes}
                         />
                     </div>
                 </section>
@@ -131,9 +135,17 @@ export default function ProductsPage() {
                                 Designed to feel complete.
                             </h2>
                         </div>
-                        <p className="hidden max-w-md text-sm leading-7 text-white/52 md:block">
-                            Clear hierarchy, stronger visuals, and a more confident product presentation.
-                        </p>
+                        <div className="flex flex-col items-end gap-3">
+                            <p className="hidden max-w-md text-right text-sm leading-7 text-white/52 md:block">
+                                Clear hierarchy, stronger visuals, and a more confident product presentation.
+                            </p>
+                            <LoadingLink
+                                href="/products/compare?compare=cardholder-pro,wallet-elite,desk-organizer"
+                                className="inline-flex rounded-full border border-white/14 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/78 transition-colors hover:border-white/28 hover:bg-white/10"
+                            >
+                                Compare products
+                            </LoadingLink>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -156,6 +168,9 @@ export default function ProductsPage() {
                                         subtitle="Product image slot"
                                         className="mb-6 aspect-square p-5"
                                         accent="from-white/10 via-white/4 to-transparent"
+                                        imageSrc={product.image?.src}
+                                        imageAlt={product.image?.alt}
+                                        imageSizes={product.image?.sizes}
                                     />
 
                                     <div className="mb-6 rounded-3xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-5">

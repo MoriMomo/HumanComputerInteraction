@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import LoadingLink from "@/components/ui/LoadingLink";
+import { useCart } from "@/contexts/CartProvider";
 
 const NAV_LINKS = [
     { label: "Showcase", href: "/#showcase" },
@@ -25,6 +26,7 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("");
     const pathname = usePathname();
+    const { itemCount } = useCart();
 
     const isActive = (href: string) => {
         if (href.startsWith("/#")) return activeSection === href.slice(2);
@@ -184,15 +186,32 @@ export default function Navbar() {
                             })}
                         </div>
 
-                        {/* Right - CTA */}
-                        <LoadingLink
-                            href="/auth/login"
-                            onClick={closeMenu}
-                            className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
-                        >
-                            <span className="relative z-10">Log in</span>
-                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-                        </LoadingLink>
+                        {/* Right - Utility + CTA */}
+                        <div className="hidden md:flex items-center gap-2">
+                            <LoadingLink
+                                href="/cart"
+                                onClick={closeMenu}
+                                className="group relative inline-flex h-11 items-center justify-center rounded-full border border-white/16 bg-white/6 px-4 text-sm font-medium text-white/86 transition-all duration-300 hover:border-white/34 hover:bg-white/12"
+                                aria-label="Open cart"
+                            >
+                                <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+                                <span className="ml-2">Cart</span>
+                                {itemCount > 0 && (
+                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#0a0f16]">
+                                        {itemCount}
+                                    </span>
+                                )}
+                            </LoadingLink>
+
+                            <LoadingLink
+                                href="/auth/login"
+                                onClick={closeMenu}
+                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
+                            >
+                                <span className="relative z-10">Log in</span>
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                            </LoadingLink>
+                        </div>
 
                         {/* Mobile Menu Toggle */}
                         {menuOpen ? (
@@ -266,6 +285,17 @@ export default function Navbar() {
                         </div>
 
                         <div className="menu-cta mt-10">
+                            <LoadingLink
+                                href="/cart"
+                                onClick={closeMenu}
+                                className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/14 bg-white/6 px-5 py-4"
+                            >
+                                <span className="text-lg font-medium text-white/88">Cart</span>
+                                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#0a0f16]">
+                                    {itemCount}
+                                </span>
+                            </LoadingLink>
+
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}

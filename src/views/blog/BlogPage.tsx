@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,11 +8,15 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { BLOG_POSTS } from "@/data/blog";
+import { BLOG_CATEGORIES, formatCategoryLabel } from "@/lib/blog-categories";
+import { trackEvent } from "@/lib/analytics";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function BlogPage() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [email, setEmail] = useState("");
+    const [subscribed, setSubscribed] = useState(false);
 
     useGSAP(
         () => {
@@ -151,6 +155,18 @@ export default function BlogPage() {
                         </p>
                     </div>
 
+                    <div className="mb-8 flex flex-wrap gap-3">
+                        {BLOG_CATEGORIES.map((category) => (
+                            <LoadingLink
+                                key={category}
+                                href={`/blog/category/${category}`}
+                                className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/70 transition-colors hover:border-white/28 hover:bg-white/10"
+                            >
+                                {formatCategoryLabel(category)}
+                            </LoadingLink>
+                        ))}
+                    </div>
+
                     <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                         {rest.map((post) => (
                             <LoadingLink href={`/blog/${post.slug}`} key={post.slug}>
@@ -187,16 +203,28 @@ export default function BlogPage() {
                         <p className="mt-4 max-w-xl text-sm leading-7 text-white/56">
                             Occasional updates on product thinking, materials, and design decisions from SatSet.
                         </p>
-                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                        <form
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                if (!email.trim()) return;
+                                trackEvent("email_capture_submit", { source: "blog_newsletter" });
+                                setSubscribed(true);
+                            }}
+                            className="mt-6 flex flex-col gap-3 sm:flex-row"
+                        >
                             <input
                                 type="email"
+                                required
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                                 placeholder="you@example.com"
                                 className="w-full rounded-full border border-white/12 bg-white/6 px-5 py-3 text-sm text-white placeholder:text-white/35 focus:border-white/28 focus:outline-none sm:max-w-sm"
                             />
-                            <button className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90">
+                            <button type="submit" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90">
                                 Subscribe
                             </button>
-                        </div>
+                        </form>
+                        {subscribed && <p className="mt-3 text-sm text-white/74">Thanks. You are on the list.</p>}
                     </div>
                 </section>
 

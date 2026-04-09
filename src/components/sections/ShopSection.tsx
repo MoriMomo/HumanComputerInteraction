@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useCart } from "@/contexts/CartProvider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -73,9 +74,16 @@ const products = [
     },
 ];
 
+const PRODUCT_ID_TO_SLUG: Record<string, string> = {
+    standard: "cardholder-pro",
+    pro: "wallet-elite",
+    executive: "desk-organizer",
+};
+
 export default function ShopSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const [cart, setCart] = useState<Record<string, number>>({});
+    const { addItem } = useCart();
 
     useGSAP(
         () => {
@@ -148,6 +156,11 @@ export default function ShopSection() {
     );
 
     const addToCart = (id: string) => {
+        const mappedSlug = PRODUCT_ID_TO_SLUG[id];
+        if (mappedSlug) {
+            addItem({ slug: mappedSlug });
+        }
+
         setCart((prev) => ({
             ...prev,
             [id]: (prev[id] || 0) + 1,

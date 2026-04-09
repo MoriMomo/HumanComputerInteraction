@@ -4,8 +4,10 @@ import { Suspense } from "react";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
 import { AuthProvider } from "@/contexts/AuthProvider";
+import { CartProvider } from "@/contexts/CartProvider";
 import GlobalLoadingLayer from "@/components/ui/GlobalLoadingLayer";
 import RouteLoadingManager from "@/components/ui/RouteLoadingManager";
+import ExitIntentOffer from "@/components/ui/ExitIntentOffer";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,8 +26,15 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "SatSet - Office Utility, Refined",
+  metadataBase: new URL("https://satset.local"),
+  title: {
+    default: "SatSet - Office Utility, Refined",
+    template: "%s | SatSet",
+  },
   description: "Premium carry objects for the modern professional.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({
@@ -62,17 +71,20 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AuthProvider>
-          <LoadingProvider>
-            <ScrollProvider>
-              <Suspense fallback={null}>
-                <RouteLoadingManager />
-              </Suspense>
-              <GlobalLoadingLayer />
-              <div id="main-content" tabIndex={-1}>
-                {children}
-              </div>
-            </ScrollProvider>
-          </LoadingProvider>
+          <CartProvider>
+            <LoadingProvider>
+              <ScrollProvider>
+                <Suspense fallback={null}>
+                  <RouteLoadingManager />
+                </Suspense>
+                <GlobalLoadingLayer />
+                <ExitIntentOffer />
+                <div id="main-content" tabIndex={-1}>
+                  {children}
+                </div>
+              </ScrollProvider>
+            </LoadingProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

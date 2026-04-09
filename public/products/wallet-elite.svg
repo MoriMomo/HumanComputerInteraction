@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Wallet Elite</title>
+  <desc id="desc">Minimal product render placeholder</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#101219"/>
+      <stop offset="100%" stop-color="#2f241d"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3c2f24"/>
+      <stop offset="100%" stop-color="#20170f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect x="290" y="260" width="620" height="370" rx="42" fill="url(#body)"/>
+  <rect x="350" y="330" width="500" height="56" rx="28" fill="#6e5a47" opacity="0.4"/>
+  <circle cx="780" cy="446" r="18" fill="#bca782" opacity="0.8"/>
+  <text x="600" y="780" text-anchor="middle" font-size="34" fill="#efe5dc" font-family="Georgia, serif" letter-spacing="4">WALLET ELITE</text>
+</svg>
