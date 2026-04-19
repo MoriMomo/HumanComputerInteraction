@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useAuth } from "@/contexts/AuthProvider";
 import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
+import { validateEmail, validateName, validatePassword } from "@/lib/auth-validation";
 
 export default function SignupPage() {
     const [name, setName] = useState("");
@@ -13,17 +14,33 @@ export default function SignupPage() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
-    const { login, isAuthLoading } = useAuth();
+    const { signup, isAuthLoading } = useAuth();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+
+        if (!validateName(name)) {
+            setError("Name must be between 2 and 80 characters.");
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        if (!validatePassword(password)) {
+            setError("Password must be at least 8 characters.");
+            return;
+        }
+
         try {
-            await login(email, name);
+            await signup(name, email, password);
             router.push("/");
-        } catch {
-            setError("Something went wrong. Please try again.");
+        } catch (authError) {
+            setError(authError instanceof Error ? authError.message : "Something went wrong. Please try again.");
         }
     };
 

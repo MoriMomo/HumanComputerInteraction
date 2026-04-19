@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartProvider";
 import GlobalLoadingLayer from "@/components/ui/GlobalLoadingLayer";
 import RouteLoadingManager from "@/components/ui/RouteLoadingManager";
 import ExitIntentOffer from "@/components/ui/ExitIntentOffer";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,7 +27,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://satset.local"),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "SatSet - Office Utility, Refined",
     template: "%s | SatSet",

@@ -2,8 +2,9 @@ import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/data/blog";
 import { PRODUCTS } from "@/data/products";
 import { BLOG_CATEGORIES } from "@/lib/blog-categories";
+import { getSiteUrl } from "@/lib/site-url";
 
-const BASE_URL = "https://satset.local";
+const BASE_URL = getSiteUrl();
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const staticRoutes: MetadataRoute.Sitemap = [

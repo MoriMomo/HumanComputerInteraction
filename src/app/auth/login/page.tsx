@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useAuth } from "@/contexts/AuthProvider";
 import SeamlessLoopVideo from "@/components/ui/SeamlessLoopVideo";
+import { validateEmail, validatePassword } from "@/lib/auth-validation";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -18,11 +19,22 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+
+        if (!validateEmail(email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+
+        if (!validatePassword(password)) {
+            setError("Password must be at least 8 characters.");
+            return;
+        }
+
         try {
-            await login(email);
+            await login(email, password);
             router.push("/");
-        } catch {
-            setError("Invalid email or password. Please try again.");
+        } catch (authError) {
+            setError(authError instanceof Error ? authError.message : "Invalid email or password. Please try again.");
         }
     };
 

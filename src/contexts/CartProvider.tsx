@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { PRODUCTS } from "@/data/products";
+import { useAuth } from "@/contexts/AuthProvider";
+import { getApiBaseUrl } from "@/lib/site-url";
 
 const CART_STORAGE_KEY = "satset-cart-v1";
 
@@ -36,84 +38,175 @@ function getItemKey(slug: string, color?: string) {
     return `${slug}::${color ?? "default"}`;
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
-    const [items, setItems] = useState<CartItem[]>(() => {
-        if (typeof window === "undefined") {
+function parseLocalCart(raw: string | null): CartItem[] {
+    if (!raw) {
+        return [];
+    }
+
+    try {
+        const parsed = JSON.parse(raw) as CartItem[];
+        if (!Array.isArray(parsed)) {
             return [];
         }
 
-        try {
-            const raw = window.localStorage.getItem(CART_STORAGE_KEY);
-            if (!raw) {
-                return [];
-            }
+        return parsed.filter((item) => item.quantity > 0);
+    } catch {
+        return [];
+    }
+}
 
-            const parsed = JSON.parse(raw) as CartItem[];
-            if (!Array.isArray(parsed)) {
-                return [];
-            }
+function getLocalCart() {
+    if (typeof window === "undefined") {
+        return [];
+    }
 
-            return parsed.filter((item) => item.quantity > 0);
-        } catch {
-            window.localStorage.removeItem(CART_STORAGE_KEY);
-            return [];
-        }
+    return parseLocalCart(window.localStorage.getItem(CART_STORAGE_KEY));
+}
+
+async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unknown) {
+    const response = await fetch(`${getApiBaseUrl()}/cart`, {
+        method,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: body ? JSON.stringify(body) : undefined,
     });
 
+    if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+        throw new Error(payload?.message || "Failed to sync cart.");
+    }
+
+    const payload = (await response.json()) as { items?: CartItem[] };
+    return payload.items || [];
+}
+
+export function CartProvider({ children }: { children: ReactNode }) {
+    const { user, isAuthLoading } = useAuth();
+    const [items, setItems] = useState<CartItem[]>(() => getLocalCart());
+
     useEffect(() => {
+        if (typeof window === "undefined" || user) {
+            return;
+        }
+
         window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-    }, [items]);
+    }, [items, user]);
 
-    const addItem = useCallback(({ slug, quantity = 1, color }: AddToCartPayload) => {
-        const product = PRODUCTS.find((entry) => entry.slug === slug);
-        if (!product) return;
+    const syncFromServer = useCallback(async () => {
+        const serverItems = await requestCart("GET");
+        setItems(serverItems);
+    }, []);
 
-        setItems((prev) => {
-            const key = getItemKey(slug, color);
-            const existingIndex = prev.findIndex((item) => getItemKey(item.slug, item.color) === key);
+    useEffect(() => {
+        if (isAuthLoading || !user) {
+            return;
+        }
 
-            if (existingIndex >= 0) {
-                const next = [...prev];
-                const target = next[existingIndex];
-                next[existingIndex] = { ...target, quantity: target.quantity + Math.max(1, quantity) };
-                return next;
+        const syncAuthenticatedCart = async () => {
+            const localItems = getLocalCart();
+
+            if (localItems.length > 0) {
+                for (const entry of localItems) {
+                    await requestCart("POST", {
+                        slug: entry.slug,
+                        color: entry.color,
+                        quantity: entry.quantity,
+                    });
+                }
+                window.localStorage.removeItem(CART_STORAGE_KEY);
             }
 
-            return [
-                ...prev,
-                {
-                    slug: product.slug,
-                    name: product.name,
-                    price: product.price,
-                    quantity: Math.max(1, quantity),
-                    color,
-                    imageSrc: product.image?.src,
-                },
-            ];
-        });
-    }, []);
+            await syncFromServer();
+        };
 
-    const updateQuantity = useCallback((slug: string, quantity: number, color?: string) => {
-        setItems((prev) => {
-            const key = getItemKey(slug, color);
-            if (quantity <= 0) {
-                return prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+        void syncAuthenticatedCart();
+    }, [isAuthLoading, syncFromServer, user]);
+
+    const addItem = useCallback(
+        ({ slug, quantity = 1, color }: AddToCartPayload) => {
+            const product = PRODUCTS.find((entry) => entry.slug === slug);
+            if (!product) {
+                return;
             }
 
-            return prev.map((item) => {
-                if (getItemKey(item.slug, item.color) !== key) return item;
-                return { ...item, quantity };
-            });
-        });
-    }, []);
+            if (!user) {
+                setItems((prev) => {
+                    const key = getItemKey(slug, color);
+                    const existingIndex = prev.findIndex((item) => getItemKey(item.slug, item.color) === key);
 
-    const removeItem = useCallback((slug: string, color?: string) => {
-        setItems((prev) => prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color)));
-    }, []);
+                    if (existingIndex >= 0) {
+                        const next = [...prev];
+                        const target = next[existingIndex];
+                        next[existingIndex] = { ...target, quantity: target.quantity + Math.max(1, quantity) };
+                        return next;
+                    }
+
+                    return [
+                        ...prev,
+                        {
+                            slug: product.slug,
+                            name: product.name,
+                            price: product.price,
+                            quantity: Math.max(1, quantity),
+                            color,
+                            imageSrc: product.image?.src,
+                        },
+                    ];
+                });
+                return;
+            }
+
+            void requestCart("POST", { slug, color, quantity }).then(setItems).catch(console.error);
+        },
+        [user]
+    );
+
+    const updateQuantity = useCallback(
+        (slug: string, quantity: number, color?: string) => {
+            if (!user) {
+                setItems((prev) => {
+                    const key = getItemKey(slug, color);
+                    if (quantity <= 0) {
+                        return prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+                    }
+
+                    return prev.map((item) => {
+                        if (getItemKey(item.slug, item.color) !== key) {
+                            return item;
+                        }
+
+                        return { ...item, quantity };
+                    });
+                });
+                return;
+            }
+
+            void requestCart("PUT", { slug, color, quantity }).then(setItems).catch(console.error);
+        },
+        [user]
+    );
+
+    const removeItem = useCallback(
+        (slug: string, color?: string) => {
+            if (!user) {
+                setItems((prev) => prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color)));
+                return;
+            }
+
+            void requestCart("DELETE", { slug, color }).then(setItems).catch(console.error);
+        },
+        [user]
+    );
 
     const clearCart = useCallback(() => {
-        setItems([]);
-    }, []);
+        if (!user) {
+            setItems([]);
+            return;
+        }
+
+        void requestCart("DELETE").then(setItems).catch(console.error);
+    }, [user]);
 
     const value = useMemo(() => {
         const itemCount = items.reduce((total, item) => total + item.quantity, 0);

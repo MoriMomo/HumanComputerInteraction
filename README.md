@@ -20,6 +20,26 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Environment Setup
+
+Create a local environment file by copying `.env.example` to `.env.local`.
+
+Then update at least the following values in `.env.local`:
+
+- `DATABASE_URL`
+- `AUTH_SESSION_SECRET`
+
+## Database Setup
+
+Generate Prisma client and push schema to your database:
+
+```bash
+npm run prisma:generate
+npm run prisma:push
+```
+
+If you use a fresh local Postgres instance, ensure the database in `DATABASE_URL` already exists before running `prisma:push`.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
