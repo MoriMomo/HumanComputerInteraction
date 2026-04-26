@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/**/*.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "test:e2e": "playwright test"
@@ -36,6 +37,8 @@
     "eslint-config-next": "^16.1.7",
     "prisma": "^6.18.0",
     "tailwindcss": "^4",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }
