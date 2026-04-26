@@ -70,30 +70,6 @@ export default function ShowcasePage() {
     };
   }, [threeReady]);
 
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "development" || typeof PerformanceObserver === "undefined") {
-      return;
-    }
-
-    const observer = new PerformanceObserver((list) => {
-      list.getEntries().forEach((entry) => {
-        if (entry.duration > 50) {
-          console.warn("Long task detected:", entry.name || "unknown", entry.duration);
-        }
-      });
-    });
-
-    try {
-      observer.observe({ entryTypes: ["longtask"] });
-    } catch {
-      return;
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   return (
     <main className="relative min-h-screen bg-[#0a0f16]">
       <div

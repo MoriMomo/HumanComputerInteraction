@@ -39,13 +39,7 @@ async function getAuthenticatedUserId() {
     return sessionUser?.id || null;
 }
 
-export async function GET() {
-    const userId = await getAuthenticatedUserId();
-
-    if (!userId) {
-        return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
-    }
-
+async function getCartResponse(userId: string) {
     const cartItems = await prisma.cartItem.findMany({
         where: { userId },
         select: {
@@ -62,6 +56,16 @@ export async function GET() {
     });
 }
 
+export async function GET() {
+    const userId = await getAuthenticatedUserId();
+
+    if (!userId) {
+        return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+    }
+
+    return getCartResponse(userId);
+}
+
 export async function POST(request: Request) {
     const userId = await getAuthenticatedUserId();
 
@@ -69,10 +73,52 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
     }
 
-    const body = (await request.json().catch(() => null)) as CartMutationBody | null;
-    const slug = body?.slug?.trim() || "";
-    const color = body?.color?.trim() || null;
-    const quantity = Number.isFinite(body?.quantity) ? Math.floor(body?.quantity as number) : 1;
+    const body = await request.json().catch(() => null);
+
+    if (Array.isArray(body)) {
+        const items = body as CartMutationBody[];
+
+        await prisma.$transaction(async (tx) => {
+            // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
+            const existingItems = await tx.cartItem.findMany({
+                where: { userId },
+            });
+
+            const existingMap = new Map(
+                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
+            );
+
+            for (const item of items) {
+                const slug = item.slug?.trim() || "";
+                const color = item.color?.trim() || null;
+                const quantity = Number.isFinite(item.quantity) ? Math.floor(item.quantity as number) : 1;
+
+                if (!getProduct(slug) || quantity < 1) {
+                    continue;
+                }
+
+                const existing = existingMap.get(`${slug}:${color ?? ""}`);
+
+                if (existing) {
+                    await tx.cartItem.update({
+                        where: { id: existing.id },
+                        data: { quantity: existing.quantity + quantity },
+                    });
+                } else {
+                    await tx.cartItem.create({
+                        data: { userId, slug, color, quantity },
+                    });
+                }
+            }
+        });
+
+        return getCartResponse(userId);
+    }
+
+    const bodyItem = body as CartMutationBody | null;
+    const slug = bodyItem?.slug?.trim() || "";
+    const color = bodyItem?.color?.trim() || null;
+    const quantity = Number.isFinite(bodyItem?.quantity) ? Math.floor(bodyItem?.quantity as number) : 1;
 
     const product = getProduct(slug);
     if (!product) {
@@ -84,11 +130,7 @@ export async function POST(request: Request) {
     }
 
     const existing = await prisma.cartItem.findFirst({
-        where: {
-            userId,
-            slug,
-            color,
-        },
+        where: { userId, slug, color },
     });
 
     if (existing) {
@@ -98,16 +140,11 @@ export async function POST(request: Request) {
         });
     } else {
         await prisma.cartItem.create({
-            data: {
-                userId,
-                slug,
-                color,
-                quantity,
-            },
+            data: { userId, slug, color, quantity },
         });
     }
 
-    return GET();
+    return getCartResponse(userId);
 }
 
 export async function PUT(request: Request) {
@@ -136,12 +173,12 @@ export async function PUT(request: Request) {
     });
 
     if (!existing) {
-        return GET();
+        return getCartResponse(userId);
     }
 
     if (quantity <= 0) {
         await prisma.cartItem.delete({ where: { id: existing.id } });
-        return GET();
+        return getCartResponse(userId);
     }
 
     await prisma.cartItem.update({
@@ -149,7 +186,7 @@ export async function PUT(request: Request) {
         data: { quantity },
     });
 
-    return GET();
+    return getCartResponse(userId);
 }
 
 export async function DELETE(request: Request) {
@@ -176,5 +213,5 @@ export async function DELETE(request: Request) {
         },
     });
 
-    return GET();
+    return getCartResponse(userId);
 }

@@ -11,6 +11,9 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { PRODUCTS } from "@/data/products";
 import { trackEvent } from "@/lib/analytics";
+import SafeJsonLd from "@/components/ui/SafeJsonLd";
+import RecentlyViewed from "@/components/products/RecentlyViewed";
+import ProductReviews from "@/components/products/ProductReviews";
 
 const PRODUCT_REVIEW_SNIPPETS = [
     { name: "Reza", note: "The finish still looks clean after daily commute use.", rating: 5 },
@@ -100,7 +103,7 @@ export default function ProductDetailPage() {
     return (
         <>
             <Navbar />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+            <SafeJsonLd data={productSchema} />
             <main ref={containerRef} className="min-h-screen bg-[#0a0f16] pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
@@ -178,23 +181,11 @@ export default function ProductDetailPage() {
                                 </div>
                             </div>
 
-                            <div className="detail-feature mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
-                                <div className="flex items-center justify-between gap-4">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Verified reviews</p>
-                                    <p className="text-sm text-white/72">4.9★ · 2,400+ buyers</p>
-                                </div>
-                                <div className="mt-4 space-y-3">
-                                    {PRODUCT_REVIEW_SNIPPETS.map((review) => (
-                                        <article key={review.name} className="rounded-2xl border border-white/8 bg-white/5 p-4">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-sm font-semibold text-white">{review.name}</p>
-                                                <p className="text-xs text-white/62">{"★".repeat(review.rating)}</p>
-                                            </div>
-                                            <p className="mt-2 text-sm leading-6 text-white/58">{review.note}</p>
-                                        </article>
-                                    ))}
-                                </div>
-                            </div>
+                            <ProductReviews
+                                reviews={PRODUCT_REVIEW_SNIPPETS}
+                                aggregateRating="4.9"
+                                reviewCount="2,400"
+                            />
 
                             <div className="detail-feature mt-8 grid gap-4 md:grid-cols-2">
                                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
@@ -299,6 +290,8 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
                 </section>
+
+                <RecentlyViewed currentSlug={product.slug} />
 
                 <Footer />
             </main>
