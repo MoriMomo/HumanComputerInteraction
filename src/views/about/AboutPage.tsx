@@ -159,9 +159,25 @@ export default function AboutPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormStatus("sending");
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        setFormStatus("sent");
-        setFormData({ name: "", email: "", message: "" });
+
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to send message");
+            }
+
+            setFormStatus("sent");
+            setFormData({ name: "", email: "", message: "" });
+        } catch (error) {
+            console.error("Submission error:", error);
+            setFormStatus("idle");
+            // You might want to show an error message to the user here
+        }
     };
 
     return (

@@ -30,6 +30,9 @@ describe('validateEmail', () => {
     assert.strictEqual(validateEmail("   "), false);
   });
 });
+import { test, describe } from 'node:test';
+import assert from 'node:assert';
+import { validateName } from './auth-validation.ts';
 
 describe('validateName', () => {
   test('should return true for valid names', () => {
@@ -56,4 +59,5 @@ describe('validateName', () => {
   test('should return false for names that are only whitespace', () => {
     assert.strictEqual(validateName('   '), false);
   });
+});
 });

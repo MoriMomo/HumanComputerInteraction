@@ -13,7 +13,16 @@ interface SessionPayload extends SessionUser {
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
 function getSessionSecret() {
-    return process.env.AUTH_SESSION_SECRET?.trim() || "development-auth-secret-change-me";
+    const secret = process.env.AUTH_SESSION_SECRET?.trim();
+
+    if (!secret) {
+        if (process.env.NODE_ENV === "production") {
+            throw new Error("AUTH_SESSION_SECRET environment variable is required in production.");
+        }
+        return "development-auth-secret-change-me";
+    }
+
+    return secret;
 }
 
 function toBase64Url(value: string) {
