@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/**/*.test.ts",
+    "test": "node --test --experimental-strip-types src/**/*.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "test:e2e": "playwright test"
