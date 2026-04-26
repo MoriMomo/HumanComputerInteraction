@@ -2,16 +2,16 @@
 
 @theme {
   /* ── Brand colours ── */
-  --color-primary: #7B8795;
-  --color-primary-light: #A7B2BE;
-  --color-primary-dark: #586270;
-  --color-secondary: #29323C;
-  --color-charcoal: #1E2730;
-  --color-charcoal-light: #46515D;
-  --color-soft-grey: #D7DEE4;
-  --color-background-light: #EEF2F4;
+  --color-primary: #B59E7D;
+  --color-primary-light: #CEC1A8;
+  --color-primary-dark: #AAA396;
+  --color-secondary: #AAA396;
+  --color-charcoal: #584738;
+  --color-charcoal-light: #B59E7D;
+  --color-soft-grey: #CEC1A8;
+  --color-background-light: #F1EADA;
   --color-surface: #FFFFFF;
-  --color-overlay: rgba(30,39,48,0.55);
+  --color-overlay: rgba(88,71,56,0.55);
 
   /* ── Swatch colours ── */
   --color-swatch-bronze: #B48A63;
@@ -110,34 +110,34 @@ body {
 .page-shell {
   isolation: isolate;
   background:
-    radial-gradient(circle at 50% 0%, rgba(120, 136, 151, 0.18), transparent 28%),
-    radial-gradient(circle at 14% 14%, rgba(174, 184, 194, 0.18), transparent 32%),
-    radial-gradient(circle at 86% 10%, rgba(108, 121, 133, 0.14), transparent 24%),
-    linear-gradient(180deg, #e8edf0 0%, #eef2f3 34%, #f7f8f8 100%);
+    radial-gradient(circle at 50% 0%, rgba(181, 158, 125, 0.18), transparent 28%),
+    radial-gradient(circle at 14% 14%, rgba(206, 193, 168, 0.18), transparent 32%),
+    radial-gradient(circle at 86% 10%, rgba(170, 163, 150, 0.14), transparent 24%),
+    linear-gradient(180deg, #F1EADA 0%, #F1EADA 34%, #f7f8f8 100%);
 }
 
 .section-seam-light {
-  background: linear-gradient(180deg, rgba(243, 246, 248, 0) 0%, rgba(243, 246, 248, 0.96) 78%);
+  background: linear-gradient(180deg, rgba(241, 234, 218, 0) 0%, rgba(241, 234, 218, 0.96) 78%);
 }
 
 .section-seam-dark {
-  background: linear-gradient(180deg, rgba(24, 31, 38, 0) 0%, rgba(24, 31, 38, 0.98) 76%);
+  background: linear-gradient(180deg, rgba(88, 71, 56, 0) 0%, rgba(88, 71, 56, 0.98) 76%);
 }
 
 .section-seam-paper {
-  background: linear-gradient(180deg, rgba(244, 246, 247, 0) 0%, rgba(244, 246, 247, 0.95) 80%);
+  background: linear-gradient(180deg, rgba(241, 234, 218, 0) 0%, rgba(241, 234, 218, 0.95) 80%);
 }
 
 .ambient-panel {
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(238, 242, 244, 0.88));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(241, 234, 218, 0.88));
 }
 
 .office-grid {
   background-image:
-    linear-gradient(rgba(67, 82, 97, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(67, 82, 97, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(88, 71, 56, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 71, 56, 0.08) 1px, transparent 1px);
   background-size: 120px 120px;
 }
 
@@ -177,20 +177,20 @@ section {
 
 /* Decorative background helpers (avoids inline style lint) */
 .blob-bronze {
-  background: radial-gradient(circle, #7B8795 0%, transparent 70%);
+  background: radial-gradient(circle, #B59E7D 0%, transparent 70%);
 }
 .fade-top-bg {
-  background: linear-gradient(to bottom, #F8F8F9, transparent);
+  background: linear-gradient(to bottom, #F1EADA, transparent);
 }
 
 .showcase-vignette {
   background:
-    radial-gradient(circle at 50% 42%, transparent 30%, rgba(6, 5, 5, 0.35) 82%),
-    linear-gradient(to bottom, rgba(8, 7, 6, 0.14), rgba(8, 7, 6, 0.22));
+    radial-gradient(circle at 50% 42%, transparent 30%, rgba(88, 71, 56, 0.35) 82%),
+    linear-gradient(to bottom, rgba(88, 71, 56, 0.14), rgba(88, 71, 56, 0.22));
 }
 
 .showcase-top-glow {
-  background: linear-gradient(to bottom, rgba(148, 164, 179, 0.16), transparent 80%);
+  background: linear-gradient(to bottom, rgba(181, 158, 125, 0.16), transparent 80%);
 }
 
 .feat-grid-overlay {
@@ -351,10 +351,10 @@ section {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F8F9;
+  background: #F1EADA;
 }
 ::-webkit-scrollbar-thumb {
-  background: #DBDBDE;
+  background: #CEC1A8;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {

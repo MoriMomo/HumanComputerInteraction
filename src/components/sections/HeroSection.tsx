@@ -216,7 +216,7 @@ export default function HeroSection({
             {/* Background glows */}
             <div
                 aria-hidden
-                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(188,201,214,0.22),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(133,146,160,0.18),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(106,120,134,0.16),transparent_50%)] blur-2xl"
+                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(241,234,218,0.22),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(206,193,168,0.18),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(170,163,150,0.16),transparent_50%)] blur-2xl"
             />
             <div
                 aria-hidden

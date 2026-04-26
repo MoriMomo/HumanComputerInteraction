@@ -58,9 +58,9 @@ export default function BlogPage() {
     return (
         <>
             <Navbar />
-            <main id="main-content" ref={containerRef} className="min-h-screen bg-[#0a0f16] text-white">
+            <main id="main-content" ref={containerRef} className="min-h-screen bg-[#584738] text-white">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.16),transparent_24%),radial-gradient(circle_at_80%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
+                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.16),transparent_24%),radial-gradient(circle_at_80%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
 
                     <div className="relative mx-auto grid max-w-7xl gap-8 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
                         <div>
@@ -108,7 +108,7 @@ export default function BlogPage() {
 
                 <section className="mx-auto max-w-7xl px-6 pb-8 pt-14 md:px-12 lg:px-20">
                     <LoadingLink href={`/blog/${featured.slug}`}>
-                        <article className="blog-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/68 transition-all duration-500 hover:border-white/22">
+                        <article className="blog-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/68 transition-all duration-500 hover:border-white/22">
                             <div
                                 aria-hidden
                                 className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -170,7 +170,7 @@ export default function BlogPage() {
                     <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                         {rest.map((post) => (
                             <LoadingLink href={`/blog/${post.slug}`} key={post.slug}>
-                                <article className="blog-card group cursor-pointer overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/62 transition-all duration-500 hover:-translate-y-1 hover:border-white/22">
+                                <article className="blog-card group cursor-pointer overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/62 transition-all duration-500 hover:-translate-y-1 hover:border-white/22">
                                     <div className="relative aspect-video border-b border-white/8 bg-linear-to-br from-white/10 to-white/2">
                                         <div className="absolute inset-0 office-grid opacity-[0.06]" />
                                         <div className="absolute inset-0 flex items-center justify-center">
@@ -197,7 +197,7 @@ export default function BlogPage() {
                 </section>
 
                 <section className="mx-auto max-w-7xl px-6 pb-24 md:px-12 lg:px-20">
-                    <div className="rounded-4xl border border-white/10 bg-[#0f1620]/58 p-8 md:p-10">
+                    <div className="rounded-4xl border border-white/10 bg-[#584738]/58 p-8 md:p-10">
                         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Newsletter</p>
                         <h3 className="mt-4 font-serif text-3xl font-bold tracking-tight md:text-4xl">Get the next journal drop.</h3>
                         <p className="mt-4 max-w-xl text-sm leading-7 text-white/56">
@@ -220,7 +220,7 @@ export default function BlogPage() {
                                 placeholder="you@example.com"
                                 className="w-full rounded-full border border-white/12 bg-white/6 px-5 py-3 text-sm text-white placeholder:text-white/35 focus:border-white/28 focus:outline-none sm:max-w-sm"
                             />
-                            <button type="submit" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90">
+                            <button type="submit" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#584738] transition-colors hover:bg-white/90">
                                 Subscribe
                             </button>
                         </form>

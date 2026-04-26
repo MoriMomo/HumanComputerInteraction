@@ -69,9 +69,9 @@ export default function ProductsPage() {
     return (
         <>
             <Navbar />
-            <main ref={containerRef} className="min-h-screen bg-[#0a0f16] text-white">
+            <main ref={containerRef} className="min-h-screen bg-[#584738] text-white">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_26%),radial-gradient(circle_at_75%_18%,rgba(180,138,99,0.14),transparent_24%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
+                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.18),transparent_26%),radial-gradient(circle_at_75%_18%,rgba(180,138,99,0.14),transparent_24%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
 
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
                         <div className="flex flex-col justify-center">
@@ -151,7 +151,7 @@ export default function ProductsPage() {
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {PRODUCTS.map((product) => (
                             <LoadingLink href={`/products/${product.slug}`} key={product.slug}>
-                                <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#111826]">
+                                <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#111826]">
                                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                                     <div className="mb-6 flex items-center justify-between">

@@ -15,7 +15,7 @@ export default function GlobalError({
 
     return (
         <html lang="en">
-            <body className="min-h-screen bg-[#0a0f16] text-white">
+            <body className="min-h-screen bg-[#584738] text-white">
                 <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center justify-center px-6 text-center">
                     <p className="text-xs uppercase tracking-[0.32em] text-white/50">Something broke</p>
                     <h1 className="mt-4 font-serif text-4xl font-bold tracking-tight sm:text-5xl">

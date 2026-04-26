@@ -71,7 +71,7 @@ export default function ShowcasePage() {
   }, [threeReady]);
 
   return (
-    <main className="relative min-h-screen bg-[#0a0f16]">
+    <main className="relative min-h-screen bg-[#584738]">
       <div
         className={`page-content ${contentVisible ? "loaded" : ""} relative z-10`}
       >

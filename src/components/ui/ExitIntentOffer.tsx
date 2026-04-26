@@ -42,7 +42,7 @@ export default function ExitIntentOffer() {
 
     return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-lg rounded-4xl border border-white/12 bg-[#0d141d] p-7 text-white shadow-[0_24px_120px_rgba(0,0,0,0.65)]">
+            <div className="w-full max-w-lg rounded-4xl border border-white/12 bg-[#584738] p-7 text-white shadow-[0_24px_120px_rgba(0,0,0,0.65)]">
                 <button
                     type="button"
                     onClick={close}
@@ -74,7 +74,7 @@ export default function ExitIntentOffer() {
                         />
                         <button
                             type="submit"
-                            className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90"
+                            className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#584738] transition-colors hover:bg-white/90"
                         >
                             Get code
                         </button>

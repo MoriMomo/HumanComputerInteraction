@@ -150,9 +150,9 @@ export default function MaterialSection({
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-[#0a0f16] overflow-hidden"
+            className="relative py-32 md:py-40 bg-[#584738] overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
             <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
 
             {/* Animated ambient orbs */}
@@ -190,7 +190,7 @@ export default function MaterialSection({
                         </div>
 
                         <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#0a0f16] font-medium hover:bg-white/90 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#584738] font-medium hover:bg-white/90 transition-colors text-sm">
                                 Customize
                             </button>
                             <button className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/18 text-white/92 font-medium hover:bg-white/16 transition-colors text-sm">
@@ -199,7 +199,7 @@ export default function MaterialSection({
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#0f1620] via-[#111a26] to-[#0b121a]">
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#584738] via-[#111a26] to-[#0b121a]">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -222,7 +222,7 @@ export default function MaterialSection({
                             </div>
                         )}
 
-                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#0a0f16]/36 via-transparent to-[#0a0f16]/28 pointer-events-none" />
+                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#584738]/36 via-transparent to-[#584738]/28 pointer-events-none" />
                     </div>
 
                     <div className="material-controls space-y-4">
@@ -263,7 +263,7 @@ export default function MaterialSection({
                                         onClick={() => onColorChange(swatch.hex)}
                                         type="button"
                                         className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#0f1620]"
+                                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#584738]"
                                             : "hover:scale-105"
                                             } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
                                         aria-label={`Select ${swatch.label}`}
