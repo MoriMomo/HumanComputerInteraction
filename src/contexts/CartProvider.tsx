@@ -107,13 +107,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
             const localItems = getLocalCart();
 
             if (localItems.length > 0) {
-                for (const entry of localItems) {
-                    await requestCart("POST", {
+                await requestCart(
+                    "POST",
+                    localItems.map((entry) => ({
                         slug: entry.slug,
                         color: entry.color,
                         quantity: entry.quantity,
-                    });
-                }
+                    }))
+                );
                 window.localStorage.removeItem(CART_STORAGE_KEY);
             }
 
