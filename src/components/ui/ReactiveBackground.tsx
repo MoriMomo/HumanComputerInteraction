@@ -123,7 +123,7 @@ function ReactiveBlocks({ active, color, blockCount, opacity }: ReactiveBlocksPr
 
 export default function ReactiveBackground({
     active = true,
-    color = "#60a5fa",
+    color = "#B59E7D",
     blockCount = 10,
     opacity = 0.15,
     mode = "absolute",

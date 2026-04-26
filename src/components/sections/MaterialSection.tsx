@@ -15,12 +15,12 @@ const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
 });
 
 export const SWATCHES = [
-    { id: "graphite", label: "Graphite", hex: "#59636E", description: "Muted graphite anodized finish" },
-    { id: "onyx", label: "Onyx", hex: "#1C1C1E", description: "Low-glare black finish" },
-    { id: "steel", label: "Steel", hex: "#8E9AA6", description: "Cool brushed alloy tone" },
-    { id: "stone", label: "Stone", hex: "#BCA782", description: "Soft archival stone tone" },
-    { id: "walnut", label: "Walnut", hex: "#3C2F24", description: "Dark walnut tone" },
-    { id: "champagne", label: "Champagne", hex: "#8A683A", description: "Muted metallic champagne" },
+    { id: "graphite", label: "Graphite", hex: "#B59E7D", description: "Muted graphite anodized finish" },
+    { id: "onyx", label: "Onyx", hex: "#584738", description: "Low-glare black finish" },
+    { id: "steel", label: "Steel", hex: "#AAA396", description: "Cool brushed alloy tone" },
+    { id: "stone", label: "Stone", hex: "#CEC1A8", description: "Soft archival stone tone" },
+    { id: "walnut", label: "Walnut", hex: "#413429", description: "Dark walnut tone" },
+    { id: "champagne", label: "Champagne", hex: "#B59E7D", description: "Muted metallic champagne" },
 ];
 
 const RENDER_MODES = [
@@ -30,12 +30,11 @@ const RENDER_MODES = [
 ];
 
 const SWATCH_BG_CLASS: Record<string, string> = {
-    "#59636E": "bg-[#59636E]",
-    "#1C1C1E": "bg-[#1C1C1E]",
-    "#8E9AA6": "bg-[#8E9AA6]",
-    "#BCA782": "bg-[#BCA782]",
-    "#3C2F24": "bg-[#3C2F24]",
-    "#8A683A": "bg-[#8A683A]",
+    "#B59E7D": "bg-[#B59E7D]",
+    "#584738": "bg-[#584738]",
+    "#AAA396": "bg-[#AAA396]",
+    "#CEC1A8": "bg-[#CEC1A8]",
+    "#413429": "bg-[#413429]",
 };
 
 interface MaterialSectionProps {
@@ -174,14 +173,14 @@ export default function MaterialSection({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
                             <p className="text-white/68 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Performance</h3>
                             <div className="flex items-center gap-2 text-white/70 text-sm">
                                 <span className="w-2 h-2 rounded-full bg-green-500/60" />
@@ -199,7 +198,7 @@ export default function MaterialSection({
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#584738] via-[#111a26] to-[#0b121a]">
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#584738] via-[#584738] to-[#584738]">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -226,7 +225,7 @@ export default function MaterialSection({
                     </div>
 
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Render Mode
                             </p>
@@ -252,7 +251,7 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Material Color
                             </p>
@@ -282,7 +281,7 @@ export default function MaterialSection({
                             <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
                         </div>
 
-                        <div className="bg-[#111b27]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
                                 Input: Active
                             </p>

@@ -15,12 +15,11 @@ gsap.registerPlugin(ScrollTrigger);
 const COLOR_PREVIEW_COUNT = 3;
 
 const SWATCH_BG_CLASS: Record<string, string> = {
-    "#59636E": "bg-[#59636E]",
-    "#1C1C1E": "bg-[#1C1C1E]",
-    "#8E9AA6": "bg-[#8E9AA6]",
-    "#BCA782": "bg-[#BCA782]",
-    "#3C2F24": "bg-[#3C2F24]",
-    "#8A683A": "bg-[#8A683A]",
+    "#B59E7D": "bg-[#B59E7D]",
+    "#584738": "bg-[#584738]",
+    "#AAA396": "bg-[#AAA396]",
+    "#CEC1A8": "bg-[#CEC1A8]",
+    "#413429": "bg-[#413429]",
 };
 
 export default function ProductsPage() {
@@ -151,7 +150,7 @@ export default function ProductsPage() {
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {PRODUCTS.map((product) => (
                             <LoadingLink href={`/products/${product.slug}`} key={product.slug}>
-                                <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#111826]">
+                                <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#584738]">
                                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                                     <div className="mb-6 flex items-center justify-between">

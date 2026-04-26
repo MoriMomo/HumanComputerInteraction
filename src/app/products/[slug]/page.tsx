@@ -28,12 +28,11 @@ const PRODUCT_RELATED_JOURNAL: Record<string, string[]> = {
 };
 
 const SWATCH_BG_CLASS: Record<string, string> = {
-    "#59636E": "bg-[#59636E]",
-    "#1C1C1E": "bg-[#1C1C1E]",
-    "#8E9AA6": "bg-[#8E9AA6]",
-    "#BCA782": "bg-[#BCA782]",
-    "#3C2F24": "bg-[#3C2F24]",
-    "#8A683A": "bg-[#8A683A]",
+    "#B59E7D": "bg-[#B59E7D]",
+    "#584738": "bg-[#584738]",
+    "#AAA396": "bg-[#AAA396]",
+    "#CEC1A8": "bg-[#CEC1A8]",
+    "#413429": "bg-[#413429]",
 };
 
 export default function ProductDetailPage() {
