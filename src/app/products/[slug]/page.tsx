@@ -11,6 +11,7 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { PRODUCTS } from "@/data/products";
 import { trackEvent } from "@/lib/analytics";
+import SafeJsonLd from "@/components/ui/SafeJsonLd";
 
 const PRODUCT_REVIEW_SNIPPETS = [
     { name: "Reza", note: "The finish still looks clean after daily commute use.", rating: 5 },
@@ -100,7 +101,7 @@ export default function ProductDetailPage() {
     return (
         <>
             <Navbar />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+            <SafeJsonLd data={productSchema} />
             <main ref={containerRef} className="min-h-screen bg-[#0a0f16] pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
