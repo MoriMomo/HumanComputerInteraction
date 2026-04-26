@@ -51,7 +51,7 @@ export default function CartPage() {
                             <div className="space-y-4">
                                 {items.map((item) => (
                                     <article key={`${item.slug}-${item.color ?? "default"}`} className="grid gap-4 rounded-3xl border border-white/10 bg-white/4 p-4 sm:grid-cols-[120px_1fr]">
-                                        <div className="relative h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#111a25]">
+                                        <div className="relative h-28 overflow-hidden rounded-2xl border border-white/10 bg-[#584738]">
                                             {item.imageSrc ? (
                                                 <SmartImage
                                                     src={item.imageSrc}

@@ -14,9 +14,9 @@
   --color-overlay: rgba(88,71,56,0.55);
 
   /* ── Swatch colours ── */
-  --color-swatch-bronze: #B48A63;
-  --color-swatch-midnight: #1C1C1E;
-  --color-swatch-steel: #8E9AA6;
+  --color-swatch-bronze: #B59E7D;
+  --color-swatch-midnight: #584738;
+  --color-swatch-steel: #AAA396;
 
   /* ── Typography ── */
   --font-sans: var(--font-inter), sans-serif;
@@ -113,7 +113,7 @@ body {
     radial-gradient(circle at 50% 0%, rgba(181, 158, 125, 0.18), transparent 28%),
     radial-gradient(circle at 14% 14%, rgba(206, 193, 168, 0.18), transparent 32%),
     radial-gradient(circle at 86% 10%, rgba(170, 163, 150, 0.14), transparent 24%),
-    linear-gradient(180deg, #F1EADA 0%, #F1EADA 34%, #f7f8f8 100%);
+    linear-gradient(180deg, #F1EADA 0%, #F1EADA 34%, #F1EADA 100%);
 }
 
 .section-seam-light {
@@ -358,7 +358,7 @@ section {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B48A63;
+  background: #B59E7D;
 }
 
 /* ── Accessibility Enhancements ── */

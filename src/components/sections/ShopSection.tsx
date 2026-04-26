@@ -13,7 +13,7 @@ const products = [
         id: "standard",
         name: "SatSet Standard",
         price: 79,
-        color: "#8E9AA6",
+        color: "#AAA396",
         colorLabel: "Storm Grey",
         capacity: "4–6 cards",
         features: [
@@ -24,16 +24,16 @@ const products = [
         ],
         badge: null,
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#8E9AA6]/8",
-        bgSolidClass: "bg-[#8E9AA6]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#8E9AA6,transparent_70%)]",
-        textColorClass: "text-[#8E9AA6]",
+        bgPaleClass: "bg-[#AAA396]/8",
+        bgSolidClass: "bg-[#AAA396]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#AAA396,transparent_70%)]",
+        textColorClass: "text-[#AAA396]",
     },
     {
         id: "pro",
         name: "SatSet Pro",
         price: 129,
-        color: "#59636E",
+        color: "#B59E7D",
         colorLabel: "Graphite",
         capacity: "4–8 cards",
         features: [
@@ -45,16 +45,16 @@ const products = [
         ],
         badge: "Most Popular",
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#59636E]/8",
-        bgSolidClass: "bg-[#59636E]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#59636E,transparent_70%)]",
-        textColorClass: "text-[#59636E]",
+        bgPaleClass: "bg-[#B59E7D]/8",
+        bgSolidClass: "bg-[#B59E7D]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#B59E7D,transparent_70%)]",
+        textColorClass: "text-[#B59E7D]",
     },
     {
         id: "executive",
         name: "SatSet Executive",
         price: 199,
-        color: "#1C1C1E",
+        color: "#584738",
         colorLabel: "Midnight Black",
         capacity: "4–8 cards + cash",
         features: [
@@ -67,10 +67,10 @@ const products = [
         ],
         badge: "Premium",
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#1C1C1E]/8",
-        bgSolidClass: "bg-[#1C1C1E]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#1C1C1E,transparent_70%)]",
-        textColorClass: "text-[#1C1C1E]",
+        bgPaleClass: "bg-[#584738]/8",
+        bgSolidClass: "bg-[#584738]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#584738,transparent_70%)]",
+        textColorClass: "text-[#584738]",
     },
 ];
 
@@ -176,11 +176,11 @@ export default function ShopSection() {
             <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
             <div
                 aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#3b4a5a]/12 blur-3xl"
+                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#584738]/12 blur-3xl"
             />
             <div
                 aria-hidden
-                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-[#1e3a5f]/8 blur-3xl"
+                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-[#584738]/8 blur-3xl"
             />
             <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                 {/* Label + title */}

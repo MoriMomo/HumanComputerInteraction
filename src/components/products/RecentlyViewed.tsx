@@ -70,7 +70,7 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
                         href={`/products/${product.slug}`}
                         className="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition-colors hover:border-white/20 hover:bg-white/8"
                     >
-                        <div className="relative aspect-square w-full bg-[#111a25] p-6 flex items-center justify-center">
+                        <div className="relative aspect-square w-full bg-[#584738] p-6 flex items-center justify-center">
                             {product.image?.src ? (
                                 <SmartImage
                                     src={product.image.src}

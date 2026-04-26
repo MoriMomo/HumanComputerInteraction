@@ -19,7 +19,7 @@ interface CardHolderModelProps {
 }
 
 export default function CardHolderModel({
-    color = "#B48A63",
+    color = "#B59E7D",
     autoRotate = true,
     renderMode = "normal",
     modelRotation = [0, 0, 0],
@@ -132,7 +132,7 @@ export default function CardHolderModel({
                 const isGlass = mode === "glass";
                 const isWire = mode === "wireframe";
                 const sourceStandard = sourceMaterial as Partial<THREE.MeshStandardMaterial & THREE.MeshPhysicalMaterial> | null;
-                const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color("#c7d0d9");
+                const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color("#F1EADA");
                 const tintColor = new THREE.Color(nextColor);
                 const blendedColor = sourceColor.lerp(tintColor, isWire ? 0.88 : 0.72);
                 const maps = getMaterialMaps(sourceMaterial);

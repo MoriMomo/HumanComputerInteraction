@@ -15,48 +15,48 @@ const FEATURES = [
         icon: "shield_person",
         title: "RFID Shielding",
         description: "Military-grade blocking layer protects your contactless cards from digital skimming — invisible, always active.",
-        accent: "from-[#6f8ea9]/30 to-[#8caec7]/22",
-        glowClass: "from-[#6f8ea9]/40 to-transparent",
+        accent: "from-[#B59E7D]/30 to-[#B59E7D]/22",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "100%",
     },
     {
         icon: "scale",
         title: "Ultralight 18g",
         description: "Aircraft-grade aluminium body machined to 18 grams. Barely there in your pocket, unmistakable in your hand.",
-        accent: "from-[#8a95a4]/28 to-[#a7b2be]/20",
-        glowClass: "from-[#8a95a4]/40 to-transparent",
+        accent: "from-[#B59E7D]/28 to-[#B59E7D]/20",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "18g",
     },
     {
         icon: "widgets",
         title: "Modular System",
         description: "Click-and-lock accessory rails. Attach a cash strap, AirTag slot, or USB-C key — your carry, your config.",
-        accent: "from-[#68879c]/28 to-[#89a3b4]/20",
-        glowClass: "from-[#68879c]/40 to-transparent",
+        accent: "from-[#B59E7D]/28 to-[#B59E7D]/20",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "4+",
     },
     {
         icon: "check_circle",
         title: "Premium Finish",
         description: "Micro-blasted and PVD-coated by hand. Scratch-resistant surface that only gets better character over time.",
-        accent: "from-[#8d9aa8]/30 to-[#6f7c8a]/22",
-        glowClass: "from-[#8d9aa8]/40 to-transparent",
+        accent: "from-[#B59E7D]/30 to-[#B59E7D]/22",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "5H",
     },
     {
         icon: "credit_card",
         title: "8-Card Capacity",
         description: "Spring-tensioned clip holds 4–8 cards securely. Single-hand thumb access — cards fan out instantly.",
-        accent: "from-[#6b92a1]/28 to-[#8db3c1]/20",
-        glowClass: "from-[#6b92a1]/40 to-transparent",
+        accent: "from-[#B59E7D]/28 to-[#B59E7D]/20",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "8",
     },
     {
         icon: "verified",
         title: "2-Year Warranty",
         description: "Every SatSet ships with a full two-year warranty. If it breaks, we fix or replace it. No questions asked.",
-        accent: "from-[#758595]/28 to-[#9ba9b5]/20",
-        glowClass: "from-[#758595]/40 to-transparent",
+        accent: "from-[#B59E7D]/28 to-[#B59E7D]/20",
+        glowClass: "from-[#B59E7D]/40 to-transparent",
         stat: "2yr",
     },
 ];
@@ -279,11 +279,11 @@ export default function FeaturesSection() {
             {/* Ambient orbs - Reduced blur for performance */}
             <div
                 aria-hidden
-                className="feat-orb-1 pointer-events-none absolute left-[5%] top-[15%] h-72 w-72 rounded-full bg-linear-to-br from-[#6f8ea9]/20 to-[#8caec7]/12 blur-2xl"
+                className="feat-orb-1 pointer-events-none absolute left-[5%] top-[15%] h-72 w-72 rounded-full bg-linear-to-br from-[#B59E7D]/20 to-[#B59E7D]/12 blur-2xl"
             />
             <div
                 aria-hidden
-                className="feat-orb-2 pointer-events-none absolute right-[8%] top-[40%] h-96 w-96 rounded-full bg-linear-to-br from-[#758595]/18 to-[#9ba9b5]/10 blur-2xl"
+                className="feat-orb-2 pointer-events-none absolute right-[8%] top-[40%] h-96 w-96 rounded-full bg-linear-to-br from-[#B59E7D]/18 to-[#B59E7D]/10 blur-2xl"
             />
 
             {/* Subtle grid pattern */}
@@ -335,7 +335,7 @@ export default function FeaturesSection() {
                         {FEATURES.map((feature) => (
                             <div
                                 key={feature.title}
-                                className="feat-card-slide feat-card group relative mx-2 basis-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-[#111c29]/92 p-8 transition-all duration-500 hover:border-white/22 md:mx-3 md:p-10"
+                                className="feat-card-slide feat-card group relative mx-2 basis-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-[#584738]/92 p-8 transition-all duration-500 hover:border-white/22 md:mx-3 md:p-10"
                                 tabIndex={0}
                                 role="article"
                                 aria-label={feature.title}

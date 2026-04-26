@@ -14,7 +14,7 @@ import StatsSection from "@/components/sections/StatsSection";
 const ENABLE_3D_MODEL = true;
 
 export default function ShowcasePage() {
-  const [activeColor, setActiveColor] = useState("#8E9AA6");
+  const [activeColor, setActiveColor] = useState("#AAA396");
   const { isLoading } = useLoading();
   const [threeReady, setThreeReady] = useState(() => !ENABLE_3D_MODEL);
   const [assetsReady, setAssetsReady] = useState(() => !isLoading);
