@@ -267,7 +267,7 @@ export default function FeaturesSection() {
         <section
             id="features"
             ref={sectionRef}
-            className="relative py-40 md:py-52 bg-[#0a0f16] overflow-hidden"
+            className="relative py-40 md:py-52 bg-[#584738] overflow-hidden"
             aria-labelledby="features-heading"
         >
             {/* Top border */}

@@ -47,7 +47,7 @@ export default function SignupPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-[#0a0f16] text-white">
+            <main className="min-h-screen bg-[#584738] text-white">
                 <div className="grid min-h-screen lg:grid-cols-2">
                     <section className="flex items-center bg-[#f4f6f8] px-6 py-10 text-[#0f1720] sm:px-10 lg:px-14 lg:py-12">
                         <div className="mx-auto w-full max-w-md">
@@ -58,7 +58,7 @@ export default function SignupPage() {
                                 </div>
                                 <LoadingLink
                                     href="/auth/login"
-                                    className="rounded-full border border-[#d6dce2] bg-white px-4 py-2 text-sm font-medium text-[#24303d] transition-colors hover:bg-[#eef2f4]"
+                                    className="rounded-full border border-[#d6dce2] bg-white px-4 py-2 text-sm font-medium text-[#24303d] transition-colors hover:bg-[#F1EADA]"
                                 >
                                     Sign in
                                 </LoadingLink>
@@ -157,9 +157,9 @@ export default function SignupPage() {
                         </div>
                     </section>
 
-                    <section className="relative flex items-end overflow-hidden bg-[#0b1118] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
+                    <section className="relative flex items-end overflow-hidden bg-[#584738] px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
                         <SeamlessLoopVideo src="/video/signup.mp4" />
-                        <div className="absolute inset-0 bg-linear-to-br from-[#0a0f16]/92 via-[#0a0f16]/64 to-[#0a0f16]/18" />
+                        <div className="absolute inset-0 bg-linear-to-br from-[#584738]/92 via-[#584738]/64 to-[#584738]/18" />
                         <div className="absolute inset-0 office-grid opacity-[0.05]" />
 
                         <div className="relative z-10 max-w-xl">

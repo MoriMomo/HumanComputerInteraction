@@ -26,7 +26,7 @@ export default function BlogCategoryPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-[#0a0f16] px-6 pb-20 pt-32 text-white md:px-12 lg:px-20">
+            <main className="min-h-screen bg-[#584738] px-6 pb-20 pt-32 text-white md:px-12 lg:px-20">
                 <div className="mx-auto max-w-7xl">
                     <LoadingLink href="/blog" className="text-sm text-white/52 transition-colors hover:text-white/84">
                         ← Back to journal
@@ -37,7 +37,7 @@ export default function BlogCategoryPage() {
                     <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
                         {posts.map((post) => (
                             <LoadingLink key={post.slug} href={`/blog/${post.slug}`}>
-                                <article className="h-full rounded-4xl border border-white/10 bg-[#0f1620]/64 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-white/22">
+                                <article className="h-full rounded-4xl border border-white/10 bg-[#584738]/64 p-8 transition-all duration-300 hover:-translate-y-1 hover:border-white/22">
                                     <div className="text-xs text-white/38">
                                         {post.date} · {post.readTime}
                                     </div>

@@ -171,9 +171,9 @@ export default function ShopSection() {
         <section
             id="shop"
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-[#0a0f16] overflow-hidden"
+            className="relative py-32 md:py-40 bg-[#584738] overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
             <div
                 aria-hidden
                 className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#3b4a5a]/12 blur-3xl"

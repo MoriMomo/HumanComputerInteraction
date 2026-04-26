@@ -16,7 +16,7 @@ export default function CartPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-[#0a0f16] pb-20 pt-32 text-white">
+            <main className="min-h-screen bg-[#584738] pb-20 pt-32 text-white">
                 <section className="mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                     <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                         <div>
@@ -41,7 +41,7 @@ export default function CartPage() {
                             <p className="mt-3 text-sm text-white/60">Browse the collection and add items to continue.</p>
                             <LoadingLink
                                 href="/products"
-                                className="mt-6 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90"
+                                className="mt-6 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#584738] transition-colors hover:bg-white/90"
                             >
                                 Explore products
                             </LoadingLink>
@@ -128,7 +128,7 @@ export default function CartPage() {
 
                                 <button
                                     type="button"
-                                    className="mt-6 w-full rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90"
+                                    className="mt-6 w-full rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#584738] transition-colors hover:bg-white/90"
                                 >
                                     Continue to checkout
                                 </button>

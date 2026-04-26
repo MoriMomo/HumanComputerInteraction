@@ -27,7 +27,7 @@ export default function ProductComparePage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-[#0a0f16] px-6 pb-24 pt-32 text-white md:px-12 lg:px-20">
+            <main className="min-h-screen bg-[#584738] px-6 pb-24 pt-32 text-white md:px-12 lg:px-20">
                 <div className="mx-auto max-w-7xl">
                     <LoadingLink href="/products" className="text-sm text-white/52 transition-colors hover:text-white/84">
                         ← Back to products
@@ -36,7 +36,7 @@ export default function ProductComparePage() {
                     <p className="mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-primary">Comparison</p>
                     <h1 className="mt-3 font-serif text-4xl font-bold md:text-5xl">Choose the right carry setup.</h1>
 
-                    <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/64">
+                    <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/64">
                         <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
                             <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>
                             {selected.map((product) => (

@@ -104,9 +104,9 @@ export default function ProductDetailPage() {
         <>
             <Navbar />
             <SafeJsonLd data={productSchema} />
-            <main ref={containerRef} className="min-h-screen bg-[#0a0f16] pb-28 text-white md:pb-0">
+            <main ref={containerRef} className="min-h-screen bg-[#584738] pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
+                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40">
                         <div className="detail-visual">
                             <LoadingLink
@@ -244,7 +244,7 @@ export default function ProductDetailPage() {
                             <div className="detail-feature mt-8 flex flex-col gap-4 sm:flex-row">
                                 <button
                                     onClick={handleAddToCart}
-                                    className="flex-1 rounded-full bg-white px-8 py-4 font-semibold text-[#0a0f16] transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="flex-1 rounded-full bg-white px-8 py-4 font-semibold text-[#584738] transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
                                     disabled={addedToCart}
                                 >
                                     {addedToCart ? "Added to Cart ✓" : "Add to Cart"}
@@ -274,7 +274,7 @@ export default function ProductDetailPage() {
                 </section>
 
                 <section className="mx-auto max-w-7xl px-6 pb-20 md:px-12 lg:px-20">
-                    <div className="rounded-4xl border border-white/10 bg-[#0f1620]/60 p-8 md:p-10">
+                    <div className="rounded-4xl border border-white/10 bg-[#584738]/60 p-8 md:p-10">
                         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Read before you buy</p>
                         <h2 className="mt-4 font-serif text-3xl font-bold tracking-tight md:text-4xl">Journal notes related to this product.</h2>
                         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
                 <Footer />
             </main>
 
-            <div className="fixed inset-x-0 bottom-0 z-90 border-t border-white/12 bg-[#0a0f16]/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-md md:hidden">
+            <div className="fixed inset-x-0 bottom-0 z-90 border-t border-white/12 bg-[#584738]/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-md md:hidden">
                 <div className="mx-auto flex max-w-7xl items-center gap-3">
                     <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-white">{product.name}</p>
@@ -305,7 +305,7 @@ export default function ProductDetailPage() {
                     <button
                         type="button"
                         onClick={handleAddToCart}
-                        className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#0a0f16] transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#584738] transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
                         disabled={addedToCart}
                     >
                         {addedToCart ? "Added ✓" : "Add"}

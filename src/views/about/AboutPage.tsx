@@ -167,9 +167,9 @@ export default function AboutPage() {
     return (
         <>
             <Navbar />
-            <main id="main-content" ref={containerRef} className="min-h-screen bg-[#0a0f16] text-white">
+            <main id="main-content" ref={containerRef} className="min-h-screen bg-[#584738] text-white">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.18),transparent_24%),radial-gradient(circle_at_80%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
+                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.18),transparent_24%),radial-gradient(circle_at_80%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
 
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
                         <div>
@@ -234,7 +234,7 @@ export default function AboutPage() {
                         {VALUES.map((value, index) => (
                             <div
                                 key={value.title}
-                                className={`about-value-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0f1620]/70 p-8 ${index === 0 ? "lg:col-span-6 lg:row-span-2" : "lg:col-span-3"}`}
+                                className={`about-value-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#584738]/70 p-8 ${index === 0 ? "lg:col-span-6 lg:row-span-2" : "lg:col-span-3"}`}
                             >
                                 <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(180,138,99,0.12),transparent_42%)]" />
                                 <p className="relative mb-5 text-[11px] uppercase tracking-[0.24em] text-white/45">{value.kicker}</p>
@@ -268,7 +268,7 @@ export default function AboutPage() {
                         <div aria-hidden className="pointer-events-none absolute left-8 top-0 hidden h-full w-px bg-white/10 md:block" />
                         <div className="space-y-5">
                             {WORKFLOW.map((item) => (
-                                <div key={item.step} className="about-story-card grid grid-cols-1 gap-5 rounded-3xl border border-white/10 bg-[#0f1620]/62 p-6 md:grid-cols-[5rem_1fr] md:items-center md:p-8">
+                                <div key={item.step} className="about-story-card grid grid-cols-1 gap-5 rounded-3xl border border-white/10 bg-[#584738]/62 p-6 md:grid-cols-[5rem_1fr] md:items-center md:p-8">
                                     <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-white/14 bg-white/6 text-2xl font-semibold text-white/88">
                                         {item.step}
                                     </div>
@@ -290,9 +290,9 @@ export default function AboutPage() {
                         {TEAM.map((member) => (
                             <div
                                 key={member.name}
-                                className="about-team-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#0f1620]/72 p-8"
+                                className="about-team-card relative overflow-hidden rounded-3xl border border-white/10 bg-[#584738]/72 p-8"
                             >
-                                <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(142,154,166,0.14),transparent_40%)]" />
+                                <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(181,158,125,0.14),transparent_40%)]" />
                                 <div className="relative mb-6 flex items-center justify-between gap-4">
                                     <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/12 bg-white/8">
                                         <span className="material-symbols-outlined text-white/60">person</span>
@@ -344,7 +344,7 @@ export default function AboutPage() {
                             <p className="mb-8 max-w-md text-sm leading-7 text-white/60">
                                 Have a product question, partnership idea, or wholesale request? Send us a message.
                             </p>
-                            <div className="space-y-5 rounded-3xl border border-white/10 bg-[#0f1620]/58 p-6">
+                            <div className="space-y-5 rounded-3xl border border-white/10 bg-[#584738]/58 p-6">
                                 {[
                                     { icon: "mail", label: "hello@satset.com" },
                                     { icon: "location_on", label: "Jakarta, Indonesia" },
@@ -358,7 +358,7 @@ export default function AboutPage() {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5 rounded-3xl border border-white/10 bg-[#0f1620]/58 p-6 md:p-8">
+                        <form onSubmit={handleSubmit} className="space-y-5 rounded-3xl border border-white/10 bg-[#584738]/58 p-6 md:p-8">
                             {formStatus === "sent" ? (
                                 <div className="rounded-2xl border border-white/15 bg-white/5 p-8 text-center">
                                     <span className="material-symbols-outlined mb-3 block text-4xl text-primary">
@@ -413,7 +413,7 @@ export default function AboutPage() {
                                     <button
                                         type="submit"
                                         disabled={formStatus === "sending"}
-                                        className="w-full rounded-full bg-white px-8 py-4 font-semibold text-[#0a0f16] transition-all duration-300 hover:bg-white/90 disabled:opacity-60"
+                                        className="w-full rounded-full bg-white px-8 py-4 font-semibold text-[#584738] transition-all duration-300 hover:bg-white/90 disabled:opacity-60"
                                     >
                                         {formStatus === "sending" ? "Sending..." : "Send Message"}
                                     </button>

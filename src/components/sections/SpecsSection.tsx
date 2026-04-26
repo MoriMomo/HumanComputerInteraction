@@ -126,9 +126,9 @@ export default function SpecsSection() {
         <section
             id="specs"
             ref={sectionRef}
-            className="relative py-32 md:py-40 overflow-hidden bg-[#0a0f16] text-white"
+            className="relative py-32 md:py-40 overflow-hidden bg-[#584738] text-white"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#0a0f16] via-[#0f1620] to-[#0a0f16]" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
 
             {/* Animated ambient gradient orbs */}
             <div aria-hidden className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-3xl animate-pulse" />

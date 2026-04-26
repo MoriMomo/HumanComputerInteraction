@@ -28,7 +28,7 @@ export default function ProductImagePlaceholder({
     const hasRenderableImage = Boolean(imageSrc) && !failedToLoad;
 
     return (
-        <div className={`relative overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/72 ${className}`}>
+        <div className={`relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/72 ${className}`}>
             <div aria-hidden className={`absolute inset-0 bg-linear-to-br ${accent}`} />
             <div aria-hidden className="absolute inset-0 office-grid opacity-[0.06]" />
 
@@ -45,7 +45,7 @@ export default function ProductImagePlaceholder({
                     />
                     <div
                         aria-hidden
-                        className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0a0f16]/24 via-transparent to-transparent"
+                        className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#584738]/24 via-transparent to-transparent"
                     />
                 </>
             )}

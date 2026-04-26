@@ -42,9 +42,9 @@ export default function BlogPostPage() {
     return (
         <>
             <Navbar />
-            <main ref={containerRef} className="min-h-screen bg-[#0a0f16] text-white">
+            <main ref={containerRef} className="min-h-screen bg-[#584738] text-white">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(142,154,166,0.14),transparent_24%),radial-gradient(circle_at_75%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#0b1118_0%,#0a0f16_100%)]" />
+                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.14),transparent_24%),radial-gradient(circle_at_75%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
                     <div className="relative mx-auto max-w-5xl px-6 pb-16 pt-36 md:px-12 lg:pt-40">
                         <LoadingLink
                             href="/blog"
@@ -95,7 +95,7 @@ export default function BlogPostPage() {
                         </div>
                     </article>
 
-                    <div className="post-body mt-14 rounded-4xl border border-white/10 bg-[#0f1620]/58 p-8 md:p-10">
+                    <div className="post-body mt-14 rounded-4xl border border-white/10 bg-[#584738]/58 p-8 md:p-10">
                         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Keep reading</p>
                         <h3 className="mt-4 font-serif text-3xl font-bold tracking-tight">More notes from the workshop.</h3>
                         <p className="mt-4 max-w-2xl text-sm leading-7 text-white/56">
@@ -112,7 +112,7 @@ export default function BlogPostPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {related.map((p) => (
                                 <LoadingLink key={p.slug} href={`/blog/${p.slug}`}>
-                                    <article className="group overflow-hidden rounded-4xl border border-white/10 bg-[#0f1620]/64 p-8 transition-all duration-400 hover:-translate-y-1 hover:border-white/22">
+                                    <article className="group overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/64 p-8 transition-all duration-400 hover:-translate-y-1 hover:border-white/22">
                                         <div className="flex items-center gap-3 text-xs text-white/38 mb-3">
                                             <span>{p.date}</span>
                                             <span>·</span>

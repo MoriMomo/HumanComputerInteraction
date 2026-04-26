@@ -339,9 +339,9 @@ export default function LoadingOverlay({
     return (
         <div
             ref={containerRef}
-            className={`loading-overlay-root fixed inset-0 flex items-center justify-center bg-[#0a0f16] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
+            className={`loading-overlay-root fixed inset-0 flex items-center justify-center bg-[#584738] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
         >
-            <div className="absolute inset-0 bg-linear-to-br from-[#0a0f16] via-[#131b24] to-[#0a0f16]" />
+            <div className="absolute inset-0 bg-linear-to-br from-[#584738] via-[#131b24] to-[#584738]" />
 
             <div className="loading-grid absolute inset-0 opacity-[0.03]" />
 
