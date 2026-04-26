@@ -11,6 +11,8 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { PRODUCTS } from "@/data/products";
 import { trackEvent } from "@/lib/analytics";
+import RecentlyViewed from "@/components/products/RecentlyViewed";
+import ProductReviews from "@/components/products/ProductReviews";
 
 const PRODUCT_REVIEW_SNIPPETS = [
     { name: "Reza", note: "The finish still looks clean after daily commute use.", rating: 5 },
@@ -178,23 +180,11 @@ export default function ProductDetailPage() {
                                 </div>
                             </div>
 
-                            <div className="detail-feature mt-8 rounded-3xl border border-white/10 bg-white/5 p-6">
-                                <div className="flex items-center justify-between gap-4">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/42">Verified reviews</p>
-                                    <p className="text-sm text-white/72">4.9★ · 2,400+ buyers</p>
-                                </div>
-                                <div className="mt-4 space-y-3">
-                                    {PRODUCT_REVIEW_SNIPPETS.map((review) => (
-                                        <article key={review.name} className="rounded-2xl border border-white/8 bg-white/5 p-4">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-sm font-semibold text-white">{review.name}</p>
-                                                <p className="text-xs text-white/62">{"★".repeat(review.rating)}</p>
-                                            </div>
-                                            <p className="mt-2 text-sm leading-6 text-white/58">{review.note}</p>
-                                        </article>
-                                    ))}
-                                </div>
-                            </div>
+                            <ProductReviews
+                                reviews={PRODUCT_REVIEW_SNIPPETS}
+                                aggregateRating="4.9"
+                                reviewCount="2,400"
+                            />
 
                             <div className="detail-feature mt-8 grid gap-4 md:grid-cols-2">
                                 <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
@@ -299,6 +289,8 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
                 </section>
+
+                <RecentlyViewed currentSlug={product.slug} />
 
                 <Footer />
             </main>
