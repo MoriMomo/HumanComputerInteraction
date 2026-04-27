@@ -1,6 +1,6 @@
-import test from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
-import { hashPassword, verifyPassword } from "./password.ts";
+import { hashPassword, verifyPassword } from "./password";
 
 test("hashPassword and verifyPassword functionality", async (t) => {
     await t.test("hashPassword returns a hash different from the plain text", async () => {

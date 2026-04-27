@@ -5,8 +5,14 @@ import { createSessionToken } from "@/lib/auth-session";
 import { validateEmail, validateName, validatePassword } from "@/lib/auth-validation";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
+import { authRateLimiter } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
+    const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
+    if (!authRateLimiter.check(ip)) {
+        return NextResponse.json({ message: "Too many signup attempts, please try again later." }, { status: 429 });
+    }
+
     const body = (await request.json().catch(() => null)) as
         | {
             name?: string;

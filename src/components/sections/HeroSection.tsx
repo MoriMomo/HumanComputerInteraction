@@ -267,14 +267,14 @@ export default function HeroSection({
                 </div>
 
                 {/* Canvas - LARGER container for premium 3D presentation */}
-                <div className="hero-canvas flex items-center justify-center py-6 md:py-8 min-h-[40vh] md:min-h-[50vh]">
-                    <div className="relative w-full max-w-3xl md:max-w-4xl aspect-video md:aspect-video">
+                <div className="hero-canvas flex items-center justify-center py-6 md:py-8 min-h-[40vh] md:min-h-[50vh] -mx-4 md:mx-0">
+                    <div className="relative w-full max-w-3xl md:max-w-4xl aspect-[4/3] md:aspect-video">
                         <div
                             aria-hidden
                             className={`absolute inset-[10%] rounded-full blur-2xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-full h-full ">
+                            <div className="w-full h-[120%] md:h-full -mt-[10%] md:mt-0">
                                 {show3DModel && loadingComplete ? (
                                     <CardHolderScene
                                         color={activeColor}
@@ -310,7 +310,7 @@ export default function HeroSection({
                 </div>
 
                 {/* Bottom Content - REMOVED min-h constraint */}
-                <div className="flex items-start justify-between pt-4 md:pt-6">
+                <div className="flex items-start justify-between pt-4 md:pt-6 relative z-30">
                     <div className="hero-meta max-w-xl">
                         <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-2.5">
                             Built For Workdays.

@@ -148,8 +148,13 @@ export default function ProductsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        {PRODUCTS.map((product) => (
-                            <LoadingLink href={`/products/${product.slug}`} key={product.slug}>
+                        {PRODUCTS.length === 0 ? (
+                            <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-12 text-center">
+                                <h3 className="font-serif text-2xl font-semibold text-white">No products found</h3>
+                                <p className="mt-2 text-white/60">We&apos;re currently restocking. Check back soon.</p>
+                            </div>
+                        ) : PRODUCTS.map((product) => (
+                            <LoadingLink href={`/products/${product.slug}`} key={product.slug} className="focus:outline-none focus-visible:ring-4 focus-visible:ring-white/50 rounded-4xl block">
                                 <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-white/24 hover:bg-[#584738]">
                                     <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -187,6 +192,7 @@ export default function ProductsPage() {
                                                 key={hex}
                                                 className={`h-4 w-4 rounded-full border border-white/18 ring-1 ring-white/5 ${SWATCH_BG_CLASS[hex] ?? "bg-swatch-steel"}`}
                                                 aria-label={hex}
+                                                role="img"
                                             />
                                         ))}
                                         {product.colors.length > COLOR_PREVIEW_COUNT && (

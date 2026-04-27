@@ -173,7 +173,7 @@ export default function Navbar() {
                         <div className="hidden md:flex items-center gap-1">
                             {NAV_LINKS.map((link) => {
                                 const active = isActive(link.href);
-                                const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full ${active ? "text-white" : "text-white/68 hover:text-white/88"
+                                const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${active ? "text-white" : "text-white/68 hover:text-white/88"
                                     }`;
                                 return (
                                     <LoadingLink key={link.label} href={link.href} onClick={closeMenu} className={cls}>
@@ -191,7 +191,7 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/cart"
                                 onClick={closeMenu}
-                                className="group relative inline-flex h-11 items-center justify-center rounded-full border border-white/16 bg-white/6 px-4 text-sm font-medium text-white/86 transition-all duration-300 hover:border-white/34 hover:bg-white/12"
+                                className="group relative inline-flex h-11 items-center justify-center rounded-full border border-white/16 bg-white/6 px-4 text-sm font-medium text-white/86 transition-all duration-300 hover:border-white/34 hover:bg-white/12 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                                 aria-label="Open cart"
                             >
                                 <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
@@ -206,7 +206,7 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
-                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300"
+                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="relative z-10">Log in</span>
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
@@ -254,6 +254,11 @@ export default function Navbar() {
                     aria-modal="true"
                     aria-label="Mobile navigation"
                     className="fixed inset-0 top-20 z-99 bg-[#584738]/98 md:hidden"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                            closeMenu();
+                        }
+                    }}
                 >
                     <div className="max-w-lg mx-auto px-6 py-12">
                         <div className="flex flex-col gap-2">
@@ -262,7 +267,7 @@ export default function Navbar() {
                                     key={link.label}
                                     href={link.href}
                                     onClick={closeMenu}
-                                    className="menu-link flex items-center justify-between py-6 border-b border-white/10 group"
+                                    className="menu-link flex items-center justify-between py-6 border-b border-white/10 group focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg px-2"
                                 >
                                     <span className="text-3xl font-light text-white/78 group-hover:text-white transition-colors duration-300">
                                         {link.label}
@@ -288,7 +293,7 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/cart"
                                 onClick={closeMenu}
-                                className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/14 bg-white/6 px-5 py-4"
+                                className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/14 bg-white/6 px-5 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="text-lg font-medium text-white/88">Cart</span>
                                 <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#584738]">
@@ -299,7 +304,7 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
-                                className="block w-full py-4 rounded-2xl bg-white text-[#584738] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300"
+                                className="block w-full py-4 rounded-2xl bg-white text-[#584738] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 Log in
                             </LoadingLink>

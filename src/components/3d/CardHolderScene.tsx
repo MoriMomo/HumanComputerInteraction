@@ -138,8 +138,8 @@ function SceneContent({
                 preset="studio"
                 background={false}
                 blur={energySaving ? 0.35 : 0.8}
-                // @ts-expect-error Property intensity is added in newer versions of drei
-                intensity={energySaving ? 1.1 : 1.5}
+
+                environmentIntensity={energySaving ? 1.1 : 1.5}
             />
 
             <ambientLight intensity={0.5} />
@@ -268,7 +268,7 @@ export default function CardHolderScene({
         <div className={`w-full h-full relative ${className}`}>
             <Canvas
                 className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
-                frameloop={isActive ? "always" : "never"}
+                frameloop={isActive && !energySaving ? "always" : "demand"}
                 orthographic
                 camera={{
                     position: cameraPosition,
@@ -282,7 +282,7 @@ export default function CardHolderScene({
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
                     gl.toneMappingExposure = energySaving ? 1 : 1.2;
                 }}
-                dpr={dprRange}
+                dpr={energySaving ? 1 : dprRange}
                 gl={{
                     antialias: !energySaving,
                     alpha: true,
@@ -292,6 +292,7 @@ export default function CardHolderScene({
                     preserveDrawingBuffer: false,
                     toneMapping: THREE.ACESFilmicToneMapping,
                     toneMappingExposure: energySaving ? 1 : 1.2,
+                    precision: energySaving ? "lowp" : "highp",
                 }}
                 performance={{ min: 0.35 }}
                 shadows={false}

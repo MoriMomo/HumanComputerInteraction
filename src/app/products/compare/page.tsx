@@ -36,8 +36,18 @@ export default function ProductComparePage() {
                     <p className="mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-primary">Comparison</p>
                     <h1 className="mt-3 font-serif text-4xl font-bold md:text-5xl">Choose the right carry setup.</h1>
 
-                    <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/64">
-                        <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
+                    {selected.length === 0 ? (
+                        <div className="mt-10 rounded-4xl border border-white/10 bg-white/5 p-16 text-center">
+                            <h3 className="font-serif text-2xl font-semibold text-white">No products to compare</h3>
+                            <p className="mt-2 text-white/60">Select at least two products to see a comparison.</p>
+                            <LoadingLink href="/products" className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#584738] transition-colors hover:bg-white/90">
+                                Browse products
+                            </LoadingLink>
+                        </div>
+                    ) : (
+                        <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/64 overflow-x-auto">
+                            <div className="min-w-[800px]">
+                                <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
                             <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>
                             {selected.map((product) => (
                                 <div key={product.slug} className="border-l border-white/10 p-4">
@@ -65,20 +75,22 @@ export default function ProductComparePage() {
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))]">
-                            <div className="p-4 text-sm text-white/60">Action</div>
-                            {selected.map((product) => (
-                                <div key={`${product.slug}-action`} className="border-l border-white/10 p-4">
-                                    <LoadingLink
-                                        href={`/products/${product.slug}`}
-                                        className="inline-flex rounded-full border border-white/16 bg-white/6 px-4 py-2 text-sm text-white/86 transition-colors hover:border-white/30 hover:bg-white/10"
-                                    >
-                                        View details
-                                    </LoadingLink>
+                                <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))]">
+                                    <div className="p-4 text-sm text-white/60">Action</div>
+                                    {selected.map((product) => (
+                                        <div key={`${product.slug}-action`} className="border-l border-white/10 p-4">
+                                            <LoadingLink
+                                                href={`/products/${product.slug}`}
+                                                className="inline-flex rounded-full border border-white/16 bg-white/6 px-4 py-2 text-sm text-white/86 transition-colors hover:border-white/30 hover:bg-white/10"
+                                            >
+                                                View details
+                                            </LoadingLink>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
             <Footer />

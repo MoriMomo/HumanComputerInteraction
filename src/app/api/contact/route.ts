@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { contactRateLimiter } from '@/lib/rate-limit';
+import { validateEmail, validateName } from '@/lib/auth-validation';
 
 export async function POST(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
+  if (!contactRateLimiter.check(ip)) {
+      return NextResponse.json({ error: "Too many requests, please try again later." }, { status: 429 });
+  }
+
   try {
     const { name, email, message } = await request.json();
 
@@ -10,6 +17,14 @@ export async function POST(request: Request) {
         { error: 'Name, email, and message are required' },
         { status: 400 }
       );
+    }
+
+    if (!validateName(name) || !validateEmail(email)) {
+        return NextResponse.json({ error: 'Invalid name or email' }, { status: 400 });
+    }
+
+    if (message.length > 2000) {
+        return NextResponse.json({ error: 'Message is too long' }, { status: 400 });
     }
 
     // Try to use environment variables for SMTP, otherwise fallback to ethereal for local dev

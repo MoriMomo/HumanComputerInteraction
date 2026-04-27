@@ -1,38 +1,35 @@
-import { test, describe, it } from 'node:test';
-import assert from 'node:assert';
-import { validateEmail, validateName } from './auth-validation.ts';
+import { test, describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { validateEmail, validateName, validatePassword } from "./auth-validation";
 
 describe('validateEmail', () => {
   it('should return true for valid email addresses', () => {
-    assert.strictEqual(validateEmail("test@example.com"), true);
-    assert.strictEqual(validateEmail("user.name+tag@domain.co.uk"), true);
-    assert.strictEqual(validateEmail("123@numbers.com"), true);
+    assert.equal(validateEmail("test@example.com"), true);
+    assert.equal(validateEmail("user.name+tag@domain.co.uk"), true);
+    assert.equal(validateEmail("123@numbers.com"), true);
   });
 
   it('should return true for valid email addresses with leading/trailing spaces', () => {
-    assert.strictEqual(validateEmail("  test@example.com  "), true);
-    assert.strictEqual(validateEmail("\ttest@example.com\n"), true);
+    assert.equal(validateEmail("  test@example.com  "), true);
+    assert.equal(validateEmail("\ttest@example.com\n"), true);
   });
 
   it('should return false for invalid email addresses', () => {
-    assert.strictEqual(validateEmail("test"), false);
-    assert.strictEqual(validateEmail("test@"), false);
-    assert.strictEqual(validateEmail("@example.com"), false);
-    assert.strictEqual(validateEmail("test@example"), false);
-    assert.strictEqual(validateEmail("test@.com"), false);
-    assert.strictEqual(validateEmail("test@example."), false);
-    assert.strictEqual(validateEmail("test @example.com"), false);
-    assert.strictEqual(validateEmail("test@ example.com"), false);
+    assert.equal(validateEmail("test"), false);
+    assert.equal(validateEmail("test@"), false);
+    assert.equal(validateEmail("@example.com"), false);
+    assert.equal(validateEmail("test@example"), false);
+    assert.equal(validateEmail("test@.com"), false);
+    assert.equal(validateEmail("test@example."), false);
+    assert.equal(validateEmail("test @example.com"), false);
+    assert.equal(validateEmail("test@ example.com"), false);
   });
 
   it('should return false for empty string', () => {
-    assert.strictEqual(validateEmail(""), false);
-    assert.strictEqual(validateEmail("   "), false);
+    assert.equal(validateEmail(""), false);
+    assert.equal(validateEmail("   "), false);
   });
 });
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import { validatePassword } from './auth-validation.ts';
 
 test('validatePassword', async (t) => {
     await t.test('returns true for password exactly 8 characters long', () => {
@@ -50,34 +47,31 @@ test('validatePassword', async (t) => {
     await t.test('returns false for empty password', () => {
         assert.equal(validatePassword(''), false);
     });
-import { test, describe } from 'node:test';
-import assert from 'node:assert';
-import { validateName } from './auth-validation.ts';
+});
 
 describe('validateName', () => {
   test('should return true for valid names', () => {
-    assert.strictEqual(validateName('John Doe'), true);
-    assert.strictEqual(validateName('Ab'), true); // Min length 2
-    assert.strictEqual(validateName('A'.repeat(80)), true); // Max length 80
+    assert.equal(validateName('John Doe'), true);
+    assert.equal(validateName('Ab'), true); // Min length 2
+    assert.equal(validateName('A'.repeat(80)), true); // Max length 80
   });
 
   test('should return false for names shorter than 2 characters', () => {
-    assert.strictEqual(validateName(''), false);
-    assert.strictEqual(validateName('A'), false);
+    assert.equal(validateName(''), false);
+    assert.equal(validateName('A'), false);
   });
 
   test('should return false for names longer than 80 characters', () => {
-    assert.strictEqual(validateName('A'.repeat(81)), false);
+    assert.equal(validateName('A'.repeat(81)), false);
   });
 
   test('should trim whitespace from names', () => {
-    assert.strictEqual(validateName('  John Doe  '), true);
-    assert.strictEqual(validateName(' A '), false); // "A" is too short after trimming
-    assert.strictEqual(validateName('  '), false); // Empty after trimming
+    assert.equal(validateName('  John Doe  '), true);
+    assert.equal(validateName(' A '), false); // "A" is too short after trimming
+    assert.equal(validateName('  '), false); // Empty after trimming
   });
 
   test('should return false for names that are only whitespace', () => {
-    assert.strictEqual(validateName('   '), false);
+    assert.equal(validateName('   '), false);
   });
-});
 });
