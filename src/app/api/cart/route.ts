@@ -9,7 +9,13 @@ interface CartMutationBody {
     slug?: string;
     color?: string;
     quantity?: number;
+    idempotencyKey?: string;
 }
+
+const processedIdempotencyKeys = new Set<string>();
+setInterval(() => {
+    processedIdempotencyKeys.clear();
+}, 1000 * 60 * 15); // Clear every 15 mins to prevent memory leak
 
 function getProduct(slug: string) {
     return PRODUCTS.find((entry) => entry.slug === slug);
@@ -119,6 +125,14 @@ export async function POST(request: Request) {
     const slug = bodyItem?.slug?.trim() || "";
     const color = bodyItem?.color?.trim() || null;
     const quantity = Number.isFinite(bodyItem?.quantity) ? Math.floor(bodyItem?.quantity as number) : 1;
+    const idempotencyKey = bodyItem?.idempotencyKey?.trim() || null;
+
+    if (idempotencyKey) {
+        if (processedIdempotencyKeys.has(idempotencyKey)) {
+            return getCartResponse(userId); // Return success if already processed
+        }
+        processedIdempotencyKeys.add(idempotencyKey);
+    }
 
     const product = getProduct(slug);
     if (!product) {

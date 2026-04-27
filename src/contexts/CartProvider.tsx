@@ -131,83 +131,94 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 return;
             }
 
-            if (!user) {
-                setItems((prev) => {
-                    const key = getItemKey(slug, color);
-                    const existingIndex = prev.findIndex((item) => getItemKey(item.slug, item.color) === key);
+            const q = Math.max(1, quantity);
 
-                    if (existingIndex >= 0) {
-                        const next = [...prev];
-                        const target = next[existingIndex];
-                        next[existingIndex] = { ...target, quantity: target.quantity + Math.max(1, quantity) };
-                        return next;
-                    }
+            setItems((prev) => {
+                const key = getItemKey(slug, color);
+                const existingIndex = prev.findIndex((item) => getItemKey(item.slug, item.color) === key);
 
-                    return [
-                        ...prev,
-                        {
-                            slug: product.slug,
-                            name: product.name,
-                            price: product.price,
-                            quantity: Math.max(1, quantity),
-                            color,
-                            imageSrc: product.image?.src,
-                        },
-                    ];
+                if (existingIndex >= 0) {
+                    const next = [...prev];
+                    const target = next[existingIndex];
+                    next[existingIndex] = { ...target, quantity: target.quantity + q };
+                    return next;
+                }
+
+                return [
+                    ...prev,
+                    {
+                        slug: product.slug,
+                        name: product.name,
+                        price: product.price,
+                        quantity: q,
+                        color,
+                        imageSrc: product.image?.src,
+                    },
+                ];
+            });
+
+            if (user) {
+                const idempotencyKey = `${Date.now()}-${Math.random()}`;
+                void requestCart("POST", { slug, color, quantity: q, idempotencyKey }).then(setItems).catch((err) => {
+                    console.error(err);
+                    void syncFromServer();
                 });
-                return;
             }
-
-            void requestCart("POST", { slug, color, quantity }).then(setItems).catch(console.error);
         },
-        [user]
+        [user, syncFromServer]
     );
 
     const updateQuantity = useCallback(
         (slug: string, quantity: number, color?: string) => {
-            if (!user) {
-                setItems((prev) => {
-                    const key = getItemKey(slug, color);
-                    if (quantity <= 0) {
-                        return prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+            setItems((prev) => {
+                const key = getItemKey(slug, color);
+                if (quantity <= 0) {
+                    return prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+                }
+
+                return prev.map((item) => {
+                    if (getItemKey(item.slug, item.color) !== key) {
+                        return item;
                     }
 
-                    return prev.map((item) => {
-                        if (getItemKey(item.slug, item.color) !== key) {
-                            return item;
-                        }
-
-                        return { ...item, quantity };
-                    });
+                    return { ...item, quantity };
                 });
-                return;
-            }
+            });
 
-            void requestCart("PUT", { slug, color, quantity }).then(setItems).catch(console.error);
+            if (user) {
+                void requestCart("PUT", { slug, color, quantity }).then(setItems).catch((err) => {
+                    console.error(err);
+                    void syncFromServer();
+                });
+            }
         },
-        [user]
+        [user, syncFromServer]
     );
 
     const removeItem = useCallback(
         (slug: string, color?: string) => {
-            if (!user) {
-                setItems((prev) => prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color)));
-                return;
-            }
+            setItems((prev) => prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color)));
 
-            void requestCart("DELETE", { slug, color }).then(setItems).catch(console.error);
+            if (user) {
+                void requestCart("DELETE", { slug, color }).then(setItems).catch((err) => {
+                    console.error(err);
+                    void syncFromServer();
+                });
+            }
         },
-        [user]
+        [user, syncFromServer]
     );
 
     const clearCart = useCallback(() => {
-        if (!user) {
-            setItems([]);
-            return;
-        }
+        setItems([]);
 
-        void requestCart("DELETE").then(setItems).catch(console.error);
-    }, [user]);
+        if (user) {
+            void requestCart("DELETE").then(setItems).catch((err) => {
+                console.error(err);
+                void syncFromServer();
+            });
+        }
+    }, [user, syncFromServer]);
 
     const value = useMemo(() => {
         const itemCount = items.reduce((total, item) => total + item.quantity, 0);

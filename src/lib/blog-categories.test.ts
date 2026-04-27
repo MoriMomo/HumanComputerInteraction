@@ -1,16 +1,16 @@
 import { test, describe } from "node:test";
-import assert from "node:assert";
-import { getBlogCategory } from "./blog-categories.ts";
+import assert from "node:assert/strict";
+import { getBlogCategory } from "./blog-categories";
 
 describe("getBlogCategory", () => {
     test("returns correct category for known slugs", () => {
-        assert.strictEqual(getBlogCategory("minimalist-carry-essentials"), "workflow");
-        assert.strictEqual(getBlogCategory("premium-materials-guide"), "materials");
-        assert.strictEqual(getBlogCategory("how-we-test-daily-carry"), "engineering");
+        assert.equal(getBlogCategory("minimalist-carry-essentials"), "workflow");
+        assert.equal(getBlogCategory("premium-materials-guide"), "materials");
+        assert.equal(getBlogCategory("how-we-test-daily-carry"), "engineering");
     });
 
     test("returns 'workflow' as fallback for unknown slugs", () => {
-        assert.strictEqual(getBlogCategory("unknown-slug-123"), "workflow");
-        assert.strictEqual(getBlogCategory(""), "workflow");
+        assert.equal(getBlogCategory("unknown-slug-123"), "workflow");
+        assert.equal(getBlogCategory(""), "workflow");
     });
 });
