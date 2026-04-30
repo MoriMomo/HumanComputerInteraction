@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
 import { AuthProvider } from "@/contexts/AuthProvider";
@@ -8,6 +9,7 @@ import { CartProvider } from "@/contexts/CartProvider";
 import GlobalLoadingLayer from "@/components/ui/GlobalLoadingLayer";
 import RouteLoadingManager from "@/components/ui/RouteLoadingManager";
 import ExitIntentOffer from "@/components/ui/ExitIntentOffer";
+import GPUMonitorClient from "@/components/debug/GPUMonitorClient";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -83,6 +85,7 @@ export default function RootLayout({
                 <div id="main-content" tabIndex={-1}>
                   {children}
                 </div>
+                <GPUMonitorClient />
               </ScrollProvider>
             </LoadingProvider>
           </CartProvider>

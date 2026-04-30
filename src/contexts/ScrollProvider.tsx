@@ -20,6 +20,7 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
     const isScrolling = scrollSignal !== debouncedScrollSignal;
 
     useEffect(() => {
+        // Let Lenis manage the RAF loop (reduces duplicate RAFs and main-thread work)
         const lenis = new Lenis({
             duration: 1.2,
             easing: (value: number) => Math.min(1, 1.001 - Math.pow(2, -10 * value)),
@@ -30,13 +31,12 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
             wheelMultiplier: 1,
             touchMultiplier: 2,
             infinite: false,
-            autoRaf: false,
+            autoRaf: true,
         });
-
-        let rafId = 0;
 
         const handleScroll = () => {
             setScrollSignal((previous) => previous + 1);
+            // Allow GSAP's ScrollTrigger to update when scroll events happen
             ScrollTrigger.update();
         };
 
@@ -44,19 +44,13 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
             lenis.resize();
         };
 
-        const tick = (time: number) => {
-            lenis.raf(time);
-            rafId = window.requestAnimationFrame(tick);
-        };
-
         lenis.on("scroll", handleScroll);
         ScrollTrigger.addEventListener("refresh", handleRefresh);
-        rafId = window.requestAnimationFrame(tick);
+        // Ensure ScrollTrigger picks up the initial sizes
         ScrollTrigger.refresh();
 
         return () => {
             ScrollTrigger.removeEventListener("refresh", handleRefresh);
-            window.cancelAnimationFrame(rafId);
             lenis.destroy();
         };
     }, []);

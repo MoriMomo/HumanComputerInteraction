@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import useResolvedColor from "@/hooks/useResolvedColor";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -27,8 +28,21 @@ function ReactiveBlocks({ active, color, blockCount, opacity }: ReactiveBlocksPr
     const dummyRef = useRef(new THREE.Object3D());
     const frameColorRef = useRef(new THREE.Color());
 
-    const darkColor = useMemo(() => new THREE.Color(color).multiplyScalar(0.15), [color]);
-    const lightColor = useMemo(() => new THREE.Color(color).multiplyScalar(0.6), [color]);
+    const resolved = useResolvedColor(color);
+    const darkColor = useMemo(() => {
+        try {
+            return new THREE.Color(resolved).multiplyScalar(0.15);
+        } catch {
+            return new THREE.Color("#000").multiplyScalar(0.15);
+        }
+    }, [resolved]);
+    const lightColor = useMemo(() => {
+        try {
+            return new THREE.Color(resolved).multiplyScalar(0.6);
+        } catch {
+            return new THREE.Color("#fff").multiplyScalar(0.6);
+        }
+    }, [resolved]);
 
     const total = blockCount * blockCount;
 

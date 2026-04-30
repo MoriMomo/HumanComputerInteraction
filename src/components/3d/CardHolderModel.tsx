@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import useResolvedColor from "@/hooks/useResolvedColor";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
@@ -120,6 +121,8 @@ export default function CardHolderModel({
         };
     }, []);
 
+    const resolvedPropColor = useResolvedColor(color);
+
     const getMaterial = useCallback(
         (
             mode: NonNullable<CardHolderModelProps["renderMode"]>,
@@ -133,7 +136,12 @@ export default function CardHolderModel({
                 const isWire = mode === "wireframe";
                 const sourceStandard = sourceMaterial as Partial<THREE.MeshStandardMaterial & THREE.MeshPhysicalMaterial> | null;
                 const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color("var(--color-brand-cream)");
-                const tintColor = new THREE.Color(nextColor);
+                let tintColor: THREE.Color;
+                try {
+                    tintColor = new THREE.Color(nextColor);
+                } catch {
+                    tintColor = new THREE.Color("#ffffff");
+                }
                 const blendedColor = sourceColor.lerp(tintColor, isWire ? 0.88 : 0.72);
                 const maps = getMaterialMaps(sourceMaterial);
 
@@ -201,7 +209,7 @@ export default function CardHolderModel({
     // Apply materials to all meshes
     useEffect(() => {
         meshEntries.forEach(({ mesh, sourceMaterial }) => {
-            mesh.material = getMaterial(renderMode, color, sourceMaterial);
+            mesh.material = getMaterial(renderMode, resolvedPropColor, sourceMaterial);
             mesh.material.needsUpdate = true;
         });
     }, [color, getMaterial, meshEntries, renderMode]);
