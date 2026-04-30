@@ -15,12 +15,12 @@ const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
 });
 
 export const SWATCHES = [
-    { id: "graphite", label: "Graphite", hex: "#B59E7D", description: "Muted graphite anodized finish" },
-    { id: "onyx", label: "Onyx", hex: "#584738", description: "Low-glare black finish" },
-    { id: "steel", label: "Steel", hex: "#AAA396", description: "Cool brushed alloy tone" },
-    { id: "stone", label: "Stone", hex: "#CEC1A8", description: "Soft archival stone tone" },
-    { id: "walnut", label: "Walnut", hex: "#413429", description: "Dark walnut tone" },
-    { id: "champagne", label: "Champagne", hex: "#B59E7D", description: "Muted metallic champagne" },
+    { id: "graphite", label: "Graphite", hex: "var(--color-brand-primary)", description: "Muted graphite anodized finish" },
+    { id: "onyx", label: "Onyx", hex: "var(--color-brand-dark)", description: "Low-glare black finish" },
+    { id: "steel", label: "Steel", hex: "var(--color-brand-mountain)", description: "Cool brushed alloy tone" },
+    { id: "stone", label: "Stone", hex: "var(--color-brand-sand)", description: "Soft archival stone tone" },
+    { id: "walnut", label: "Walnut", hex: "var(--color-brand-darker)", description: "Dark walnut tone" },
+    { id: "champagne", label: "Champagne", hex: "var(--color-brand-primary)", description: "Muted metallic champagne" },
 ];
 
 const RENDER_MODES = [
@@ -30,11 +30,11 @@ const RENDER_MODES = [
 ];
 
 const SWATCH_BG_CLASS: Record<string, string> = {
-    "#B59E7D": "bg-[#B59E7D]",
-    "#584738": "bg-[#584738]",
-    "#AAA396": "bg-[#AAA396]",
-    "#CEC1A8": "bg-[#CEC1A8]",
-    "#413429": "bg-[#413429]",
+    "var(--color-brand-primary)": "bg-brand-primary",
+    "var(--color-brand-dark)": "bg-brand-dark",
+    "var(--color-brand-mountain)": "bg-brand-mountain",
+    "var(--color-brand-sand)": "bg-brand-sand",
+    "var(--color-brand-darker)": "bg-brand-darker",
 };
 
 interface MaterialSectionProps {
@@ -149,9 +149,9 @@ export default function MaterialSection({
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-[#584738] overflow-hidden"
+            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
             <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
 
             {/* Animated ambient orbs */}
@@ -173,14 +173,14 @@ export default function MaterialSection({
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
                             <p className="text-white/68 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Performance</h3>
                             <div className="flex items-center gap-2 text-white/70 text-sm">
                                 <span className="w-2 h-2 rounded-full bg-green-500/60" />
@@ -189,7 +189,7 @@ export default function MaterialSection({
                         </div>
 
                         <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-[#584738] font-medium hover:bg-white/90 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-brand-dark font-medium hover:bg-white/90 transition-colors text-sm">
                                 Customize
                             </button>
                             <button className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/18 text-white/92 font-medium hover:bg-white/16 transition-colors text-sm">
@@ -198,7 +198,7 @@ export default function MaterialSection({
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-[#584738] via-[#584738] to-[#584738]">
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -221,11 +221,11 @@ export default function MaterialSection({
                             </div>
                         )}
 
-                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#584738]/36 via-transparent to-[#584738]/28 pointer-events-none" />
+                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-dark/36 via-transparent to-brand-dark/28 pointer-events-none" />
                     </div>
 
                     <div className="material-controls space-y-4">
-                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Render Mode
                             </p>
@@ -251,7 +251,7 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Material Color
                             </p>
@@ -262,7 +262,7 @@ export default function MaterialSection({
                                         onClick={() => onColorChange(swatch.hex)}
                                         type="button"
                                         className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                            ? "ring-2 ring-white ring-offset-2 ring-offset-[#584738]"
+                                            ? "ring-2 ring-white ring-offset-2 ring-offset-brand-dark"
                                             : "hover:scale-105"
                                             } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
                                         aria-label={`Select ${swatch.label}`}
@@ -281,7 +281,7 @@ export default function MaterialSection({
                             <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
                         </div>
 
-                        <div className="bg-[#584738]/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
                                 Input: Active
                             </p>

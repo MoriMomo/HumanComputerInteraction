@@ -14,7 +14,7 @@ import StatsSection from "@/components/sections/StatsSection";
 const ENABLE_3D_MODEL = true;
 
 export default function ShowcasePage() {
-  const [activeColor, setActiveColor] = useState("#AAA396");
+  const [activeColor, setActiveColor] = useState("var(--color-brand-mountain)");
   const { isLoading } = useLoading();
   const [threeReady, setThreeReady] = useState(() => !ENABLE_3D_MODEL);
   const [assetsReady, setAssetsReady] = useState(() => !isLoading);
@@ -71,7 +71,7 @@ export default function ShowcasePage() {
   }, [threeReady]);
 
   return (
-    <main className="relative min-h-screen bg-[#584738]">
+    <main className="relative min-h-screen bg-brand-dark">
       <div
         className={`page-content ${contentVisible ? "loaded" : ""} relative z-10`}
       >

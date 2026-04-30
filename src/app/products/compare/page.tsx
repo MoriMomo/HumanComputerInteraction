@@ -27,7 +27,7 @@ export default function ProductComparePage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-[#584738] px-6 pb-24 pt-32 text-white md:px-12 lg:px-20">
+            <main className="min-h-screen bg-brand-dark px-6 pb-24 pt-32 text-white md:px-12 lg:px-20">
                 <div className="mx-auto max-w-7xl">
                     <LoadingLink href="/products" className="text-sm text-white/52 transition-colors hover:text-white/84">
                         ← Back to products
@@ -40,12 +40,12 @@ export default function ProductComparePage() {
                         <div className="mt-10 rounded-4xl border border-white/10 bg-white/5 p-16 text-center">
                             <h3 className="font-serif text-2xl font-semibold text-white">No products to compare</h3>
                             <p className="mt-2 text-white/60">Select at least two products to see a comparison.</p>
-                            <LoadingLink href="/products" className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-[#584738] transition-colors hover:bg-white/90">
+                            <LoadingLink href="/products" className="mt-6 inline-flex rounded-full bg-white px-6 py-3 font-semibold text-brand-dark transition-colors hover:bg-white/90">
                                 Browse products
                             </LoadingLink>
                         </div>
                     ) : (
-                        <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-[#584738]/64 overflow-x-auto">
+                        <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/64 overflow-x-auto">
                             <div className="min-w-[800px]">
                                 <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
                             <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>

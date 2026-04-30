@@ -144,7 +144,7 @@ function SceneContent({
 
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow={false} />
-            <directionalLight position={[-5, -5, -5]} intensity={0.8} color="#B59E7D" />
+            <directionalLight position={[-5, -5, -5]} intensity={0.8} color="var(--color-brand-primary)" />
             <directionalLight position={[0, 5, 0]} intensity={0.5} />
 
             {show3DModel && (
@@ -198,7 +198,7 @@ function SceneContent({
 }
 
 export default function CardHolderScene({
-    color = "#B59E7D",
+    color = "var(--color-brand-primary)",
     autoRotate = true,
     show3DModel = true,
     className = "",

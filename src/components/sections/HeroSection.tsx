@@ -13,18 +13,18 @@ gsap.registerPlugin(ScrollTrigger);
 const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
     loading: () => (
-        <div className="w-full h-full flex items-center justify-center rounded-3xl border border-white/12 bg-[#584738]">
+        <div className="w-full h-full flex items-center justify-center rounded-3xl border border-white/12 bg-brand-dark">
             <p className="text-[11px] uppercase tracking-[0.18em] text-white/58">Preparing 3D Scene</p>
         </div>
     ),
 });
 
 const GLOW_CLASS: Record<string, string> = {
-    "#B59E7D": "bg-[#B59E7D]",
-    "#584738": "bg-[#584738]",
-    "#AAA396": "bg-[#AAA396]",
-    "#CEC1A8": "bg-[#CEC1A8]",
-    "#413429": "bg-[#413429]",
+    "var(--color-brand-primary)": "bg-brand-primary",
+    "var(--color-brand-dark)": "bg-brand-dark",
+    "var(--color-brand-mountain)": "bg-brand-mountain",
+    "var(--color-brand-sand)": "bg-brand-sand",
+    "var(--color-brand-darker)": "bg-brand-darker",
 };
 
 interface HeroSectionProps {
@@ -193,11 +193,11 @@ export default function HeroSection({
         <section
             id="showcase"
             ref={containerRef}
-            className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]"
+            className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark"
         >
             {isInView && (
                 <ReactiveBackground
-                    color="#B59E7D"
+                    color="var(--color-brand-primary)"
                     blockCount={9}
                     opacity={0.06}
                     mode="absolute"
@@ -218,7 +218,7 @@ export default function HeroSection({
             />
             <div
                 aria-hidden
-                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-[#F1EADA]/12 blur-2xl"
+                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-brand-cream/12 blur-2xl"
             />
 
             {/* Bottom fade to dark – matches StatsSection bg */}
@@ -294,7 +294,7 @@ export default function HeroSection({
                                         className="w-full h-full"
                                     />
                                 ) : (
-                                    <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-[#584738] via-[#584738] to-[#584738] flex items-center justify-center">
+                                    <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark flex items-center justify-center">
                                         <div className="text-center px-6">
                                             <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
                                             <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Loading...</p>

@@ -224,8 +224,8 @@ export default function StatsSection({
     );
 
     return (
-        <section id="specs" ref={sectionRef} className="relative z-20 bg-[#584738]">
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#584738] to-transparent z-10" />
+        <section id="specs" ref={sectionRef} className="relative z-20 bg-brand-dark">
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-brand-dark to-transparent z-10" />
 
             <div className="grid min-h-[92vh] grid-cols-1 lg:grid-cols-2">
                 <div className="stats-image relative min-h-[58vh] overflow-hidden lg:min-h-[92vh]">
@@ -252,20 +252,20 @@ export default function StatsSection({
 
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-r from-[#584738]/80 via-[#584738]/40 to-transparent lg:hidden"
+                        className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/40 to-transparent lg:hidden"
                     />
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-t from-[#584738] via-transparent to-[#584738]/20"
+                        className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/20"
                     />
 
                     {(!isVideoLoaded || videoStalled) && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-[#584738]" aria-hidden="true">
+                        <div className="absolute inset-0 flex items-center justify-center bg-brand-dark" aria-hidden="true">
                             <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin" />
                         </div>
                     )}
 
-                    <div className="absolute inset-0 lg:hidden bg-[#584738]/20" />
+                    <div className="absolute inset-0 lg:hidden bg-brand-dark/20" />
                 </div>
 
                 <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0">
