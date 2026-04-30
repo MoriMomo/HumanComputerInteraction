@@ -229,9 +229,9 @@ export default function HeroSection({
 
             {/* Horizontal dividers */}
             <div aria-hidden className="absolute top-1/2 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-
-            {/* Main Content - COMPACT LAYOUT */}
-            <div className="relative z-20 min-h-screen flex flex-col justify-between pt-20 pb-8 md:pt-24 md:pb-10 px-8 md:px-16 max-w-480 mx-auto">
+            
+            {/* Main Content - FULL WIDTH RESPONSIVE LAYOUT */}
+            <div className="relative z-20 w-full min-h-screen flex flex-col justify-between px-4 sm:px-6 md:px-12 lg:px-20 py-12 sm:py-16 md:py-20 lg:py-24">
 
                 {/* Top Content - REMOVED min-h constraint */}
                 <div className="flex items-end justify-between pb-5 md:pb-7">
@@ -241,7 +241,7 @@ export default function HeroSection({
                             <span className="hero-word inline-block align-top text-[0.5em]">™</span>
                         </h1>
                         <p className="hero-kicker text-xs uppercase tracking-[0.35em] text-white/60 mt-3">
-                            Office Utility. Refined.
+                            Premium Card Holder. Engineered.
                         </p>
                         <div className="mt-6 flex items-center gap-3">
                             <a
@@ -261,14 +261,14 @@ export default function HeroSection({
 
                     <div className="hero-top-right hidden md:block max-w-xs text-right">
                         <p className="text-xs text-white/85 leading-relaxed">
-                            A compact carry object tuned for meetings, desks, and daily professional movement.
+                            A precision-engineered RFID-blocking card holder designed for professionals who refuse to compromise on quality or style.
                         </p>
                     </div>
                 </div>
 
-                {/* Canvas - LARGER container for premium 3D presentation */}
-                <div className="hero-canvas flex items-center justify-center py-6 md:py-8 min-h-[40vh] md:min-h-[50vh] -mx-4 md:mx-0">
-                    <div className="relative w-full max-w-3xl md:max-w-4xl aspect-[4/3] md:aspect-video">
+                {/* Canvas - CENTER FULL RESPONSIVE */}
+                <div className="hero-canvas flex items-center justify-center py-6 sm:py-8 md:py-10 lg:py-12 min-h-[35vh] sm:min-h-[40vh] md:min-h-[45vh] lg:min-h-[50vh] -mx-4 sm:-mx-6 md:-mx-12 lg:-mx-20 px-4 sm:px-6 md:px-12 lg:px-20 flex-1">
+                    <div className="relative w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl aspect-4/3 md:aspect-video">
                         <div
                             aria-hidden
                             className={`absolute inset-[10%] rounded-full blur-2xl opacity-30 ${GLOW_CLASS[activeColor] ?? "bg-swatch-bronze"}`}
@@ -295,10 +295,10 @@ export default function HeroSection({
                                     />
                                 ) : (
                                     <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark flex items-center justify-center">
-                                        <div className="text-center px-6">
-                                            <p className="text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
-                                            <p className="mt-2 text-2xl md:text-3xl font-semibold text-white/90">3D Preview Loading...</p>
-                                            <p className="mt-3 max-w-md text-sm text-white/64 leading-relaxed">
+                                        <div className="text-center px-4 sm:px-6">
+                                            <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
+                                            <p className="mt-2 text-lg sm:text-2xl md:text-3xl font-semibold text-white/90">3D Preview Loading...</p>
+                                            <p className="mt-3 max-w-xs sm:max-w-md text-xs sm:text-sm text-white/64 leading-relaxed">
                                                 Finishing asset initialization so the model appears instantly.
                                             </p>
                                         </div>
@@ -309,39 +309,39 @@ export default function HeroSection({
                     </div>
                 </div>
 
-                {/* Bottom Content - REMOVED min-h constraint */}
-                <div className="flex items-start justify-between pt-4 md:pt-6 relative z-30">
-                    <div className="hero-meta max-w-xl">
-                        <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-2.5">
-                            Built For Workdays.
+                {/* Bottom Content - Bottom Corners */}
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-8 pt-4 sm:pt-6 md:pt-8 relative z-30">
+                    <div className="hero-meta flex-1 max-w-xl">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2.5">
+                            Your Cards Deserve Better.
                             <br />
-                            Ready For Every Move.
+                            So Do You.
                         </h2>
-                        <p className="text-white/68 text-sm leading-relaxed max-w-md">
-                            Minimal enough for the boardroom, durable enough for the commute, and clean enough to feel native on a desk.
+                        <p className="text-white/68 text-xs sm:text-sm leading-relaxed max-w-sm sm:max-w-md">
+                            18g of aircraft-grade aluminum and military-grade RFID shielding. Holds 4–8 cards securely. Built to last. Designed to impress.
                         </p>
                     </div>
 
-                    <div className="hero-top-right hidden md:block max-w-xs text-right">
-                        <p className="text-xs uppercase tracking-[0.2em] text-white/58 mb-2">
-                            Compact Work Carry Format
+                    <div className="hero-top-right hidden lg:block shrink-0 max-w-xs text-right">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-white/58 mb-2">
+                            RFID Protection. Always Active.
                         </p>
-                        <p className="text-sm text-white/84">
-                            Precision-built for cards, cash, and daily essentials.
+                        <p className="text-xs text-white/84">
+                            Military-grade blocking layer keeps your contactless cards safe from digital skimming.
                         </p>
                     </div>
                 </div>
 
-                {/* Bottom Rail */}
-                <div className="hero-rail flex items-center justify-between pt-4 border-t border-white/10 mt-4 flex-wrap gap-y-2.5">
-                    <div className="flex gap-8 md:gap-12 flex-wrap">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Utility Profile</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Slim Desk Carry</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Focus</span>
+                {/* Bottom Rail - Bottom Edge */}
+                <div className="hero-rail flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 pt-4 border-t border-white/10 mt-4 flex-wrap">
+                    <div className="flex flex-wrap gap-6 sm:gap-8 md:gap-12">
+                        <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/58">Card Capacity</span>
+                        <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/58">4–8 Cards</span>
+                        <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/58">18g Weight</span>
                     </div>
-                    <div className="flex gap-8 md:gap-12 flex-wrap md:justify-end">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Surface</span>
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/58">Graphite, Steel, Sand</span>
+                    <div className="flex flex-wrap gap-6 sm:gap-8 md:gap-12 sm:justify-end w-full sm:w-auto">
+                        <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/58">Finish</span>
+                        <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/58">Graphite, Steel, Sand</span>
                     </div>
                 </div>
             </div>

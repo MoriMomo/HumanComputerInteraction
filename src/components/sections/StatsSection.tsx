@@ -268,7 +268,7 @@ export default function StatsSection({
                     <div className="absolute inset-0 lg:hidden bg-brand-dark/20" />
                 </div>
 
-                <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0">
+                <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0 bg-black/40">
                     <div className="max-w-xl">
                         <p className="stats-subtitle mb-4 text-xs font-semibold tracking-[0.28em] text-white/52 uppercase">
                             Performance Snapshot

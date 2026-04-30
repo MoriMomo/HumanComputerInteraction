@@ -1,9 +1,0 @@
-sed -i 's/--color-primary: #7B8795;/--color-primary: #B59E7D;/g' src/app/globals.css
-sed -i 's/--color-primary-light: #A7B2BE;/--color-primary-light: #CEC1A8;/g' src/app/globals.css
-sed -i 's/--color-primary-dark: #586270;/--color-primary-dark: #AAA396;/g' src/app/globals.css
-sed -i 's/--color-secondary: #29323C;/--color-secondary: #AAA396;/g' src/app/globals.css
-sed -i 's/--color-charcoal: #1E2730;/--color-charcoal: #584738;/g' src/app/globals.css
-sed -i 's/--color-charcoal-light: #46515D;/--color-charcoal-light: #B59E7D;/g' src/app/globals.css
-sed -i 's/--color-soft-grey: #D7DEE4;/--color-soft-grey: #CEC1A8;/g' src/app/globals.css
-sed -i 's/--color-background-light: #EEF2F4;/--color-background-light: #F1EADA;/g' src/app/globals.css
-sed -i 's/--color-overlay: rgba(30,39,48,0.55);/--color-overlay: rgba(88,71,56,0.55);/g' src/app/globals.css
