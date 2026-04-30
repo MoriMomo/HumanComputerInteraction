@@ -20,7 +20,7 @@ export const PRODUCTS: Product[] = [
         name: "CardHolder Pro",
         price: 89,
         description: "Premium aluminium card holder with RFID shielding",
-        colors: ["#B59E7D", "#584738", "#AAA396", "#CEC1A8"],
+        colors: ["var(--color-brand-primary)", "var(--color-brand-dark)", "var(--color-brand-mountain)", "var(--color-brand-sand)"],
         features: ["RFID Shielding", "18g Weight", "8-Card Capacity", "Anodised Finish"],
         image: {
             src: "/products/cardholder-pro.svg",
@@ -33,7 +33,7 @@ export const PRODUCTS: Product[] = [
         name: "Wallet Elite",
         price: 129,
         description: "Minimalist wallet with cash strap and modular system",
-        colors: ["#B59E7D", "#584738", "#413429"],
+        colors: ["var(--color-brand-primary)", "var(--color-brand-dark)", "var(--color-brand-darker)"],
         features: ["Cash Strap", "Modular Rails", "6061-T6 Aluminium", "Lifetime Warranty"],
         image: {
             src: "/products/wallet-elite.svg",
@@ -46,7 +46,7 @@ export const PRODUCTS: Product[] = [
         name: "Desk Organizer",
         price: 149,
         description: "Executive desk organizer for modern professionals",
-        colors: ["#B59E7D", "#AAA396"],
+        colors: ["var(--color-brand-primary)", "var(--color-brand-mountain)"],
         features: ["Multiple Compartments", "Cable Management", "Non-Slip Base", "Powder Coated"],
         image: {
             src: "/products/desk-organizer.svg",

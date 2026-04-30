@@ -13,7 +13,7 @@ const products = [
         id: "standard",
         name: "SatSet Standard",
         price: 79,
-        color: "#AAA396",
+        color: "var(--color-brand-mountain)",
         colorLabel: "Storm Grey",
         capacity: "4–6 cards",
         features: [
@@ -24,16 +24,16 @@ const products = [
         ],
         badge: null,
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#AAA396]/8",
-        bgSolidClass: "bg-[#AAA396]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#AAA396,transparent_70%)]",
-        textColorClass: "text-[#AAA396]",
+        bgPaleClass: "bg-brand-mountain/8",
+        bgSolidClass: "bg-brand-mountain",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,var(--color-brand-mountain),transparent_70%)]",
+        textColorClass: "text-brand-mountain",
     },
     {
         id: "pro",
         name: "SatSet Pro",
         price: 129,
-        color: "#B59E7D",
+        color: "var(--color-brand-primary)",
         colorLabel: "Graphite",
         capacity: "4–8 cards",
         features: [
@@ -45,16 +45,16 @@ const products = [
         ],
         badge: "Most Popular",
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#B59E7D]/8",
-        bgSolidClass: "bg-[#B59E7D]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#B59E7D,transparent_70%)]",
-        textColorClass: "text-[#B59E7D]",
+        bgPaleClass: "bg-brand-primary/8",
+        bgSolidClass: "bg-brand-primary",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,var(--color-brand-primary),transparent_70%)]",
+        textColorClass: "text-brand-primary",
     },
     {
         id: "executive",
         name: "SatSet Executive",
         price: 199,
-        color: "#584738",
+        color: "var(--color-brand-dark)",
         colorLabel: "Midnight Black",
         capacity: "4–8 cards + cash",
         features: [
@@ -67,10 +67,10 @@ const products = [
         ],
         badge: "Premium",
         cta: "Add to Cart",
-        bgPaleClass: "bg-[#584738]/8",
-        bgSolidClass: "bg-[#584738]",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,#584738,transparent_70%)]",
-        textColorClass: "text-[#584738]",
+        bgPaleClass: "bg-brand-dark/8",
+        bgSolidClass: "bg-brand-dark",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,var(--color-brand-dark),transparent_70%)]",
+        textColorClass: "text-brand-dark",
     },
 ];
 
@@ -171,16 +171,16 @@ export default function ShopSection() {
         <section
             id="shop"
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-[#584738] overflow-hidden"
+            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-[#584738] via-[#584738] to-[#584738]" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
             <div
                 aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#584738]/12 blur-3xl"
+                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-brand-dark/12 blur-3xl"
             />
             <div
                 aria-hidden
-                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-[#584738]/8 blur-3xl"
+                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-brand-dark/8 blur-3xl"
             />
             <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                 {/* Label + title */}
@@ -206,9 +206,9 @@ export default function ShopSection() {
                         return (
                             <div
                                 key={product.id}
-                                className={`shop-card group relative flex flex-col overflow-hidden rounded-3xl border backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-white/15 ${isPopular
-                                    ? "border-white/12 bg-white/6 shadow-xl shadow-black/30"
-                                    : "border-white/8 bg-white/4"
+                                className={`shop-card group relative flex flex-col overflow-hidden rounded-3xl border backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-brand-primary/20 hover:shadow-brand-hover ${isPopular
+                                    ? "border-brand-primary/20 bg-linear-to-b from-brand-primary/10 to-brand-primary/5 shadow-brand-hover"
+                                    : "border-brand-mountain/10 bg-linear-to-b from-brand-mountain/5 to-transparent"
                                     }`}
                             >
                                 {/* Badge */}

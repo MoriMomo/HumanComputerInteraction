@@ -137,8 +137,8 @@ export default function Navbar() {
             <nav
                 ref={navRef}
                 className={`fixed top-0 left-0 right-0 z-100 transition-all duration-700 ${scrolled
-                    ? "bg-[#584738]/96 border-b border-white/8 shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
-                    : "bg-linear-to-b from-[#584738]/80 to-transparent"
+                    ? "bg-brand-dark/96 border-b border-white/8 shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
+                    : "bg-linear-to-b from-brand-dark/80 to-transparent"
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -197,7 +197,7 @@ export default function Navbar() {
                                 <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
                                 <span className="ml-2">Cart</span>
                                 {itemCount > 0 && (
-                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#584738]">
+                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-dark">
                                         {itemCount}
                                     </span>
                                 )}
@@ -253,7 +253,7 @@ export default function Navbar() {
                     role="dialog"
                     aria-modal="true"
                     aria-label="Mobile navigation"
-                    className="fixed inset-0 top-20 z-99 bg-[#584738]/98 md:hidden"
+                    className="fixed inset-0 top-20 z-99 bg-brand-dark/98 md:hidden"
                     onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                             closeMenu();
@@ -296,7 +296,7 @@ export default function Navbar() {
                                 className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/14 bg-white/6 px-5 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="text-lg font-medium text-white/88">Cart</span>
-                                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#584738]">
+                                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-dark">
                                     {itemCount}
                                 </span>
                             </LoadingLink>
@@ -304,7 +304,7 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
-                                className="block w-full py-4 rounded-2xl bg-white text-[#584738] text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                                className="block w-full py-4 rounded-2xl bg-white text-brand-dark text-lg font-semibold text-center hover:bg-white/90 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 Log in
                             </LoadingLink>
