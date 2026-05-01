@@ -33,8 +33,6 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
             autoRaf: false,
         });
 
-        let rafId = 0;
-
         const handleScroll = () => {
             setScrollSignal((previous) => previous + 1);
             ScrollTrigger.update();
@@ -44,19 +42,24 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
             lenis.resize();
         };
 
-        const tick = (time: number) => {
-            lenis.raf(time);
-            rafId = window.requestAnimationFrame(tick);
-        };
-
         lenis.on("scroll", handleScroll);
         ScrollTrigger.addEventListener("refresh", handleRefresh);
-        rafId = window.requestAnimationFrame(tick);
+
+        const tickerWrapper = (time: number) => {
+            lenis.raf(time * 1000); // gsap provides time in seconds, lenis expects ms
+        };
+
+        // Sync Lenis with GSAP's internal ticker to avoid multiple requestAnimationFrames
+        gsap.ticker.add(tickerWrapper);
+
+        // Ensure GSAP ticker doesn't lag behind
+        gsap.ticker.lagSmoothing(0);
+
         ScrollTrigger.refresh();
 
         return () => {
             ScrollTrigger.removeEventListener("refresh", handleRefresh);
-            window.cancelAnimationFrame(rafId);
+            gsap.ticker.remove(tickerWrapper);
             lenis.destroy();
         };
     }, []);
