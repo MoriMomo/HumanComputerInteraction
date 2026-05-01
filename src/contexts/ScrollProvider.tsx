@@ -20,6 +20,7 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
     const isScrolling = scrollSignal !== debouncedScrollSignal;
 
     useEffect(() => {
+        // Let Lenis manage the RAF loop (reduces duplicate RAFs and main-thread work)
         const lenis = new Lenis({
             duration: 1.2,
             easing: (value: number) => Math.min(1, 1.001 - Math.pow(2, -10 * value)),
@@ -35,6 +36,7 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
 
         const handleScroll = () => {
             setScrollSignal((previous) => previous + 1);
+            // Allow GSAP's ScrollTrigger to update when scroll events happen
             ScrollTrigger.update();
         };
 
