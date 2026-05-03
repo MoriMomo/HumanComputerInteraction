@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookie";
 import { readSessionToken } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCT_MAP } from "@/data/products";
 
 interface CartMutationBody {
     slug?: string;
@@ -18,7 +18,7 @@ setInterval(() => {
 }, 1000 * 60 * 15); // Clear every 15 mins to prevent memory leak
 
 function getProduct(slug: string) {
-    return PRODUCTS.find((entry) => entry.slug === slug);
+    return PRODUCT_MAP.get(slug);
 }
 
 function toResponseItem(entry: { slug: string; color: string | null; quantity: number }) {

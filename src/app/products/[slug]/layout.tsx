@@ -1,4 +1,4 @@
-import { PRODUCTS } from "@/data/products";
+import { PRODUCT_MAP } from "@/data/products";
 import { getSiteUrl } from "@/lib/site-url";
 import { Metadata } from "next";
 
@@ -8,7 +8,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const product = PRODUCTS.find((p) => p.slug === slug);
+    const product = PRODUCT_MAP.get(slug);
 
     if (!product) {
         return {

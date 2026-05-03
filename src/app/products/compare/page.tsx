@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import LoadingLink from "@/components/ui/LoadingLink";
-import { PRODUCTS, type Product } from "@/data/products";
+import { PRODUCTS, PRODUCT_MAP, type Product } from "@/data/products";
 
 export default function ProductComparePage() {
     const searchParams = useSearchParams();
@@ -19,7 +19,7 @@ export default function ProductComparePage() {
             .slice(0, 3);
 
         const resolved = slugs
-            .map((slug) => PRODUCTS.find((product) => product.slug === slug))
+            .map((slug) => PRODUCT_MAP.get(slug))
             .filter((product): product is Product => Boolean(product));
         return resolved.length >= 2 ? resolved : PRODUCTS.slice(0, 2);
     }, [compare]);
