@@ -9,7 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCTS, PRODUCT_MAP } from "@/data/products";
 import { trackEvent } from "@/lib/analytics";
 import SafeJsonLd from "@/components/ui/SafeJsonLd";
 import RecentlyViewed from "@/components/products/RecentlyViewed";
@@ -38,7 +38,7 @@ const SWATCH_BG_CLASS: Record<string, string> = {
 export default function ProductDetailPage() {
     const { slug } = useParams<{ slug: string }>();
     const containerRef = useRef<HTMLDivElement>(null);
-    const product = PRODUCTS.find((p) => p.slug === slug) ?? PRODUCTS[0];
+    const product = PRODUCT_MAP.get(slug) ?? PRODUCTS[0];
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCT_MAP } from "@/data/products";
 import { useAuth } from "@/contexts/AuthProvider";
 import { getApiBaseUrl } from "@/lib/site-url";
 
@@ -126,7 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const addItem = useCallback(
         ({ slug, quantity = 1, color }: AddToCartPayload) => {
-            const product = PRODUCTS.find((entry) => entry.slug === slug);
+            const product = PRODUCT_MAP.get(slug);
             if (!product) {
                 return;
             }
