@@ -16,10 +16,7 @@ function getSessionSecret() {
     const secret = process.env.AUTH_SESSION_SECRET?.trim();
 
     if (!secret) {
-        if (process.env.NODE_ENV === "production") {
-            throw new Error("AUTH_SESSION_SECRET environment variable is required in production.");
-        }
-        return "development-auth-secret-change-me";
+        throw new Error("AUTH_SESSION_SECRET environment variable is required.");
     }
 
     return secret;
