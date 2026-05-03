@@ -229,7 +229,7 @@ export default function HeroSection({
 
             {/* Horizontal dividers */}
             <div aria-hidden className="absolute top-1/2 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
-            
+
             {/* Main Content - FULL WIDTH RESPONSIVE LAYOUT */}
             <div className="relative z-20 w-full min-h-screen flex flex-col justify-between px-4 sm:px-6 md:px-12 lg:px-20 py-12 sm:py-16 md:py-20 lg:py-24">
 

@@ -31,7 +31,7 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
             wheelMultiplier: 1,
             touchMultiplier: 2,
             infinite: false,
-            autoRaf: true,
+            autoRaf: false,
         });
 
         const handleScroll = () => {
@@ -46,11 +46,22 @@ export function ScrollProvider({ children }: { children: ReactNode }) {
 
         lenis.on("scroll", handleScroll);
         ScrollTrigger.addEventListener("refresh", handleRefresh);
-        // Ensure ScrollTrigger picks up the initial sizes
+
+        const tickerWrapper = (time: number) => {
+            lenis.raf(time * 1000); // gsap provides time in seconds, lenis expects ms
+        };
+
+        // Sync Lenis with GSAP's internal ticker to avoid multiple requestAnimationFrames
+        gsap.ticker.add(tickerWrapper);
+
+        // Ensure GSAP ticker doesn't lag behind
+        gsap.ticker.lagSmoothing(0);
+
         ScrollTrigger.refresh();
 
         return () => {
             ScrollTrigger.removeEventListener("refresh", handleRefresh);
+            gsap.ticker.remove(tickerWrapper);
             lenis.destroy();
         };
     }, []);

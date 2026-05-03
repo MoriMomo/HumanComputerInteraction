@@ -137,8 +137,8 @@ function SceneContent({
             <Environment
                 preset="studio"
                 background={false}
-                blur={energySaving ? 0.35 : 0.8}
-
+                blur={energySaving ? 0 : 0.8}
+                resolution={256}
                 environmentIntensity={energySaving ? 1.1 : 1.5}
             />
 
@@ -154,7 +154,8 @@ function SceneContent({
                     scale={20}
                     blur={3}
                     far={6}
-                    resolution={energySaving ? 256 : 512}
+                    resolution={256}
+                    frames={energySaving ? 1 : 60}
                     color="#000000"
                 />
             )}
@@ -258,10 +259,10 @@ export default function CardHolderScene({
 
     const dprRange = useMemo<[number, number]>(() => {
         if (energySaving) {
-            return [1, 1.1];
+            return [1, 1];
         }
 
-        return [1, maxDpr];
+        return [1, Math.min(maxDpr, 1.5)];
     }, [energySaving, maxDpr]);
 
     return (
