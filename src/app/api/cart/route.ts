@@ -84,6 +84,26 @@ export async function POST(request: Request) {
     if (Array.isArray(body)) {
         const items = body as CartMutationBody[];
 
+        // Aggregate payload items to prevent duplicate processing
+        const aggregatedItems = new Map<string, { slug: string; color: string | null; quantity: number }>();
+        for (const item of items) {
+            const slug = item.slug?.trim() || "";
+            const color = item.color?.trim() || null;
+            const quantity = Number.isFinite(item.quantity) ? Math.floor(item.quantity as number) : 1;
+
+            if (!getProduct(slug) || quantity < 1) {
+                continue;
+            }
+
+            const key = `${slug}:${color ?? ""}`;
+            const existing = aggregatedItems.get(key);
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                aggregatedItems.set(key, { slug, color, quantity });
+            }
+        }
+
         await prisma.$transaction(async (tx) => {
             // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
             const existingItems = await tx.cartItem.findMany({
@@ -94,28 +114,24 @@ export async function POST(request: Request) {
                 existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
-            for (const item of items) {
-                const slug = item.slug?.trim() || "";
-                const color = item.color?.trim() || null;
-                const quantity = Number.isFinite(item.quantity) ? Math.floor(item.quantity as number) : 1;
-
-                if (!getProduct(slug) || quantity < 1) {
-                    continue;
-                }
-
-                const existing = existingMap.get(`${slug}:${color ?? ""}`);
+            const operations = Array.from(aggregatedItems.values()).map((item) => {
+                const { slug, color, quantity } = item;
+                const key = `${slug}:${color ?? ""}`;
+                const existing = existingMap.get(key);
 
                 if (existing) {
-                    await tx.cartItem.update({
+                    return tx.cartItem.update({
                         where: { id: existing.id },
                         data: { quantity: existing.quantity + quantity },
                     });
                 } else {
-                    await tx.cartItem.create({
+                    return tx.cartItem.create({
                         data: { userId, slug, color, quantity },
                     });
                 }
-            }
+            });
+
+            await Promise.all(operations);
         });
 
         return getCartResponse(userId);

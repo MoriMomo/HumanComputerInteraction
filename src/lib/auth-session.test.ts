@@ -1,6 +1,6 @@
 import { test, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { createSessionToken, readSessionToken } from "./auth-session.ts";
+import { createSessionToken, readSessionToken } from "./auth-session";
 
 describe("auth-session", () => {
     it("should create and read a session token", () => {
