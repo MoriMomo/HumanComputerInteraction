@@ -94,6 +94,8 @@ export async function POST(request: Request) {
                 existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
+            const aggregatedItems = new Map<string, { slug: string; color: string | null; quantity: number }>();
+
             for (const item of items) {
                 const slug = item.slug?.trim() || "";
                 const color = item.color?.trim() || null;
@@ -103,19 +105,30 @@ export async function POST(request: Request) {
                     continue;
                 }
 
-                const existing = existingMap.get(`${slug}:${color ?? ""}`);
-
-                if (existing) {
-                    await tx.cartItem.update({
-                        where: { id: existing.id },
-                        data: { quantity: existing.quantity + quantity },
-                    });
+                const key = `${slug}:${color ?? ""}`;
+                if (aggregatedItems.has(key)) {
+                    aggregatedItems.get(key)!.quantity += quantity;
                 } else {
-                    await tx.cartItem.create({
-                        data: { userId, slug, color, quantity },
-                    });
+                    aggregatedItems.set(key, { slug, color, quantity });
                 }
             }
+
+            await Promise.all(
+                Array.from(aggregatedItems.values()).map(async (item) => {
+                    const existing = existingMap.get(`${item.slug}:${item.color ?? ""}`);
+
+                    if (existing) {
+                        await tx.cartItem.update({
+                            where: { id: existing.id },
+                            data: { quantity: existing.quantity + item.quantity },
+                        });
+                    } else {
+                        await tx.cartItem.create({
+                            data: { userId, slug: item.slug, color: item.color, quantity: item.quantity },
+                        });
+                    }
+                })
+            );
         });
 
         return getCartResponse(userId);
