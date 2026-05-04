@@ -94,6 +94,9 @@ export async function POST(request: Request) {
                 existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
+            // Pre-process items: aggregate quantities for duplicate items in the payload
+            const aggregatedItemsMap = new Map<string, { slug: string; color: string | null; quantity: number }>();
+
             for (const item of items) {
                 const slug = item.slug?.trim() || "";
                 const color = item.color?.trim() || null;
@@ -103,19 +106,31 @@ export async function POST(request: Request) {
                     continue;
                 }
 
+                const key = `${slug}:${color ?? ""}`;
+                const existingAgg = aggregatedItemsMap.get(key);
+                if (existingAgg) {
+                    existingAgg.quantity += quantity;
+                } else {
+                    aggregatedItemsMap.set(key, { slug, color, quantity });
+                }
+            }
+
+            const operations = Array.from(aggregatedItemsMap.values()).map(({ slug, color, quantity }) => {
                 const existing = existingMap.get(`${slug}:${color ?? ""}`);
 
                 if (existing) {
-                    await tx.cartItem.update({
+                    return tx.cartItem.update({
                         where: { id: existing.id },
                         data: { quantity: existing.quantity + quantity },
                     });
                 } else {
-                    await tx.cartItem.create({
+                    return tx.cartItem.create({
                         data: { userId, slug, color, quantity },
                     });
                 }
-            }
+            });
+
+            await Promise.all(operations);
         });
 
         return getCartResponse(userId);
