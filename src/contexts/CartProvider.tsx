@@ -158,7 +158,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
             });
 
             if (user) {
-                const idempotencyKey = `${Date.now()}-${Math.random()}`;
+                let idempotencyKey: string;
+                if (typeof crypto !== "undefined") {
+                    if (typeof crypto.randomUUID === "function") {
+                        idempotencyKey = crypto.randomUUID();
+                    } else {
+                        const array = new Uint32Array(1);
+                        crypto.getRandomValues(array);
+                        idempotencyKey = `${Date.now()}-${array[0]}`;
+                    }
+                } else {
+                    idempotencyKey = `${Date.now()}-${Math.floor(Math.random() * 1000000000)}`;
+                }
                 void requestCart("POST", { slug, color, quantity: q, idempotencyKey }).then(setItems).catch((err) => {
                     console.error(err);
                     void syncFromServer();
