@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookie";
 import { readSessionToken } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { PRODUCTS } from "@/data/products";
+import { PRODUCT_MAP } from "@/data/products";
 
 interface CartMutationBody {
     slug?: string;
@@ -18,7 +18,7 @@ setInterval(() => {
 }, 1000 * 60 * 15); // Clear every 15 mins to prevent memory leak
 
 function getProduct(slug: string) {
-    return PRODUCTS.find((entry) => entry.slug === slug);
+    return PRODUCT_MAP.get(slug);
 }
 
 function toResponseItem(entry: { slug: string; color: string | null; quantity: number }) {
@@ -46,14 +46,14 @@ async function getAuthenticatedUserId() {
 }
 
 async function getCartResponse(userId: string) {
-    const cartItems = (await prisma.cartItem.findMany({
+    const cartItems = await prisma.cartItem.findMany({
         where: { userId },
         select: {
             slug: true,
             color: true,
             quantity: true,
         },
-    })) as Array<{ slug: string; color: string | null; quantity: number }>;
+    });
 
     return NextResponse.json({
         items: cartItems
@@ -84,38 +84,54 @@ export async function POST(request: Request) {
     if (Array.isArray(body)) {
         const items = body as CartMutationBody[];
 
-        await prisma.$transaction(async (tx: any) => {
+        // Aggregate payload items to prevent duplicate processing
+        const aggregatedItems = new Map<string, { slug: string; color: string | null; quantity: number }>();
+        for (const item of items) {
+            const slug = item.slug?.trim() || "";
+            const color = item.color?.trim() || null;
+            const quantity = Number.isFinite(item.quantity) ? Math.floor(item.quantity as number) : 1;
+
+            if (!getProduct(slug) || quantity < 1) {
+                continue;
+            }
+
+            const key = `${slug}:${color ?? ""}`;
+            const existing = aggregatedItems.get(key);
+            if (existing) {
+                existing.quantity += quantity;
+            } else {
+                aggregatedItems.set(key, { slug, color, quantity });
+            }
+        }
+
+        await prisma.$transaction(async (tx) => {
             // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
-            const existingItems = (await tx.cartItem.findMany({
+            const existingItems = await tx.cartItem.findMany({
                 where: { userId },
-            })) as Array<{ id: string; slug: string; color: string | null; quantity: number }>;
+            });
 
             const existingMap = new Map(
-                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item] as const)
+                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
-            for (const item of items) {
-                const slug = item.slug?.trim() || "";
-                const color = item.color?.trim() || null;
-                const quantity = Number.isFinite(item.quantity) ? Math.floor(item.quantity as number) : 1;
-
-                if (!getProduct(slug) || quantity < 1) {
-                    continue;
-                }
-
-                const existing = existingMap.get(`${slug}:${color ?? ""}`) as (typeof existingItems)[number] | undefined;
+            const operations = Array.from(aggregatedItems.values()).map((item) => {
+                const { slug, color, quantity } = item;
+                const key = `${slug}:${color ?? ""}`;
+                const existing = existingMap.get(key);
 
                 if (existing) {
-                    await tx.cartItem.update({
+                    return tx.cartItem.update({
                         where: { id: existing.id },
                         data: { quantity: existing.quantity + quantity },
                     });
                 } else {
-                    await tx.cartItem.create({
+                    return tx.cartItem.create({
                         data: { userId, slug, color, quantity },
                     });
                 }
-            }
+            });
+
+            await Promise.all(operations);
         });
 
         return getCartResponse(userId);

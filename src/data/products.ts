@@ -55,3 +55,5 @@ export const PRODUCTS: Product[] = [
         },
     },
 ];
+
+export const PRODUCT_MAP = new Map(PRODUCTS.map((product) => [product.slug, product]));

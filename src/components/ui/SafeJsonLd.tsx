@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SafeJsonLdProps {
     data: Record<string, unknown>;
 }

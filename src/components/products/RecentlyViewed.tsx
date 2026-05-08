@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import LoadingLink from "@/components/ui/LoadingLink";
 import SmartImage from "@/components/ui/SmartImage";
-import { PRODUCTS, Product } from "@/data/products";
+import { PRODUCT_MAP, Product } from "@/data/products";
 
 const MAX_RECENT_ITEMS = 4;
 
@@ -51,7 +51,7 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
     const displaySlugs = recentSlugs.filter((slug) => slug !== currentSlug);
 
     const recentProducts = displaySlugs
-        .map((slug) => PRODUCTS.find((p) => p.slug === slug))
+        .map((slug) => PRODUCT_MAP.get(slug))
         .filter((p): p is Product => Boolean(p));
 
     if (recentProducts.length === 0) {
