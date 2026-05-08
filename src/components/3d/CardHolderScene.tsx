@@ -217,10 +217,17 @@ export default function CardHolderScene({
     const [maxDpr, setMaxDpr] = useState(1.25);
     const [isLowPowerDevice, setIsLowPowerDevice] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+    const [useOrthographic, setUseOrthographic] = useState(true);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 768px), (pointer: coarse)");
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        // Use orthographic on small / touch devices, and perspective on larger (desktop) viewports
+        const desktopQuery = window.matchMedia("(min-width: 1024px)");
+        const updateCameraType = () => {
+            setUseOrthographic(!desktopQuery.matches);
+        };
 
         const updateLowPowerMode = () => {
             setIsLowPowerDevice(mediaQuery.matches);
@@ -232,23 +239,28 @@ export default function CardHolderScene({
 
         updateLowPowerMode();
         updateReducedMotion();
+        updateCameraType();
 
         if (typeof mediaQuery.addEventListener === "function") {
             mediaQuery.addEventListener("change", updateLowPowerMode);
             reducedMotionQuery.addEventListener("change", updateReducedMotion);
+            desktopQuery.addEventListener("change", updateCameraType);
 
             return () => {
                 mediaQuery.removeEventListener("change", updateLowPowerMode);
                 reducedMotionQuery.removeEventListener("change", updateReducedMotion);
+                desktopQuery.removeEventListener("change", updateCameraType);
             };
         }
 
         mediaQuery.addListener(updateLowPowerMode);
         reducedMotionQuery.addListener(updateReducedMotion);
+        desktopQuery.addListener(updateCameraType);
 
         return () => {
             mediaQuery.removeListener(updateLowPowerMode);
             reducedMotionQuery.removeListener(updateReducedMotion);
+            desktopQuery.removeListener(updateCameraType);
         };
     }, []);
 
@@ -269,13 +281,11 @@ export default function CardHolderScene({
             <Canvas
                 className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
                 frameloop={isActive && !energySaving ? "always" : "demand"}
-                orthographic
-                camera={{
-                    position: cameraPosition,
-                    zoom: 90,
-                    near: 0.1,
-                    far: cameraFar,
-                }}
+                orthographic={useOrthographic}
+                camera={useOrthographic
+                    ? { position: cameraPosition, zoom: 90, near: 0.1, far: cameraFar }
+                    : { position: cameraPosition, fov: 45, near: 0.1, far: cameraFar }
+                }
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = false;
                     gl.outputColorSpace = THREE.SRGBColorSpace;

@@ -46,14 +46,14 @@ async function getAuthenticatedUserId() {
 }
 
 async function getCartResponse(userId: string) {
-    const cartItems = await prisma.cartItem.findMany({
+    const cartItems = (await prisma.cartItem.findMany({
         where: { userId },
         select: {
             slug: true,
             color: true,
             quantity: true,
         },
-    });
+    })) as Array<{ slug: string; color: string | null; quantity: number }>;
 
     return NextResponse.json({
         items: cartItems
@@ -84,14 +84,14 @@ export async function POST(request: Request) {
     if (Array.isArray(body)) {
         const items = body as CartMutationBody[];
 
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: any) => {
             // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
-            const existingItems = await tx.cartItem.findMany({
+            const existingItems = (await tx.cartItem.findMany({
                 where: { userId },
-            });
+            })) as Array<{ id: string; slug: string; color: string | null; quantity: number }>;
 
             const existingMap = new Map(
-                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
+                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item] as const)
             );
 
             for (const item of items) {
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
                     continue;
                 }
 
-                const existing = existingMap.get(`${slug}:${color ?? ""}`);
+                const existing = existingMap.get(`${slug}:${color ?? ""}`) as (typeof existingItems)[number] | undefined;
 
                 if (existing) {
                     await tx.cartItem.update({

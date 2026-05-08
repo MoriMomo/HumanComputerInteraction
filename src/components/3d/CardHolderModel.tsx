@@ -7,7 +7,7 @@ import { useGLTF } from "@react-three/drei";
 import type { GLTF } from "three-stdlib";
 import * as THREE from "three";
 
-const GLB_MODEL = "/satset3d/glb/bener-final.glb";
+const GLB_MODEL = "/satset3d/glb/bener-final-optimized.glb";
 
 interface CardHolderModelProps {
     color?: string;
@@ -32,9 +32,10 @@ export default function CardHolderModel({
     const rotationVelocityRef = useRef(0);
     const materialsRef = useRef<Map<string, THREE.Material>>(new Map());
     const readyNotifiedRef = useRef(false);
+    const normalsComputedRef = useRef(false);
 
     // Load model
-    const { scene } = useGLTF(GLB_MODEL) as unknown as GLTF & {
+    const { scene } = useGLTF(GLB_MODEL, true) as unknown as GLTF & {
         nodes: { [key: string]: THREE.Mesh };
         materials: { [key: string]: THREE.Material };
     };
@@ -51,9 +52,8 @@ export default function CardHolderModel({
             if (child instanceof THREE.Mesh) {
                 // Ensure geometry is valid
                 if (child.geometry) {
-                    // Fix normals (prevent inside-out rendering)
-                    child.geometry.computeVertexNormals();
-                    child.geometry.normalizeNormals();
+                    // DEFERRED: Vertex normals computed post-render to avoid main-thread blocking
+                    // (see useEffect below for deferred computation)
 
                     // PERFORMANCE: Disable shadows
                     child.castShadow = false;
@@ -123,6 +123,28 @@ export default function CardHolderModel({
 
     const resolvedPropColor = useResolvedColor(color);
 
+    // Resolve CSS variable color strings (e.g. "var(--color-foo)") to actual color values
+    const resolveCssColor = useCallback((input?: string) => {
+        if (!input) return undefined;
+        const t = input.trim();
+        if (!t) return undefined;
+        if (t.startsWith("var(")) {
+            try {
+                const m = t.match(/^var\(\s*([^,\)]+)\s*(?:,\s*([^\)]+))?\s*\)$/);
+                const varName = m ? m[1].trim() : null;
+                if (varName && typeof window !== "undefined") {
+                    const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+                    if (val) return val;
+                }
+            } catch {
+                // fall through
+            }
+            return t;
+        }
+
+        return t;
+    }, []);
+
     const getMaterial = useCallback(
         (
             mode: NonNullable<CardHolderModelProps["renderMode"]>,
@@ -135,10 +157,11 @@ export default function CardHolderModel({
                 const isGlass = mode === "glass";
                 const isWire = mode === "wireframe";
                 const sourceStandard = sourceMaterial as Partial<THREE.MeshStandardMaterial & THREE.MeshPhysicalMaterial> | null;
-                const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color("var(--color-brand-cream)");
+                const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color(resolveCssColor("var(--color-brand-cream)") ?? "#ffffff");
                 let tintColor: THREE.Color;
                 try {
-                    tintColor = new THREE.Color(nextColor);
+                    const parsed = resolveCssColor(nextColor) ?? nextColor;
+                    tintColor = new THREE.Color(parsed);
                 } catch {
                     tintColor = new THREE.Color("#ffffff");
                 }
@@ -203,7 +226,7 @@ export default function CardHolderModel({
 
             return materialsRef.current.get(key)!;
         },
-        [getMaterialMaps]
+        [getMaterialMaps, resolveCssColor]
     );
 
     // Apply materials to all meshes
@@ -212,7 +235,7 @@ export default function CardHolderModel({
             mesh.material = getMaterial(renderMode, resolvedPropColor, sourceMaterial);
             mesh.material.needsUpdate = true;
         });
-    }, [color, getMaterial, meshEntries, renderMode]);
+    }, [color, getMaterial, meshEntries, renderMode, resolvedPropColor]);
 
     useEffect(() => {
         if (readyNotifiedRef.current) {
@@ -231,6 +254,50 @@ export default function CardHolderModel({
             materialCache.clear();
         };
     }, []);
+
+    // Deferred: Compute vertex normals post-render to avoid main-thread blocking
+    useEffect(() => {
+        if (normalsComputedRef.current) {
+            return;
+        }
+
+        // Use requestIdleCallback if available, otherwise defer with setTimeout
+        const scheduleNormalCompute = (callback: () => void) => {
+            if (typeof window !== "undefined") {
+                const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number }).requestIdleCallback;
+                if (ric) {
+                    ric(callback, { timeout: 3000 });
+                    return;
+                }
+            }
+
+            globalThis.setTimeout(callback, 100);
+        };
+
+        const computeNormals = () => {
+            if (normalsComputedRef.current) return;
+
+            const startTime = performance.now();
+            let processedCount = 0;
+
+            modelGroup.traverse((child) => {
+                if (child instanceof THREE.Mesh && child.geometry) {
+                    child.geometry.computeVertexNormals();
+                    child.geometry.normalizeNormals();
+                    processedCount++;
+                }
+            });
+
+            const duration = performance.now() - startTime;
+            if (process.env.NODE_ENV === "development") {
+                console.log(`✓ Deferred normals computed for ${processedCount} meshes in ${duration.toFixed(2)}ms`);
+            }
+
+            normalsComputedRef.current = true;
+        };
+
+        scheduleNormalCompute(computeNormals);
+    }, [modelGroup]);
 
     // Debug model stats
     useEffect(() => {
@@ -287,4 +354,4 @@ export default function CardHolderModel({
     );
 }
 
-useGLTF.preload(GLB_MODEL);
+useGLTF.preload(GLB_MODEL, true);

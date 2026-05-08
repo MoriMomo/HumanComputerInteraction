@@ -198,7 +198,7 @@ export default function MaterialSection({
                         </div>
                     </div>
 
-                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark">
+                    <div suppressHydrationWarning className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}

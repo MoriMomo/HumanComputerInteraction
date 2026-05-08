@@ -26,28 +26,45 @@ export default function useResolvedColor(input: string) {
     const [resolved, setResolved] = useState(() => resolve(input));
 
     useEffect(() => {
-        setResolved(resolve(input));
-        if (typeof window === "undefined") return;
+        // Defer state updates to avoid synchronous setState within the effect
+        const newVal = resolve(input);
+        let rafId: number | null = null;
 
-        const root = document.documentElement;
-        const update = () => setResolved(resolve(input));
+        if (typeof window !== "undefined") {
+            if (newVal !== resolved) {
+                rafId = requestAnimationFrame(() => setResolved(newVal));
+            }
 
-        // Observe changes to root class/style (common theme toggles)
-        const attrObserver = new MutationObserver(() => update());
-        attrObserver.observe(root, { attributes: true, attributeFilter: ["class", "style"] });
+            const root = document.documentElement;
+            const update = () => {
+                const v = resolve(input);
+                if (v !== resolved) setResolved(v);
+            };
 
-        // Observe head for inserted/removed style elements or CSS changes
-        const headObserver = new MutationObserver(() => update());
-        headObserver.observe(document.head || document.documentElement, { childList: true, subtree: true });
+            // Observe changes to root class/style (common theme toggles)
+            const attrObserver = new MutationObserver(() => update());
+            attrObserver.observe(root, { attributes: true, attributeFilter: ["class", "style"] });
 
-        window.addEventListener("themechange", update as EventListener);
+            // Observe head for inserted/removed style elements or CSS changes
+            const headObserver = new MutationObserver(() => update());
+            headObserver.observe(document.head || document.documentElement, { childList: true, subtree: true });
 
-        return () => {
-            attrObserver.disconnect();
-            headObserver.disconnect();
-            window.removeEventListener("themechange", update as EventListener);
-        };
-    }, [input]);
+            window.addEventListener("themechange", update as EventListener);
+
+            return () => {
+                if (rafId !== null) cancelAnimationFrame(rafId);
+                attrObserver.disconnect();
+                headObserver.disconnect();
+                window.removeEventListener("themechange", update as EventListener);
+            };
+        }
+
+        // Server / non-window environment: set synchronously
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setResolved(newVal);
+
+        return;
+    }, [input, resolved]);
 
     return resolved;
 }
