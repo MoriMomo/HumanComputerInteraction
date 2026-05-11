@@ -193,7 +193,7 @@ export default function HeroSection({
         <section
             id="showcase"
             ref={containerRef}
-            className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark"
+            className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-brand-primary via-brand-primary to-brand-primary"
         >
             {isInView && (
                 <ReactiveBackground
@@ -231,16 +231,16 @@ export default function HeroSection({
             <div aria-hidden className="absolute top-1/2 left-0 right-0 z-10 h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Main Content - FULL WIDTH RESPONSIVE LAYOUT */}
-            <div className="relative z-20 w-full min-h-screen flex flex-col justify-between px-4 sm:px-6 md:px-12 lg:px-20 py-12 sm:py-16 md:py-20 lg:py-24">
+            <div className="relative z-20 w-full min-h-screen flex flex-col justify-between px-4 sm:px-6 md:px-12 lg:px-20 py-24 sm:py-32 md:py-40 lg:py-48">
 
                 {/* Top Content - REMOVED min-h constraint */}
                 <div className="flex items-end justify-between pb-5 md:pb-7">
                     <div className="max-w-4xl">
-                        <h1 className="hero-title text-5xl md:text-7xl lg:text-[7.25rem] font-bold text-white leading-none tracking-tight">
+                        <h1 className="hero-title text-6xl md:text-8xl lg:text-[9rem] font-bold text-white leading-none tracking-tight">
                             <span className="hero-word inline-block">SatSet</span>
                             <span className="hero-word inline-block align-top text-[0.5em]">™</span>
                         </h1>
-                        <p className="hero-kicker text-xs uppercase tracking-[0.35em] text-white/60 mt-3">
+                        <p className="hero-kicker text-sm md:text-base uppercase tracking-[0.4em] text-white/80 font-bold mt-3">
                             Premium Card Holder. Engineered.
                         </p>
                         <div className="mt-6 flex items-center gap-3">
@@ -289,12 +289,12 @@ export default function HeroSection({
                                         introDuration={1.15}
                                         modelRotation={[LOCK_MODEL_ORIENTATION_X, 0.22, 0]}
                                         modelOffset={[0, 0, 0]}
-                                        modelScaleMultiplier={4}
+                                        modelScaleMultiplier={5.5}
                                         onModelReady={on3DReady}
                                         className="w-full h-full"
                                     />
                                 ) : (
-                                    <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark flex items-center justify-center">
+                                    <div className="h-full w-full rounded-4xl border border-white/14 bg-linear-to-br from-brand-primary via-brand-primary to-brand-primary flex items-center justify-center">
                                         <div className="text-center px-4 sm:px-6">
                                             <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] text-white/60">Showcase Mode</p>
                                             <p className="mt-2 text-lg sm:text-2xl md:text-3xl font-semibold text-white/90">3D Preview Loading...</p>

@@ -2,23 +2,23 @@
 
 @theme {
   /* ── Brand colours ── */
-  --color-brand-cream: #F1EADA;
-  --color-brand-sand: #CEC1A8;
-  --color-brand-mountain: #AAA396;
-  --color-brand-primary: #B59E7D;
-  --color-brand-dark: #584738;
-  --color-brand-darker: #413429;
+  --color-brand-cream: #F8FAFC;
+  --color-brand-sand: #E2E8F0;
+  --color-brand-mountain: #FF007F;
+  --color-brand-primary: #0033CC;
+  --color-brand-dark: #001133;
+  --color-brand-darker: #000000;
 
   --color-primary: var(--color-brand-primary);
-  --color-primary-light: var(--color-brand-sand);
-  --color-primary-dark: var(--color-brand-mountain);
+  --color-primary-light: #3366FF;
+  --color-primary-dark: #002288;
   --color-secondary: var(--color-brand-mountain);
   --color-charcoal: var(--color-brand-dark);
   --color-charcoal-light: var(--color-brand-primary);
   --color-soft-grey: var(--color-brand-sand);
   --color-background-light: var(--color-brand-cream);
   --color-surface: #FFFFFF;
-  --color-overlay: rgba(88,71,56,0.55);
+  --color-overlay: rgba(0, 17, 51, 0.7);
 
   /* ── Swatch colours ── */
   --color-swatch-bronze: var(--color-brand-primary);
@@ -30,14 +30,14 @@
   --font-serif: var(--font-playfair), serif;
 
   /* ── Border radius ── */
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.5rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
 
   /* ── Shadows ── */
-  --shadow-soft: 0 4px 24px rgba(88,71,56,0.08);
-  --shadow-card: 0 8px 40px rgba(88,71,56,0.12);
-  --shadow-glow: 0 0 40px rgba(181,158,125,0.25);
-  --shadow-brand-hover: 0 12px 48px rgba(88,71,56,0.2);
+  --shadow-soft: 0 4px 24px rgba(0, 17, 51,0.08);
+  --shadow-card: 0 8px 40px rgba(0, 17, 51,0.12);
+  --shadow-glow: 0 0 40px rgba(0, 51, 204,0.25);
+  --shadow-brand-hover: 0 12px 48px rgba(0, 17, 51,0.2);
 
   /* ── Z-index layers ── */
   --z-canvas: 0;
@@ -118,34 +118,34 @@ body {
 .page-shell {
   isolation: isolate;
   background:
-    radial-gradient(circle at 50% 0%, rgba(181, 158, 125, 0.18), transparent 28%),
-    radial-gradient(circle at 14% 14%, rgba(206, 193, 168, 0.18), transparent 32%),
-    radial-gradient(circle at 86% 10%, rgba(170, 163, 150, 0.14), transparent 24%),
+    radial-gradient(circle at 50% 0%, rgba(0, 51, 204, 0.18), transparent 28%),
+    radial-gradient(circle at 14% 14%, rgba(255, 0, 127, 0.18), transparent 32%),
+    radial-gradient(circle at 86% 10%, rgba(51, 102, 255, 0.14), transparent 24%),
     linear-gradient(180deg, var(--color-brand-cream) 0%, var(--color-brand-cream) 34%, var(--color-brand-cream) 100%);
 }
 
 .section-seam-light {
-  background: linear-gradient(180deg, rgba(241, 234, 218, 0) 0%, rgba(241, 234, 218, 0.96) 78%);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.96) 78%);
 }
 
 .section-seam-dark {
-  background: linear-gradient(180deg, rgba(88, 71, 56, 0) 0%, rgba(88, 71, 56, 0.98) 76%);
+  background: linear-gradient(180deg, rgba(0, 17, 51, 0) 0%, rgba(0, 17, 51, 0.98) 76%);
 }
 
 .section-seam-paper {
-  background: linear-gradient(180deg, rgba(241, 234, 218, 0) 0%, rgba(241, 234, 218, 0.95) 80%);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.95) 80%);
 }
 
 .ambient-panel {
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(241, 234, 218, 0.88));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(248, 250, 252, 0.88));
 }
 
 .office-grid {
   background-image:
-    linear-gradient(rgba(88, 71, 56, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(88, 71, 56, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(0, 17, 51, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 17, 51, 0.08) 1px, transparent 1px);
   background-size: 120px 120px;
 }
 
@@ -193,12 +193,12 @@ section {
 
 .showcase-vignette {
   background:
-    radial-gradient(circle at 50% 42%, transparent 30%, rgba(88, 71, 56, 0.35) 82%),
-    linear-gradient(to bottom, rgba(88, 71, 56, 0.14), rgba(88, 71, 56, 0.22));
+    radial-gradient(circle at 50% 42%, transparent 30%, rgba(0, 17, 51, 0.35) 82%),
+    linear-gradient(to bottom, rgba(0, 17, 51, 0.14), rgba(0, 17, 51, 0.22));
 }
 
 .showcase-top-glow {
-  background: linear-gradient(to bottom, rgba(181, 158, 125, 0.16), transparent 80%);
+  background: linear-gradient(to bottom, rgba(0, 51, 204, 0.16), transparent 80%);
 }
 
 .feat-grid-overlay {
