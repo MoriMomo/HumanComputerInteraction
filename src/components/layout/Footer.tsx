@@ -18,7 +18,7 @@ export default function Footer() {
                 className="section-orb pointer-events-none absolute left-[-8%] top-0 h-72 w-72 rounded-full bg-brand-mountain/10 blur-3xl"
             />
             <div className="max-w-350 mx-auto p-4 md:p-10 lg:p-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/20">
                     {/* Brand */}
                     <div className="lg:col-span-2 flex flex-col gap-5">
                         <div className="flex items-center gap-3">

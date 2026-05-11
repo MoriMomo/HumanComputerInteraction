@@ -224,8 +224,8 @@ export default function StatsSection({
     );
 
     return (
-        <section id="specs" ref={sectionRef} className="relative z-20 bg-brand-dark">
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-brand-dark to-transparent z-10" />
+        <section id="specs" ref={sectionRef} className="relative z-20 bg-brand-primary">
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-brand-primary to-transparent z-10" />
 
             <div className="grid min-h-[92vh] grid-cols-1 lg:grid-cols-2">
                 <div className="stats-image relative min-h-[58vh] overflow-hidden lg:min-h-[92vh]">
@@ -252,20 +252,20 @@ export default function StatsSection({
 
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/40 to-transparent lg:hidden"
+                        className="absolute inset-0 bg-gradient-to-r from-brand-primary/80 via-brand-primary/40 to-transparent lg:hidden"
                     />
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/20"
+                        className="absolute inset-0 bg-gradient-to-t from-brand-primary via-transparent to-brand-primary/20"
                     />
 
                     {(!isVideoLoaded || videoStalled) && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-brand-dark" aria-hidden="true">
+                        <div className="absolute inset-0 flex items-center justify-center bg-brand-primary" aria-hidden="true">
                             <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin" />
                         </div>
                     )}
 
-                    <div className="absolute inset-0 lg:hidden bg-brand-dark/20" />
+                    <div className="absolute inset-0 lg:hidden bg-brand-primary/20" />
                 </div>
 
                 <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0 bg-black/40">
@@ -286,7 +286,7 @@ export default function StatsSection({
                                     key={stat.label}
                                     className="stats-row border-b border-white/10 py-7 last:border-0"
                                 >
-                                    <div className="group flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-6 transition-transform duration-500 ease-out hover:translate-x-2">
+                                    <div className="group flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-10 transition-transform duration-500 ease-out hover:translate-x-2">
                                         <dt className="flex items-baseline gap-4">
                                             <span className="text-4xl font-light tracking-tight text-white md:text-5xl">
                                                 {stat.value}

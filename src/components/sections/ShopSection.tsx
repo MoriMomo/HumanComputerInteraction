@@ -67,8 +67,8 @@ const products = [
         ],
         badge: "Premium",
         cta: "Add to Cart",
-        bgPaleClass: "bg-brand-dark/8",
-        bgSolidClass: "bg-brand-dark",
+        bgPaleClass: "bg-brand-primary/8",
+        bgSolidClass: "bg-brand-primary",
         glowClass: "[background:radial-gradient(circle_at_50%_50%,var(--color-brand-dark),transparent_70%)]",
         textColorClass: "text-brand-dark",
     },
@@ -171,16 +171,16 @@ export default function ShopSection() {
         <section
             id="shop"
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
+            className="relative py-32 md:py-40 bg-brand-primary overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-primary via-brand-primary to-brand-primary" />
             <div
                 aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-brand-dark/12 blur-3xl"
+                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-brand-primary/12 blur-3xl"
             />
             <div
                 aria-hidden
-                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-brand-dark/8 blur-3xl"
+                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-brand-primary/8 blur-3xl"
             />
             <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                 {/* Label + title */}
@@ -198,7 +198,7 @@ export default function ShopSection() {
                 </div>
 
                 {/* Product cards */}
-                <div className="shop-grid grid grid-cols-1 gap-8 md:grid-cols-3">
+                <div className="shop-grid grid grid-cols-1 gap-10 md:grid-cols-3 lg:gap-14">
                     {products.map((product) => {
                         const inCart = cart[product.id] || 0;
                         const isPopular = product.badge === "Most Popular";
@@ -225,10 +225,10 @@ export default function ShopSection() {
 
                                 {/* Color preview */}
                                 <div
-                                    className={`relative flex h-48 items-center justify-center overflow-hidden bg-white/2`}
+                                    className={`relative flex h-64 items-center justify-center overflow-hidden bg-white/2`}
                                 >
                                     <div
-                                        className={`h-28 w-28 rounded-2xl shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${product.bgSolidClass}`}
+                                        className={`h-40 w-40 rounded-2xl shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${product.bgSolidClass}`}
                                     />
                                     <div
                                         aria-hidden="true"
@@ -242,14 +242,14 @@ export default function ShopSection() {
                                         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-white/40">
                                             {product.colorLabel} · {product.capacity}
                                         </p>
-                                        <h3 className="text-xl font-bold text-white group-hover:text-primary/90 transition-colors">
+                                        <h3 className="text-4xl font-extrabold tracking-tight text-white group-hover:text-primary/90 transition-colors">
                                             {product.name}
                                         </h3>
                                     </div>
 
                                     {/* Price */}
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-3xl font-bold text-white">
+                                        <span className="text-4xl font-extrabold text-white">
                                             ${product.price}
                                         </span>
                                         <span className="text-sm text-white/40">USD</span>
@@ -278,7 +278,7 @@ export default function ShopSection() {
                                     {/* CTA */}
                                     <button
                                         onClick={() => addToCart(product.id)}
-                                        className={`group/btn mt-2 h-12 w-full rounded-full text-sm font-semibold tracking-wide transition-all duration-300 relative overflow-hidden ${isPopular
+                                        className={`group/btn mt-2 h-14 w-full rounded-full text-base font-bold tracking-wide transition-all duration-300 relative overflow-hidden ${isPopular
                                             ? "bg-white text-black hover:shadow-lg hover:shadow-white/20"
                                             : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
                                             }`}

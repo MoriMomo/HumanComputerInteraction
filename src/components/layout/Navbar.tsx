@@ -142,7 +142,7 @@ export default function Navbar() {
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-6 md:px-12">
-                    <div className="flex items-center justify-between h-20">
+                    <div className="flex items-center justify-between h-24">
                         {/* Left - Brand */}
                         <LoadingLink
                             href="/"
@@ -164,7 +164,7 @@ export default function Navbar() {
                                     />
                                 </svg>
                             </div>
-                            <span className="text-xl font-semibold text-white tracking-tight group-hover:text-white/90 transition-colors">
+                            <span className="text-3xl font-extrabold text-white tracking-tight group-hover:text-white/90 transition-colors">
                                 SatSet
                             </span>
                         </LoadingLink>

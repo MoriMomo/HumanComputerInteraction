@@ -279,7 +279,7 @@ export default function FeaturesSection() {
         <section
             id="features"
             ref={sectionRef}
-            className="relative py-40 md:py-52 bg-brand-darker overflow-hidden"
+            className="relative py-48 md:py-64 bg-brand-primary overflow-hidden"
             aria-labelledby="features-heading"
         >
             {/* Top border */}
@@ -315,14 +315,14 @@ export default function FeaturesSection() {
                     </div>
                     <h2
                         id="features-heading"
-                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6"
+                        className="text-5xl md:text-6xl lg:text-8xl tracking-tight font-bold text-white leading-tight mb-6"
                     >
                         <span className="feat-title-line inline-block">Engineered for the</span>{" "}
                         <span className="feat-title-line inline-block text-white/60 font-light italic">
                             detail-oriented.
                         </span>
                     </h2>
-                    <p className="feat-subtitle text-lg text-white/74 max-w-2xl leading-relaxed">
+                    <p className="feat-subtitle text-2xl text-white/74 max-w-2xl leading-relaxed">
                         Every element purposefully designed. Nothing added without reason.
                         Nothing removed without consideration.
                     </p>
@@ -350,7 +350,7 @@ export default function FeaturesSection() {
                             {FEATURES.map((feature) => (
                                 <div
                                     key={feature.title}
-                                    className="feat-card-slide feat-card group relative basis-full min-w-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-brand-dark/92 p-8 transition-all duration-500 hover:border-brand-primary/25 hover:shadow-brand-hover md:p-10"
+                                    className="feat-card-slide feat-card group relative basis-full min-w-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-brand-primary/92 p-8 transition-all duration-500 hover:border-brand-primary/25 hover:shadow-brand-hover md:p-10"
                                     tabIndex={0}
                                     role="article"
                                     aria-label={feature.title}
@@ -376,17 +376,17 @@ export default function FeaturesSection() {
 
                                     <div className="relative z-10">
                                         {/* Icon */}
-                                        <div className="feat-icon-wrapper mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-linear-to-br from-white/10 to-white/5 transition-all duration-400 group-hover:scale-110 group-hover:border-white/20">
-                                            <span className="material-symbols-outlined text-2xl text-white/80 feat-icon group-hover:text-white transition-colors">
+                                        <div className="feat-icon-wrapper mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/10 bg-linear-to-br from-white/10 to-white/5 transition-all duration-400 group-hover:scale-110 group-hover:border-white/20">
+                                            <span className="material-symbols-outlined text-4xl text-white/80 feat-icon group-hover:text-white transition-colors">
                                                 {feature.icon}
                                             </span>
                                         </div>
 
                                         {/* Content */}
-                                        <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
+                                        <h3 className="font-bold text-3xl text-white mb-4 group-hover:text-white transition-colors duration-300">
                                             {feature.title}
                                         </h3>
-                                        <p className="text-white/74 text-sm leading-relaxed group-hover:text-white/88 transition-colors duration-300">
+                                        <p className="text-white/74 text-base leading-relaxed group-hover:text-white/88 transition-colors duration-300">
                                             {feature.description}
                                         </p>
 

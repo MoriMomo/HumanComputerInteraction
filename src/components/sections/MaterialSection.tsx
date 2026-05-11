@@ -31,7 +31,7 @@ const RENDER_MODES = [
 
 const SWATCH_BG_CLASS: Record<string, string> = {
     "var(--color-brand-primary)": "bg-brand-primary",
-    "var(--color-brand-dark)": "bg-brand-dark",
+    "var(--color-brand-dark)": "bg-brand-primary",
     "var(--color-brand-mountain)": "bg-brand-mountain",
     "var(--color-brand-sand)": "bg-brand-sand",
     "var(--color-brand-darker)": "bg-brand-darker",
@@ -149,9 +149,9 @@ export default function MaterialSection({
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
+            className="relative py-32 md:py-40 bg-brand-primary overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-primary via-brand-primary to-brand-primary" />
             <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
 
             {/* Animated ambient orbs */}
@@ -171,16 +171,16 @@ export default function MaterialSection({
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
-                    <div className="material-controls space-y-4">
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
+                    <div className="material-controls space-y-6 lg:col-span-1">
+                        <div className="bg-brand-primary/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
                             <p className="text-white/68 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-primary/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <h3 className="text-white font-medium mb-3">Performance</h3>
                             <div className="flex items-center gap-2 text-white/70 text-sm">
                                 <span className="w-2 h-2 rounded-full bg-green-500/60" />
@@ -198,7 +198,7 @@ export default function MaterialSection({
                         </div>
                     </div>
 
-                    <div suppressHydrationWarning className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark">
+                    <div suppressHydrationWarning className="material-viewer lg:col-span-2 relative aspect-square lg:aspect-auto lg:min-h-[800px] w-full rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-primary via-brand-primary to-brand-primary">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -212,7 +212,7 @@ export default function MaterialSection({
                                 introDuration={1.15}
                                 modelRotation={[Math.PI / 2, 0.2, 0]}
                                 modelOffset={[0, 0, 0]}
-                                modelScaleMultiplier={4}
+                                modelScaleMultiplier={6}
                                 className="w-full h-full"
                             />
                         ) : (
@@ -221,11 +221,11 @@ export default function MaterialSection({
                             </div>
                         )}
 
-                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-dark/36 via-transparent to-brand-dark/28 pointer-events-none" />
+                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-primary/36 via-transparent to-brand-primary/28 pointer-events-none" />
                     </div>
 
-                    <div className="material-controls space-y-4">
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                    <div className="material-controls space-y-6 lg:col-span-1">
+                        <div className="bg-brand-primary/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Render Mode
                             </p>
@@ -234,7 +234,7 @@ export default function MaterialSection({
                                     <button
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
-                                        className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
+                                        className={`w-full px-6 py-4 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
                                             ? "bg-white/12 text-white border border-white/15"
                                             : "bg-transparent text-white/76 border border-transparent hover:bg-white/8"
                                             }`}
@@ -251,7 +251,7 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-primary/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
                                 Material Color
                             </p>
@@ -262,7 +262,7 @@ export default function MaterialSection({
                                         onClick={() => onColorChange(swatch.hex)}
                                         type="button"
                                         className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                            ? "ring-2 ring-white ring-offset-2 ring-offset-brand-dark"
+                                            ? "ring-2 ring-white ring-offset-2 ring-offset-brand-primary"
                                             : "hover:scale-105"
                                             } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
                                         aria-label={`Select ${swatch.label}`}
@@ -281,7 +281,7 @@ export default function MaterialSection({
                             <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
+                        <div className="bg-brand-primary/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
                             <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
                                 Input: Active
                             </p>
