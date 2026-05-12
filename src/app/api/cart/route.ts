@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookie";
 import { readSessionToken } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { PRODUCT_MAP } from "@/data/products";
 
 interface CartMutationBody {
@@ -46,7 +47,7 @@ async function getAuthenticatedUserId() {
 }
 
 async function getCartResponse(userId: string) {
-    const cartItems = await prisma.cartItem.findMany({
+    const cartItems: { slug: string; color: string | null; quantity: number }[] = await prisma.cartItem.findMany({
         where: { userId },
         select: {
             slug: true,
@@ -104,14 +105,14 @@ export async function POST(request: Request) {
             }
         }
 
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
-            const existingItems = await tx.cartItem.findMany({
+            const existingItems: Prisma.CartItem[] = await tx.cartItem.findMany({
                 where: { userId },
             });
 
             const existingMap = new Map(
-                existingItems.map((item) => [`${item.slug}:${item.color ?? ""}`, item])
+                existingItems.map((item: Prisma.CartItem) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
             const operations = Array.from(aggregatedItems.values()).map((item) => {

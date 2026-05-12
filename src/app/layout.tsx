@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
+import Link from "next/link";
 import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
 import { AuthProvider } from "@/contexts/AuthProvider";
@@ -12,6 +12,7 @@ import ExitIntentOffer from "@/components/ui/ExitIntentOffer";
 import GPUMonitorClient from "@/components/debug/GPUMonitorClient";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
+import PageTransition from "@/components/ui/PageTransition";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -65,7 +66,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${playfair.variable} antialiased`}
+        className={`${inter.variable} ${playfair.variable} antialiased min-h-screen flex flex-col bg-white text-slate-900`}
       >
         <a
           href="#main-content"
@@ -83,13 +84,23 @@ export default function RootLayout({
                 <GlobalLoadingLayer />
                 <ExitIntentOffer />
                 <div id="main-content" tabIndex={-1}>
-                  {children}
+                  <div className="app-container">
+                    <PageTransition>
+                      {children}
+                    </PageTransition>
+                  </div>
                 </div>
                 <GPUMonitorClient />
               </ScrollProvider>
             </LoadingProvider>
           </CartProvider>
         </AuthProvider>
+        {/* Persistent micro-CTA to anchor navigation flow */}
+        <div className="fixed bottom-4 left-0 right-0 flex justify-center pointer-events-none z-40">
+          <div className="pointer-events-auto rounded-full bg-slate-900/85 text-white px-4 py-2 shadow-lg">
+            <Link href="/products" className="font-semibold">Shop Collections</Link>
+          </div>
+        </div>
       </body>
     </html>
   );
