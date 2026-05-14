@@ -6,18 +6,7 @@ import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
-
-const NAV_LINKS = [
-    { label: "Showcase", href: "/#showcase" },
-    { label: "Products", href: "/products" },
-    { label: "About", href: "/about" },
-    { label: "Blog", href: "/blog" },
-];
-
-// IDs of sections to track via IntersectionObserver (home page only)
-const OBSERVED_SECTION_IDS = ["showcase"];
-
-const MOBILE_MENU_ID = "mobile-site-menu";
+import { NAV_LINKS, OBSERVED_SECTION_IDS, MOBILE_MENU_ID, isNavLinkActive } from "@/config/navigation";
 
 export default function Navbar() {
     const navRef = useRef<HTMLElement>(null);
@@ -29,8 +18,7 @@ export default function Navbar() {
     const { itemCount } = useCart();
 
     const isActive = (href: string) => {
-        if (href.startsWith("/#")) return activeSection === href.slice(2);
-        return pathname === href || (href.length > 1 && pathname.startsWith(href));
+        return isNavLinkActive(href, activeSection, pathname);
     };
 
     // Initial mount animation
@@ -136,12 +124,12 @@ export default function Navbar() {
         <>
             <nav
                 ref={navRef}
-                className={`fixed top-0 left-0 right-0 z-100 transition-all duration-700 ${scrolled
-                    ? "bg-brand-dark/96 border-b border-white/8 shadow-[0_4px_40px_rgba(0,0,0,0.5)]"
-                    : "bg-linear-to-b from-brand-dark/80 to-transparent"
+                className={`fixed top-0 left-0 right-0 z-100 bg-[#231711] transition-all duration-300 ${scrolled
+                    ? "border-b border-black/20 shadow-[0_6px_24px_rgba(0,0,0,0.28)]"
+                    : "border-b border-transparent shadow-none"
                     }`}
             >
-                <div className="max-w-7xl mx-auto px-6 md:px-12">
+                <div className="p-0 max-w-4xl mx-auto px-6 md:px-12">
                     <div className="flex items-center justify-between h-20">
                         {/* Left - Brand */}
                         <LoadingLink
@@ -149,7 +137,7 @@ export default function Navbar() {
                             className="group flex items-center gap-3"
                             onClick={closeMenu}
                         >
-                            <div className="w-9 h-9 rounded-xl bg-linear-to-br from-white/20 to-white/5 border border-white/15 flex items-center justify-center group-hover:border-white/30 transition-all duration-300">
+                            <div className="w-9 h-9 rounded-xl bg-linear-to-br from-white/14 to-white/4 border border-white/10 flex items-center justify-center group-hover:border-white/22 transition-all duration-300">
                                 <svg
                                     className="w-5 h-5 text-white"
                                     fill="none"
@@ -173,7 +161,7 @@ export default function Navbar() {
                         <div className="hidden md:flex items-center gap-1">
                             {NAV_LINKS.map((link) => {
                                 const active = isActive(link.href);
-                                const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${active ? "text-white" : "text-white/68 hover:text-white/88"
+                                const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${active ? "text-white" : "text-white/80 hover:text-white"
                                     }`;
                                 return (
                                     <LoadingLink key={link.label} href={link.href} onClick={closeMenu} className={cls}>
@@ -191,13 +179,13 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/cart"
                                 onClick={closeMenu}
-                                className="group relative inline-flex h-11 items-center justify-center rounded-full border border-white/16 bg-white/6 px-4 text-sm font-medium text-white/86 transition-all duration-300 hover:border-white/34 hover:bg-white/12 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                                className="group relative inline-flex h-11 items-center justify-center rounded-full border border-white/12 bg-white/6 px-4 text-sm font-medium text-white/94 transition-all duration-300 hover:border-white/22 hover:bg-white/12 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                                 aria-label="Open cart"
                             >
                                 <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
                                 <span className="ml-2">Cart</span>
                                 {itemCount > 0 && (
-                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-dark">
+                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-darker">
                                         {itemCount}
                                     </span>
                                 )}
@@ -206,10 +194,10 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
-                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/14 hover:border-white/26 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="relative z-10">Log in</span>
-                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                                <div className="absolute inset-0 bg-white/12 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                             </LoadingLink>
                         </div>
 
@@ -253,7 +241,7 @@ export default function Navbar() {
                     role="dialog"
                     aria-modal="true"
                     aria-label="Mobile navigation"
-                    className="fixed inset-0 top-20 z-99 bg-brand-dark/98 md:hidden"
+                    className="fixed inset-0 top-20 z-99 bg-[#231711] md:hidden"
                     onKeyDown={(e) => {
                         if (e.key === 'Escape') {
                             closeMenu();
@@ -293,10 +281,10 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/cart"
                                 onClick={closeMenu}
-                                className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/14 bg-white/6 px-5 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                                className="menu-link mt-8 flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/6 px-5 py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="text-lg font-medium text-white/88">Cart</span>
-                                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-dark">
+                                <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-darker">
                                     {itemCount}
                                 </span>
                             </LoadingLink>

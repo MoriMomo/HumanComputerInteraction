@@ -83,7 +83,14 @@ async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unk
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const { user, isAuthLoading } = useAuth();
-    const [items, setItems] = useState<CartItem[]>(() => getLocalCart());
+    // Start with empty cart on initial render to avoid SSR/CSR markup mismatch.
+    // LocalStorage is read after mount so that server HTML matches the first client render.
+    const [items, setItems] = useState<CartItem[]>([]);
+
+    useEffect(() => {
+        // Load persisted cart from localStorage only after mount
+        setItems(getLocalCart());
+    }, []);
 
     useEffect(() => {
         if (typeof window === "undefined" || user) {

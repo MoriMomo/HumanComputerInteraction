@@ -68,11 +68,14 @@ export default function ProductsPage() {
     return (
         <>
             <Navbar />
-            <main ref={containerRef} className="min-h-screen bg-brand-dark text-white">
-                <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.18),transparent_26%),radial-gradient(circle_at_75%_18%,rgba(180,138,99,0.14),transparent_24%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
+            <main ref={containerRef} className="min-h-screen bg-white text-[#231711]">
+                <section className="relative overflow-hidden border-b border-black/5">
+                    <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 z-10 [background:linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-size-[120px_120px]"
+                    />
 
-                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
+                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40 z-20">
                         <div className="flex flex-col justify-center">
                             <p className="products-hero-text mb-6 text-xs font-semibold uppercase tracking-[0.32em] text-primary">
                                 Collection
@@ -81,34 +84,34 @@ export default function ProductsPage() {
                                 Every detail,
                                 <span className="block italic text-primary">deliberate.</span>
                             </h1>
-                            <p className="products-hero-text mt-6 max-w-xl text-lg leading-8 text-white/60">
+                            <p className="products-hero-text mt-6 max-w-xl text-lg leading-8 text-[#231711]/60">
                                 Premium carry objects, presented with more structure, clarity, and visual confidence.
                             </p>
 
                             <div className="products-hero-text mt-10 flex flex-wrap gap-3">
-                                <span className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/68">
+                                <span className="rounded-full border border-black/10 bg-black/5 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#231711]/70">
                                     Aluminium
                                 </span>
-                                <span className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/68">
+                                <span className="rounded-full border border-black/10 bg-black/5 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#231711]/70">
                                     RFID safe
                                 </span>
-                                <span className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/68">
+                                <span className="rounded-full border border-black/10 bg-black/5 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#231711]/70">
                                     Modular system
                                 </span>
                             </div>
 
                             <div className="products-hero-text mt-10 grid max-w-xl grid-cols-3 gap-4">
-                                <div className="rounded-3xl border border-white/10 bg-white/6 p-4">
-                                    <div className="text-2xl font-semibold text-white">3</div>
-                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-white/42">Products</div>
+                                <div className="rounded-3xl border border-black/10 bg-black/5 p-4">
+                                    <div className="text-2xl font-semibold text-[#231711]">3</div>
+                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-[#231711]/50">Products</div>
                                 </div>
-                                <div className="rounded-3xl border border-white/10 bg-white/6 p-4">
-                                    <div className="text-2xl font-semibold text-white">6</div>
-                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-white/42">Finishes</div>
+                                <div className="rounded-3xl border border-black/10 bg-black/5 p-4">
+                                    <div className="text-2xl font-semibold text-[#231711]">6</div>
+                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-[#231711]/50">Finishes</div>
                                 </div>
-                                <div className="rounded-3xl border border-white/10 bg-white/6 p-4">
-                                    <div className="text-2xl font-semibold text-white">1</div>
-                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-white/42">System</div>
+                                <div className="rounded-3xl border border-black/10 bg-black/5 p-4">
+                                    <div className="text-2xl font-semibold text-[#231711]">1</div>
+                                    <div className="mt-1 text-xs uppercase tracking-[0.22em] text-[#231711]/50">System</div>
                                 </div>
                             </div>
                         </div>
@@ -116,8 +119,8 @@ export default function ProductsPage() {
                         <ProductImagePlaceholder
                             title={featuredProduct.name}
                             subtitle="Featured image slot"
-                            className="products-hero-text min-h-128 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.35)]"
-                            accent="from-white/10 via-white/6 to-transparent"
+                            className="products-hero-text min-h-128 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.08)] bg-white rounded-3xl"
+                            accent="from-black/5 via-black/[0.02] to-transparent"
                             imageSrc={featuredProduct.image?.src}
                             imageAlt={featuredProduct.image?.alt}
                             imagePriority
@@ -135,12 +138,12 @@ export default function ProductsPage() {
                             </h2>
                         </div>
                         <div className="flex flex-col items-end gap-3">
-                            <p className="hidden max-w-md text-right text-sm leading-7 text-white/52 md:block">
+                            <p className="hidden max-w-md text-right text-sm leading-7 text-[#231711]/60 md:block">
                                 Clear hierarchy, stronger visuals, and a more confident product presentation.
                             </p>
                             <LoadingLink
                                 href="/products/compare?compare=cardholder-pro,wallet-elite,desk-organizer"
-                                className="inline-flex rounded-full border border-white/14 bg-white/6 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/78 transition-colors hover:border-white/28 hover:bg-white/10"
+                                className="inline-flex rounded-full border border-black/10 bg-black/5 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#231711]/80 transition-colors hover:border-black/20 hover:bg-black/10"
                             >
                                 Compare products
                             </LoadingLink>
@@ -149,20 +152,20 @@ export default function ProductsPage() {
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {PRODUCTS.length === 0 ? (
-                            <div className="col-span-full rounded-3xl border border-white/10 bg-white/5 p-12 text-center">
-                                <h3 className="font-serif text-2xl font-semibold text-white">No products found</h3>
-                                <p className="mt-2 text-white/60">We&apos;re currently restocking. Check back soon.</p>
+                            <div className="col-span-full rounded-3xl border border-black/10 bg-black/5 p-12 text-center">
+                                <h3 className="font-serif text-2xl font-semibold text-[#231711]">No products found</h3>
+                                <p className="mt-2 text-[#231711]/60">We&apos;re currently restocking. Check back soon.</p>
                             </div>
                         ) : PRODUCTS.map((product) => (
-                            <LoadingLink href={`/products/${product.slug}`} key={product.slug} className="focus:outline-none focus-visible:ring-4 focus-visible:ring-white/50 rounded-4xl block">
-                                <div className="product-card group relative overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/72 p-7 transition-all duration-500 hover:-translate-y-1 hover:border-brand-primary/25 hover:bg-brand-dark hover:shadow-brand-hover">
-                                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-white/6 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                            <LoadingLink href={`/products/${product.slug}`} key={product.slug} className="focus:outline-none focus-visible:ring-4 focus-visible:ring-black/20 rounded-4xl block">
+                                <div className="product-card group relative overflow-hidden rounded-4xl border border-black/10 bg-white p-7 transition-all duration-500 hover:-translate-y-1 hover:border-brand-primary/25 hover:shadow-xl hover:shadow-black/5">
+                                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-linear-to-br from-black/5 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                                    <div className="mb-6 flex items-center justify-between">
-                                        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-white/40">
+                                    <div className="mb-6 flex items-center justify-between relative z-10">
+                                        <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#231711]/50">
                                             {product.slug === featuredProduct.slug ? "Featured" : "Collection"}
                                         </span>
-                                        <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/55">
+                                        <span className="rounded-full border border-black/10 bg-black/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[#231711]/60">
                                             {product.colors.length} finishes
                                         </span>
                                     </div>
@@ -170,41 +173,41 @@ export default function ProductsPage() {
                                     <ProductImagePlaceholder
                                         title={product.name}
                                         subtitle="Product image slot"
-                                        className="mb-6 aspect-square p-5"
-                                        accent="from-white/10 via-white/4 to-transparent"
+                                        className="mb-6 aspect-square p-5 relative z-10 bg-black/[0.02] rounded-3xl"
+                                        accent="from-black/5 via-black/[0.02] to-transparent"
                                         imageSrc={product.image?.src}
                                         imageAlt={product.image?.alt}
                                         imageSizes={product.image?.sizes}
                                     />
 
-                                    <div className="mb-6 rounded-3xl border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-5">
-                                        <h3 className="text-xl font-semibold text-white transition-colors group-hover:text-white/90">
+                                    <div className="mb-6 rounded-3xl border border-black/5 bg-black/[0.03] p-5 relative z-10">
+                                        <h3 className="text-xl font-semibold text-[#231711] transition-colors group-hover:text-primary/90">
                                             {product.name}
                                         </h3>
-                                        <p className="mt-2 text-sm leading-6 text-white/54">
+                                        <p className="mt-2 text-sm leading-6 text-[#231711]/70">
                                             {product.description}
                                         </p>
                                     </div>
 
-                                    <div className="mb-6 flex items-center gap-2">
+                                    <div className="mb-6 flex items-center gap-2 relative z-10">
                                         {product.colors.slice(0, COLOR_PREVIEW_COUNT).map((hex) => (
                                             <span
                                                 key={hex}
-                                                className={`h-4 w-4 rounded-full border border-white/18 ring-1 ring-white/5 ${SWATCH_BG_CLASS[hex] ?? "bg-swatch-steel"}`}
+                                                className={`h-4 w-4 rounded-full border border-black/10 ring-1 ring-black/5 ${SWATCH_BG_CLASS[hex] ?? "bg-swatch-steel"}`}
                                                 aria-label={hex}
                                                 role="img"
                                             />
                                         ))}
                                         {product.colors.length > COLOR_PREVIEW_COUNT && (
-                                            <span className="ml-1 text-xs text-white/35">
+                                            <span className="ml-1 text-xs text-[#231711]/50">
                                                 +{product.colors.length - COLOR_PREVIEW_COUNT}
                                             </span>
                                         )}
                                     </div>
 
-                                    <div className="flex items-center justify-between border-t border-white/8 pt-5">
-                                        <span className="text-lg font-semibold text-white">${product.price}</span>
-                                        <span className="flex items-center gap-1 text-sm text-white/42 transition-colors group-hover:text-white/78">
+                                    <div className="flex items-center justify-between border-t border-black/5 pt-5 relative z-10">
+                                        <span className="text-lg font-semibold text-[#231711]">${product.price}</span>
+                                        <span className="flex items-center gap-1 text-sm text-[#231711]/70 transition-colors group-hover:text-[#231711]">
                                             View details
                                             <span className="material-symbols-outlined text-base">arrow_forward</span>
                                         </span>
@@ -222,9 +225,9 @@ export default function ProductsPage() {
                             ["Clear hierarchy", "Pricing, colors, and actions are visible without visual noise."],
                             ["Purchase ready", "An editorial presentation that feels closer to a real storefront."],
                         ].map(([title, body]) => (
-                            <div key={title} className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                                <p className="text-sm font-semibold text-white">{title}</p>
-                                <p className="mt-3 text-sm leading-7 text-white/55">{body}</p>
+                            <div key={title} className="rounded-3xl border border-black/10 bg-black/5 p-6">
+                                <p className="text-sm font-semibold text-[#231711]">{title}</p>
+                                <p className="mt-3 text-sm leading-7 text-[#231711]/60">{body}</p>
                             </div>
                         ))}
                     </div>

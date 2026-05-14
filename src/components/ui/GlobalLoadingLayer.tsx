@@ -1,7 +1,12 @@
 "use client";
 
-import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import dynamic from "next/dynamic";
 import { useLoading } from "@/contexts/LoadingProvider";
+
+const LoadingOverlay = dynamic(() => import("@/components/ui/LoadingOverlay"), {
+    ssr: false,
+    loading: () => null,
+});
 
 export default function GlobalLoadingLayer() {
     const { isLoading, stopLoading } = useLoading();

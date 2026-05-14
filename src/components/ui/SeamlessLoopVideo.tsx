@@ -99,13 +99,13 @@ export default function SeamlessLoopVideo({ src, className = "" }: SeamlessLoopV
         };
     }, [src]);
 
-    const videoClassName = `absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-linear ${className}`;
+    const videoClassName = `absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-linear ${className}`;
 
     return (
         <>
             <video
                 ref={firstVideoRef}
-                className={`${videoClassName} ${activeIndex === 0 ? "opacity-70" : "opacity-0"}`}
+                className={`${videoClassName} ${activeIndex === 0 ? "opacity-100" : "opacity-0"}`}
                 autoPlay
                 muted
                 loop={false}
@@ -118,7 +118,7 @@ export default function SeamlessLoopVideo({ src, className = "" }: SeamlessLoopV
             </video>
             <video
                 ref={secondVideoRef}
-                className={`${videoClassName} ${activeIndex === 1 ? "opacity-70" : "opacity-0"}`}
+                className={`${videoClassName} ${activeIndex === 1 ? "opacity-100" : "opacity-0"}`}
                 muted
                 loop={false}
                 playsInline

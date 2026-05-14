@@ -49,8 +49,8 @@ export default function SignupPage() {
             <Navbar />
             <main className="min-h-screen bg-brand-dark text-white">
                 <div className="grid min-h-screen lg:grid-cols-2">
-                    <section className="flex items-center bg-brand-cream px-6 py-10 text-brand-dark sm:px-10 lg:px-14 lg:py-12">
-                        <div className="mx-auto w-full max-w-md">
+                    <section className="flex items-center bg-brand-cream px-6 py-8 text-brand-dark sm:px-8 sm:py-10 lg:px-14 lg:py-12">
+                        <div className="mx-auto w-full max-w-sm sm:max-w-md">
                             <div className="mb-10 flex items-center justify-between gap-4">
                                 <div>
                                     <p className="text-xs uppercase tracking-[0.35em] text-brand-mountain">SatSet</p>
@@ -64,10 +64,10 @@ export default function SignupPage() {
                                 </LoadingLink>
                             </div>
 
-                            <h1 className="font-serif text-4xl font-bold tracking-tight text-brand-dark sm:text-5xl">
+                            <h1 className="font-serif text-3xl font-bold tracking-tight text-brand-dark sm:text-4xl lg:text-5xl">
                                 Create account
                             </h1>
-                            <p className="mt-3 max-w-sm text-sm leading-7 text-brand-mountain">
+                            <p className="mt-2 max-w-sm text-xs leading-6 text-brand-mountain sm:text-sm sm:mt-3 sm:leading-7">
                                 Minimal access for a minimal interface.
                             </p>
 
@@ -77,7 +77,7 @@ export default function SignupPage() {
                                 </p>
                             )}
 
-                            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                            <form onSubmit={handleSubmit} className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
                                 <div>
                                     <label htmlFor="signup-name" className="mb-2 block text-xs font-medium uppercase tracking-[0.28em] text-brand-mountain">
                                         Name
@@ -142,12 +142,12 @@ export default function SignupPage() {
                                 <button
                                     type="submit"
                                     disabled={isAuthLoading}
-                                    className="flex w-full items-center justify-center rounded-full bg-brand-dark px-6 py-4 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="flex w-full items-center justify-center rounded-full bg-brand-dark px-6 py-3 text-xs font-semibold text-white transition-colors hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-60 sm:py-4 sm:text-sm"
                                 >
                                     {isAuthLoading ? "Creating account…" : "Create account"}
                                 </button>
 
-                                <p className="pt-2 text-sm text-brand-mountain">
+                                <p className="pt-2 text-xs text-brand-mountain sm:text-sm">
                                     Already have an account?{" "}
                                     <LoadingLink href="/auth/login" className="font-medium text-brand-dark underline underline-offset-4">
                                         Sign in
@@ -157,9 +157,9 @@ export default function SignupPage() {
                         </div>
                     </section>
 
-                    <section className="relative flex items-end overflow-hidden bg-brand-dark px-6 py-10 sm:px-10 lg:px-14 lg:py-12">
+                    <section className="hidden relative items-end overflow-hidden bg-brand-dark px-6 py-10 sm:px-10 lg:px-14 lg:py-12 lg:flex">
                         <SeamlessLoopVideo src="/video/signup.mp4" />
-                        <div className="absolute inset-0 bg-linear-to-br from-brand-dark/92 via-brand-dark/64 to-brand-dark/18" />
+                        <div className="absolute inset-0 bg-linear-to-br from-brand-dark/48 via-brand-dark/36 to-brand-dark/8" />
                         <div className="absolute inset-0 office-grid opacity-[0.05]" />
 
                         <div className="relative z-10 max-w-xl">

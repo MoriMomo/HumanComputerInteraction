@@ -45,48 +45,51 @@ export default function ProductComparePage() {
                             </LoadingLink>
                         </div>
                     ) : (
-                        <div className="mt-10 overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/64 overflow-x-auto">
-                            <div className="min-w-[800px]">
-                                <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
-                            <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>
-                            {selected.map((product) => (
-                                <div key={product.slug} className="border-l border-white/10 p-4">
-                                    <p className="text-lg font-semibold text-white">{product.name}</p>
-                                    <p className="mt-1 text-sm text-white/64">${product.price}</p>
-                                </div>
-                            ))}
-                        </div>
+                        <div className="mt-10">
+                            <p className="mb-3 block text-center text-xs text-white/48 md:hidden">← Scroll to compare →</p>
+                            <div className="overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/64 overflow-x-auto">
+                                <div className="min-w-[800px]\">
+                                    <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
+                                        <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>
+                                        {selected.map((product) => (
+                                            <div key={product.slug} className="border-l border-white/10 p-4">
+                                                <p className="text-lg font-semibold text-white">{product.name}</p>
+                                                <p className="mt-1 text-sm text-white/64">${product.price}</p>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                        <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
-                            <div className="p-4 text-sm text-white/60">Finishes</div>
-                            {selected.map((product) => (
-                                <div key={`${product.slug}-finishes`} className="border-l border-white/10 p-4 text-sm text-white/80">
-                                    {product.colors.length}
-                                </div>
-                            ))}
-                        </div>
+                                    <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
+                                        <div className="p-4 text-sm text-white/60">Finishes</div>
+                                        {selected.map((product) => (
+                                            <div key={`${product.slug}-finishes`} className="border-l border-white/10 p-4 text-sm text-white/80">
+                                                {product.colors.length}
+                                            </div>
+                                        ))}
+                                    </div>
 
-                        <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
-                            <div className="p-4 text-sm text-white/60">Top features</div>
-                            {selected.map((product) => (
-                                <div key={`${product.slug}-features`} className="border-l border-white/10 p-4 text-sm text-white/80">
-                                    {product.features.slice(0, 2).join(" • ")}
-                                </div>
-                            ))}
-                        </div>
+                                    <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
+                                        <div className="p-4 text-sm text-white/60">Top features</div>
+                                        {selected.map((product) => (
+                                            <div key={`${product.slug}-features`} className="border-l border-white/10 p-4 text-sm text-white/80">
+                                                {product.features.slice(0, 2).join(" • ")}
+                                            </div>
+                                        ))}
+                                    </div>
 
-                                <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))]">
-                                    <div className="p-4 text-sm text-white/60">Action</div>
-                                    {selected.map((product) => (
-                                        <div key={`${product.slug}-action`} className="border-l border-white/10 p-4">
-                                            <LoadingLink
-                                                href={`/products/${product.slug}`}
-                                                className="inline-flex rounded-full border border-white/16 bg-white/6 px-4 py-2 text-sm text-white/86 transition-colors hover:border-white/30 hover:bg-white/10"
-                                            >
-                                                View details
-                                            </LoadingLink>
-                                        </div>
-                                    ))}
+                                    <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))]">
+                                        <div className="p-4 text-sm text-white/60">Action</div>
+                                        {selected.map((product) => (
+                                            <div key={`${product.slug}-action`} className="border-l border-white/10 p-4">
+                                                <LoadingLink
+                                                    href={`/products/${product.slug}`}
+                                                    className="inline-flex rounded-full border border-white/16 bg-white/6 px-4 py-2 text-sm text-white/86 transition-colors hover:border-white/30 hover:bg-white/10"
+                                                >
+                                                    View details
+                                                </LoadingLink>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

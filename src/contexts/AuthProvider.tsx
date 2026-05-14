@@ -76,11 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsAuthLoading(true);
             try {
                 const response = await fetch(`${getApiBaseUrl()}/auth/me`, { cache: "no-store" });
+                const data = (await response.json()) as { user?: User | null };
                 if (!response.ok) {
                     return;
                 }
 
-                const data = (await response.json()) as { user?: User };
                 if (isMounted && data.user) {
                     setUser(data.user);
                 }

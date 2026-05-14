@@ -5,21 +5,19 @@ export interface AssetDescriptor {
     loader?: () => Promise<unknown>;
 }
 
+const DESKTOP_LOADING_VIDEO = "/video/vecteezy-workers-optimized.mp4";
+const MOBILE_LOADING_VIDEO = "/video/vecteezy-workers-mobile.mp4";
+
 export const CRITICAL_ASSETS: AssetDescriptor[] = [
     {
         id: "card-holder-model",
         kind: "fetch",
-        src: "/satset3d/glb/bener-final.glb",
+        src: "/satset3d/glb/bener-final-optimized.glb",
     },
     {
         id: "card-holder-scene-module",
         kind: "module",
         loader: () => import("@/components/3d/CardHolderScene"),
-    },
-    {
-        id: "stats-video",
-        kind: "video",
-        src: "/video/vecteezy_workers-hands-sorting-plastic-waste-moving-on-conveyor_5485455.mp4",
     },
 ];
 
@@ -29,18 +27,36 @@ export interface AssetProgressEvent {
     total: number;
 }
 
+export interface PreloadAssetsOptions {
+    includeMobileVideo?: boolean;
+    onProgress?: (event: AssetProgressEvent) => void;
+}
+
+export function getCriticalAssets(includeMobileVideo = false) {
+    return [
+        ...CRITICAL_ASSETS,
+        {
+            id: includeMobileVideo ? "loading-video-mobile" : "loading-video-desktop",
+            kind: "video" as const,
+            src: includeMobileVideo ? MOBILE_LOADING_VIDEO : DESKTOP_LOADING_VIDEO,
+        },
+    ];
+}
+
 export async function preloadAssets(
-    onProgress?: (event: AssetProgressEvent) => void
+    options: PreloadAssetsOptions = {}
 ) {
+    const { includeMobileVideo = false, onProgress } = options;
+    const assets = getCriticalAssets(includeMobileVideo);
     let completed = 0;
-    const total = CRITICAL_ASSETS.length;
+    const total = assets.length;
 
     const markComplete = (asset: AssetDescriptor) => {
         completed += 1;
         onProgress?.({ asset, completed, total });
     };
 
-    const tasks = CRITICAL_ASSETS.map(async (asset) => {
+    const tasks = assets.map(async (asset) => {
         try {
             if (asset.kind === "module" && asset.loader) {
                 await asset.loader();
@@ -79,22 +95,17 @@ export async function preloadAssets(
                 await new Promise<void>((resolve, reject) => {
                     const video = document.createElement("video");
 
-                    const cleanup = () => {
-                        video.oncanplaythrough = null;
-                        video.onerror = null;
-                        video.removeAttribute("src");
-                        video.load();
-                    };
-
                     video.preload = "auto";
                     video.muted = true;
                     video.playsInline = true;
                     video.oncanplaythrough = () => {
-                        cleanup();
+                        video.oncanplaythrough = null;
+                        video.onerror = null;
                         resolve();
                     };
                     video.onerror = () => {
-                        cleanup();
+                        video.oncanplaythrough = null;
+                        video.onerror = null;
                         reject(new Error(`Failed to preload ${source}`));
                     };
                     video.src = source;

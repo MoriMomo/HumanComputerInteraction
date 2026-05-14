@@ -48,8 +48,6 @@
 
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined", sans-serif;
-  font-weight: normal;
-  font-style: normal;
   font-size: 24px;
   line-height: 1;
   letter-spacing: normal;
@@ -57,17 +55,70 @@
   display: inline-block;
   white-space: nowrap;
   word-wrap: normal;
-  direction: ltr;
   -webkit-font-smoothing: antialiased;
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
 body {
-  background: var(--color-background-light);
-  color: var(--color-charcoal);
+  background: #ffffff;
+  color: #111111;
   line-height: 1.7;
   letter-spacing: -0.01em;
   overflow-x: hidden;
+}
+
+.homepage-light {
+  color: #111111;
+  background: #ffffff;
+}
+
+.homepage-light section,
+.homepage-light [class*="bg-brand-dark"],
+.homepage-light [class*="bg-brand-darker"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+.homepage-light [class*="from-brand-dark"],
+.homepage-light [class*="via-brand-dark"],
+.homepage-light [class*="to-brand-dark"],
+.homepage-light [class*="from-brand-darker"],
+.homepage-light [class*="via-brand-darker"],
+.homepage-light [class*="to-brand-darker"] {
+  background-image: none !important;
+}
+
+.homepage-light [class*="text-white"],
+.homepage-light [class*="text-white/"] {
+  color: #111111 !important;
+}
+
+.homepage-light [class*="text-primary"],
+.homepage-light [class*="text-brand-primary"],
+.homepage-light [class*="text-brand-dark"],
+.homepage-light [class*="text-brand-darker"],
+.homepage-light [class*="text-brand-mountain"],
+.homepage-light [class*="text-brand-sand"] {
+  color: #111111 !important;
+}
+
+.hero-cta-primary {
+  color: #ffffff !important;
+}
+
+.homepage-light [class*="border-white/"] {
+  border-color: rgba(17, 17, 17, 0.12) !important;
+}
+
+.homepage-light [class*="bg-white/"] {
+  background-color: #ffffff !important;
+}
+
+.homepage-light [class*="bg-linear-to-b"],
+.homepage-light [class*="bg-linear-to-br"],
+.homepage-light [class*="bg-linear-to-t"],
+.homepage-light [class*="bg-linear-to-r"] {
+  filter: none;
 }
 
 .page-content {
@@ -488,13 +539,16 @@ a[role="button"],
   }
 
   .fade-in-up {
-    animation: fadeInUp .36s cubic-bezier(.2,.9,.3,1) both;
+    position: relative;
+    top: 0;
+    will-change: none;
+    animation: none;
   }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; top: 8px; }
+  to   { opacity: 1; top: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

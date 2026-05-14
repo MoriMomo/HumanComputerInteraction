@@ -129,7 +129,7 @@ function ReactiveBlocks({ active, color, blockCount, opacity }: ReactiveBlocksPr
                 toneMapped={false}
                 depthWrite={false}
                 opacity={opacity}
-                blending={THREE.AdditiveBlending}
+                blending={THREE.NormalBlending}
             />
         </instancedMesh>
     );

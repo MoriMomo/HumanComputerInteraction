@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { SWATCHES } from "@/config/swatches";
 import { useLoading } from "@/contexts/LoadingProvider";
 import GPUMonitor from "@/components/debug/GPUMonitor";
 import Footer from "@/components/layout/Footer";
@@ -14,75 +15,64 @@ import StatsSection from "@/components/sections/StatsSection";
 const ENABLE_3D_MODEL = true;
 
 export default function ShowcasePage() {
-  const [activeColor, setActiveColor] = useState("var(--color-brand-mountain)");
+  const [activeColor, setActiveColor] = useState(() => SWATCHES[0]?.hex ?? "var(--color-brand-dark)");
   const { isLoading } = useLoading();
-  const [threeReady, setThreeReady] = useState(() => !ENABLE_3D_MODEL);
-  const [assetsReady, setAssetsReady] = useState(() => !isLoading);
-  const [contentVisible, setContentVisible] = useState(() => !isLoading);
+  const [assetsReady, setAssetsReady] = useState(() => !ENABLE_3D_MODEL);
+  const [contentVisible, setContentVisible] = useState(false);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const timers: number[] = [];
+
+    if (isLoading) {
+      setContentVisible(false);
+      setAssetsReady(!ENABLE_3D_MODEL);
+      return undefined;
+    }
+
+    timers.push(
+      window.setTimeout(() => {
+        if (isCancelled) {
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          if (!isCancelled) {
+            setContentVisible(true);
+          }
+        });
+      }, 120)
+    );
+
+    if (ENABLE_3D_MODEL) {
+      timers.push(
+        window.setTimeout(() => {
+          if (!isCancelled) {
+            setAssetsReady(true);
+          }
+        }, 2300)
+      );
+    }
+
+    return () => {
+      isCancelled = true;
+      timers.forEach((timerId) => window.clearTimeout(timerId));
+    };
+  }, [isLoading]);
 
   const loadingComplete = !isLoading;
 
-  const handle3DReady = useCallback(() => {
-    setThreeReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    const fallbackTimer = window.setTimeout(() => {
-      setThreeReady(true);
-    }, 2200);
-
-    return () => {
-      window.clearTimeout(fallbackTimer);
-    };
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    const revealTimer = window.setTimeout(() => {
-      window.requestAnimationFrame(() => {
-        setContentVisible(true);
-      });
-    }, 120);
-
-    return () => {
-      window.clearTimeout(revealTimer);
-    };
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (!threeReady && ENABLE_3D_MODEL) {
-      return;
-    }
-
-    const readyTimer = window.setTimeout(() => {
-      setAssetsReady(true);
-    }, 100);
-
-    return () => {
-      window.clearTimeout(readyTimer);
-    };
-  }, [threeReady]);
-
   return (
-    <main className="relative min-h-screen bg-brand-dark">
+    <main className="relative min-h-screen bg-white">
       <div
         className={`page-content ${contentVisible ? "loaded" : ""} relative z-10`}
       >
-        <div className="page-shell text-charcoal font-sans min-h-screen relative overflow-x-hidden">
+        <div className="page-shell text-black font-sans min-h-screen relative overflow-x-hidden bg-white">
           <Navbar />
-          <div className="relative w-full">
+          <div className="homepage-light relative w-full">
             <HeroSection
               activeColor={activeColor}
               show3DModel={loadingComplete}
-              loadingComplete={loadingComplete}
-              on3DReady={handle3DReady}
             />
           </div>
 

@@ -9,6 +9,8 @@ import * as THREE from "three";
 
 const GLB_MODEL = "/satset3d/glb/bener-final-optimized.glb";
 
+useGLTF.preload(GLB_MODEL);
+
 interface CardHolderModelProps {
     color?: string;
     autoRotate?: boolean;
@@ -21,7 +23,6 @@ interface CardHolderModelProps {
 
 export default function CardHolderModel({
     color = "var(--color-brand-primary)",
-    autoRotate = true,
     renderMode = "normal",
     modelRotation = [0, 0, 0],
     modelOffset = [0, 0, 0],
@@ -29,7 +30,6 @@ export default function CardHolderModel({
     onReady,
 }: CardHolderModelProps) {
     const animatedGroupRef = useRef<THREE.Group>(null);
-    const rotationVelocityRef = useRef(0);
     const materialsRef = useRef<Map<string, THREE.Material>>(new Map());
     const readyNotifiedRef = useRef(false);
     const normalsComputedRef = useRef(false);
@@ -92,12 +92,14 @@ export default function CardHolderModel({
             // Scale to fit view
             normalizedScale = maxDim > 0 ? 2.0 / maxDim : 1;
 
-            console.log("Model bounding box:", {
-                center: center.toArray(),
-                size: size.toArray(),
-                maxDim,
-                normalizedScale,
-            });
+            if (process.env.NODE_ENV === "development") {
+                console.log("Model bounding box:", {
+                    center: center.toArray(),
+                    size: size.toArray(),
+                    maxDim,
+                    normalizedScale,
+                });
+            }
         }
 
         return {
@@ -122,6 +124,12 @@ export default function CardHolderModel({
     }, []);
 
     const resolvedPropColor = useResolvedColor(color);
+
+    // FIX 1: Clear material cache when color or mode changes to force fresh creation
+    useEffect(() => {
+        materialsRef.current.forEach((mat) => mat.dispose());
+        materialsRef.current.clear();
+    }, [color, renderMode]);
 
     // Resolve CSS variable color strings (e.g. "var(--color-foo)") to actual color values
     const resolveCssColor = useCallback((input?: string) => {
@@ -156,8 +164,6 @@ export default function CardHolderModel({
             if (!materialsRef.current.has(key)) {
                 const isGlass = mode === "glass";
                 const isWire = mode === "wireframe";
-                const sourceStandard = sourceMaterial as Partial<THREE.MeshStandardMaterial & THREE.MeshPhysicalMaterial> | null;
-                const sourceColor = sourceStandard?.color?.clone() ?? new THREE.Color(resolveCssColor("var(--color-brand-cream)") ?? "#ffffff");
                 let tintColor: THREE.Color;
                 try {
                     const parsed = resolveCssColor(nextColor) ?? nextColor;
@@ -165,7 +171,9 @@ export default function CardHolderModel({
                 } catch {
                     tintColor = new THREE.Color("#ffffff");
                 }
-                const blendedColor = sourceColor.lerp(tintColor, isWire ? 0.88 : 0.72);
+
+                // FIX 2: Use swatch color directly — no buried blends
+                const blendedColor = tintColor.clone();
                 const maps = getMaterialMaps(sourceMaterial);
 
                 let material: THREE.Material;
@@ -173,33 +181,29 @@ export default function CardHolderModel({
                 if (isGlass) {
                     const glassMaterial = new THREE.MeshPhysicalMaterial({
                         color: blendedColor,
-                        transparent: true,
-                        opacity: 0.42,
-                        roughness: 0.06,
-                        metalness: 0.12,
-                        transmission: 0.84,
-                        thickness: 0.88,
-                        ior: 1.32,
-                        envMapIntensity: 1.8,
-                        side: THREE.DoubleSide,
+                        transparent: false,
+                        roughness: 0.05,
+                        metalness: 0.0,
+                        transmission: 0.92,
+                        thickness: 1.2,
+                        ior: 1.45,
+                        envMapIntensity: 2.5,
+                        reflectivity: 0.5,
+                        side: THREE.FrontSide,
                     });
-
-                    glassMaterial.map = maps.map;
-                    glassMaterial.normalMap = maps.normalMap;
-                    glassMaterial.roughnessMap = maps.roughnessMap;
-                    glassMaterial.metalnessMap = maps.metalnessMap;
-                    glassMaterial.aoMap = maps.aoMap;
-                    glassMaterial.envMap = maps.envMap;
 
                     material = glassMaterial;
                 } else {
+                    const emissiveTone = blendedColor.clone().multiplyScalar(isWire ? 0.02 : 0.08);
                     const standardMaterial = new THREE.MeshStandardMaterial({
                         color: blendedColor,
                         wireframe: isWire,
                         transparent: false,
-                        roughness: sourceStandard?.roughness ?? (isWire ? 0.2 : 0.24),
-                        metalness: sourceStandard?.metalness ?? (isWire ? 0.25 : 0.5),
-                        envMapIntensity: isWire ? 1.2 : 1.45,
+                        roughness: isWire ? 0.2 : 0.28,
+                        metalness: isWire ? 0.18 : 0.32,
+                        emissive: emissiveTone,
+                        emissiveIntensity: isWire ? 0.28 : 0.7,
+                        envMapIntensity: isWire ? 1.0 : 1.6,
                         side: THREE.DoubleSide,
                         flatShading: false,
                         polygonOffset: true,
@@ -255,7 +259,7 @@ export default function CardHolderModel({
         };
     }, []);
 
-    // Deferred: Compute vertex normals post-render to avoid main-thread blocking
+    // Deferred: compute vertex normals only when the geometry does not already contain them.
     useEffect(() => {
         if (normalsComputedRef.current) {
             return;
@@ -281,11 +285,17 @@ export default function CardHolderModel({
             let processedCount = 0;
 
             modelGroup.traverse((child) => {
-                if (child instanceof THREE.Mesh && child.geometry) {
-                    child.geometry.computeVertexNormals();
-                    child.geometry.normalizeNormals();
-                    processedCount++;
+                if (!(child instanceof THREE.Mesh) || !child.geometry) {
+                    return;
                 }
+
+                if (child.geometry.attributes.normal) {
+                    return;
+                }
+
+                child.geometry.computeVertexNormals();
+                child.geometry.normalizeNormals();
+                processedCount++;
             });
 
             const duration = performance.now() - startTime;
@@ -321,22 +331,9 @@ export default function CardHolderModel({
         console.log(`🎯 Model Stats: ${meshCount} meshes, ${totalVertices.toLocaleString()} vertices, ${totalTriangles.toLocaleString()} triangles`);
     }, [modelGroup]);
 
-    // Animation loop
-    useFrame((state, delta) => {
-        const group = animatedGroupRef.current;
-        if (!group) return;
-
-        const clampedDelta = Math.min(delta, 1 / 30);
-        const targetVelocity = autoRotate ? 0.68 : 0;
-
-        rotationVelocityRef.current = THREE.MathUtils.damp(
-            rotationVelocityRef.current,
-            targetVelocity,
-            7.5,
-            clampedDelta
-        );
-
-        group.rotation.y += rotationVelocityRef.current * clampedDelta;
+    // Animation loop — auto-rotation now handled by OrbitControls
+    useFrame(() => {
+        // rotation handled by OrbitControls.autoRotate
     });
 
     return (
@@ -354,4 +351,5 @@ export default function CardHolderModel({
     );
 }
 
-useGLTF.preload(GLB_MODEL, true);
+// Preload model at module level
+useGLTF.preload(GLB_MODEL);

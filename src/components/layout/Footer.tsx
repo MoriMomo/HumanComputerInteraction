@@ -1,6 +1,8 @@
 "use client";
 
-export default function Footer() {
+import { memo } from "react";
+
+function Footer() {
     const navLinks = [
         { group: "Product", links: ["Showcase", "Features", "Specs", "Shop"] },
         { group: "Company", links: ["About", "Press Kit", "Careers", "Contact"] },
@@ -8,17 +10,17 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-brand-darker text-white">
+        <footer className="bg-[#20140f] text-white">
             <div
                 aria-hidden
-                className="pointer-events-none absolute inset-x-0 top-0 h-24 section-seam-dark"
+                className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-white/0 via-black/10 to-[#20140f]"
             />
             <div
                 aria-hidden
-                className="section-orb pointer-events-none absolute left-[-8%] top-0 h-72 w-72 rounded-full bg-brand-mountain/10 blur-3xl"
+                className="section-orb pointer-events-none absolute left-[-8%] top-0 h-72 w-72 rounded-full bg-brand-primary/8 blur-3xl"
             />
             <div className="max-w-350 mx-auto p-4 md:p-10 lg:p-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/12">
                     {/* Brand */}
                     <div className="lg:col-span-2 flex flex-col gap-5">
                         <div className="flex items-center gap-3">
@@ -27,7 +29,7 @@ export default function Footer() {
                             </svg>
                             <span className="font-serif text-xl font-semibold text-white">SatSet</span>
                         </div>
-                        <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+                        <p className="text-sm text-white/76 leading-relaxed max-w-xs">
                             Precision-crafted carry essentials for the modern professional. Every detail, considered.
                         </p>
                         {/* Social icons */}
@@ -37,7 +39,7 @@ export default function Footer() {
                                     key={platform}
                                     href="#"
                                     aria-label={platform}
-                                    className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-gray-400 hover:border-primary hover:text-primary transition-colors"
+                                    className="w-9 h-9 rounded-full border border-white/12 flex items-center justify-center text-white/72 hover:border-primary hover:text-primary transition-colors"
                                 >
                                     <span className="material-symbols-outlined text-base">
                                         {platform === "twitter" ? "alternate_email" : platform === "instagram" ? "photo_camera" : "business"}
@@ -56,10 +58,7 @@ export default function Footer() {
                             <ul className="flex flex-col gap-3">
                                 {links.map((link) => (
                                     <li key={link}>
-                                        <a
-                                            href="#"
-                                            className="text-sm text-gray-400 hover:text-white transition-colors"
-                                        >
+                                        <a href="#" className="text-sm text-white/72 hover:text-white transition-colors">
                                             {link}
                                         </a>
                                     </li>
@@ -70,15 +69,17 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom strip */}
-                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+                <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/52">
                     <p>&copy; {new Date().getFullYear()} SatSet. All rights reserved.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-gray-300 transition-colors">Privacy Policy</a>
-                        <a href="#" className="hover:text-gray-300 transition-colors">Terms of Service</a>
-                        <a href="#" className="hover:text-gray-300 transition-colors">Cookie Settings</a>
+                        <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+                        <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                        <a href="#" className="hover:text-white transition-colors">Cookie Settings</a>
                     </div>
                 </div>
             </div>
         </footer>
     );
 }
+
+export default memo(Footer);

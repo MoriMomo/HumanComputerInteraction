@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { memo } from "react";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -61,7 +63,7 @@ const FEATURES = [
     },
 ];
 
-export default function FeaturesSection() {
+function FeaturesSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const carouselRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
@@ -279,7 +281,7 @@ export default function FeaturesSection() {
         <section
             id="features"
             ref={sectionRef}
-            className="relative py-40 md:py-52 bg-brand-darker overflow-hidden"
+            className="relative py-40 md:py-52 bg-[#20140f] overflow-hidden"
             aria-labelledby="features-heading"
         >
             {/* Top border */}
@@ -288,26 +290,10 @@ export default function FeaturesSection() {
                 className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent"
             />
 
-            {/* Ambient orbs - Reduced blur for performance */}
-            <div
-                aria-hidden
-                className="feat-orb-1 pointer-events-none absolute left-[5%] top-[15%] h-72 w-72 rounded-full bg-linear-to-br from-brand-primary/20 to-brand-primary/12 blur-2xl"
-            />
-            <div
-                aria-hidden
-                className="feat-orb-2 pointer-events-none absolute right-[8%] top-[40%] h-96 w-96 rounded-full bg-linear-to-br from-brand-primary/18 to-brand-primary/10 blur-2xl"
-            />
-
-            {/* Subtle grid pattern */}
-            <div
-                aria-hidden
-                className="feat-grid-overlay pointer-events-none absolute inset-0 opacity-[0.03]"
-            />
-
             <div className=" max-w-7xl mx-auto px-6 md:px-12 lg:px-20 relative z-10 ">
                 {/* Header */}
-                <div ref={headerRef} className="mb-16 md:mb-24 max-w-4xl">
-                    <div className="flex items-center gap-4 mb-8">
+                <div ref={headerRef} className="mb-12 md:mb-16 max-w-3xl">
+                    <div className="flex items-center gap-4 mb-5">
                         <div className="w-12 h-px bg-linear-to-r from-white/60 to-transparent" />
                         <p className="text-xs font-semibold tracking-[0.35em] text-white/60 uppercase">
                             Why SatSet
@@ -315,14 +301,14 @@ export default function FeaturesSection() {
                     </div>
                     <h2
                         id="features-heading"
-                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight mb-6"
+                        className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-[0.95] mb-4"
                     >
                         <span className="feat-title-line inline-block">Engineered for the</span>{" "}
                         <span className="feat-title-line inline-block text-white/60 font-light italic">
                             detail-oriented.
                         </span>
                     </h2>
-                    <p className="feat-subtitle text-lg text-white/74 max-w-2xl leading-relaxed">
+                    <p className="feat-subtitle text-lg text-white/72 max-w-xl leading-relaxed">
                         Every element purposefully designed. Nothing added without reason.
                         Nothing removed without consideration.
                     </p>
@@ -350,57 +336,53 @@ export default function FeaturesSection() {
                             {FEATURES.map((feature) => (
                                 <div
                                     key={feature.title}
-                                    className="feat-card-slide feat-card group relative basis-full min-w-full shrink-0 overflow-hidden rounded-4xl border border-white/14 bg-brand-dark/92 p-8 transition-all duration-500 hover:border-brand-primary/25 hover:shadow-brand-hover md:p-10"
+                                    className="feat-card-slide feat-card group relative basis-full min-w-full shrink-0 overflow-hidden rounded-4xl border border-white/10 bg-[#] transition-all duration-500 hover:border-white/18 hover:shadow-[0_30px_100px_rgba(0,0,0,0.5)]"
                                     tabIndex={0}
                                     role="article"
                                     aria-label={feature.title}
                                 >
-                                    {/* Gradient overlay on hover */}
-                                    <div
-                                        aria-hidden
-                                        className={`absolute inset-0 bg-linear-to-br ${feature.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}
-                                    />
+                                    <div className="grid min-h-128 lg:min-h-152 lg:grid-cols-[40%_60%]">
+                                        <div className="relative flex flex-col justify-between gap-10 p-8 md:p-10 lg:p-12">
+                                            <div className="absolute right-6 top-6 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold tracking-[0.2em] text-white/78">
+                                                {feature.stat}
+                                            </div>
 
-                                    {/* Glow effect */}
-                                    <div
-                                        aria-hidden
-                                        className={`absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-2xl bg-linear-to-br ${feature.glowClass}`}
-                                    />
+                                            <div className="max-w-sm pt-10 lg:pt-12">
+                                                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 transition-transform duration-400 group-hover:scale-105">
+                                                    <span className="material-symbols-outlined text-2xl text-white/82">
+                                                        {feature.icon}
+                                                    </span>
+                                                </div>
 
-                                    {/* Stat badge */}
-                                    <div className="absolute top-0 right-0 px-4 py-2 rounded-full bg-white/8 border border-white/10">
-                                        <span className="feat-stat-badge text-sm font-semibold text-white/80">
-                                            {feature.stat}
-                                        </span>
-                                    </div>
+                                                <p className="mb-3 text-xs uppercase tracking-[0.28em] text-white/40">
+                                                    Feature Spotlight
+                                                </p>
+                                                <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight mb-4">
+                                                    {feature.title}
+                                                </h3>
+                                                <p className="text-sm md:text-base leading-relaxed text-white/72 max-w-md">
+                                                    {feature.description}
+                                                </p>
+                                            </div>
 
-                                    <div className="relative z-10">
-                                        {/* Icon */}
-                                        <div className="feat-icon-wrapper mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-linear-to-br from-white/10 to-white/5 transition-all duration-400 group-hover:scale-110 group-hover:border-white/20">
-                                            <span className="material-symbols-outlined text-2xl text-white/80 feat-icon group-hover:text-white transition-colors">
-                                                {feature.icon}
-                                            </span>
+                                            <div className="w-full h-px bg-linear-to-r from-transparent via-white/14 to-transparent" />
                                         </div>
 
-                                        {/* Content */}
-                                        <h3 className="font-medium text-xl text-white mb-4 group-hover:text-white transition-colors duration-300">
-                                            {feature.title}
-                                        </h3>
-                                        <p className="text-white/74 text-sm leading-relaxed group-hover:text-white/88 transition-colors duration-300">
-                                            {feature.description}
-                                        </p>
-
-                                        {/* Bottom accent line */}
-                                        <div
-                                            className="absolute bottom-0 left-8 right-8 h-px bg-linear-to-r from-transparent via-white/40 to-transparent scale-x-0 origin-center transition-transform duration-500 group-hover:scale-x-100"
-                                        />
+                                        <div className="relative flex items-center justify-center border-t border-white/8 bg-[#1d110c] lg:border-t-0 lg:border-l">
+                                            <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.06),transparent_45%)]" />
+                                            <Image
+                                                src="/products/cardholder-pro.svg"
+                                                alt="CardHolder Pro product render"
+                                                width={1200}
+                                                height={900}
+                                                priority
+                                                className="relative z-10 h-full w-full max-h-112 object-contain px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12 drop-shadow-[0_30px_80px_rgba(0,0,0,0.55)]"
+                                            />
+                                            <div className="absolute bottom-6 right-6 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-white/60">
+                                                SatSet Pro
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    {/* Corner accent */}
-                                    <div
-                                        aria-hidden
-                                        className="absolute bottom-0 right-0 w-24 h-24 rounded-tl-full bg-linear-to-tl from-white/3 to-transparent pointer-events-none"
-                                    />
                                 </div>
                             ))}
                         </div>
@@ -441,18 +423,24 @@ export default function FeaturesSection() {
                 </div>
 
                 {/* Bottom CTA */}
-                <div className="mt-24 md:mt-32 text-center">
-                    <p className="text-white/52 text-sm mb-6">
+                <div className="mt-24 md:mt-32 flex flex-col items-center gap-4 text-center">
+                    <p className="text-white/48 text-sm">
                         Every feature verified through real-world testing
                     </p>
                     <a
                         href="#shop"
-                        className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 hover:border-white/30 transition-all duration-300 group"
+                        className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-semibold text-[#111111] transition-all duration-300 hover:bg-white/90"
                     >
-                        Explore All Features
-                        <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">
+                        Shop Collections
+                        <span className="material-symbols-outlined text-base transition-transform">
                             arrow_forward
                         </span>
+                    </a>
+                    <a
+                        href="#features"
+                        className="text-sm font-medium text-white/56 underline-offset-4 transition-colors hover:text-white hover:underline"
+                    >
+                        Explore All Features
                     </a>
                 </div>
             </div>
@@ -465,3 +453,5 @@ export default function FeaturesSection() {
         </section>
     );
 }
+
+export default memo(FeaturesSection);

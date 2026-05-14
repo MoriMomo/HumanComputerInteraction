@@ -58,7 +58,7 @@ export default function RootLayout({
         />
         <link
           rel="preload"
-          href="/satset3d/glb/bener-final.glb"
+          href="/satset3d/glb/bener-final-optimized.glb"
           as="fetch"
           type="model/gltf-binary"
           crossOrigin="anonymous"
@@ -84,11 +84,9 @@ export default function RootLayout({
                 <GlobalLoadingLayer />
                 <ExitIntentOffer />
                 <div id="main-content" tabIndex={-1}>
-                  <div className="app-container">
-                    <PageTransition>
-                      {children}
-                    </PageTransition>
-                  </div>
+                  <PageTransition>
+                    {children}
+                  </PageTransition>
                 </div>
                 <GPUMonitorClient />
               </ScrollProvider>

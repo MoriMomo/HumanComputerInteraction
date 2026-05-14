@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -36,7 +37,7 @@ interface StatsSectionProps {
     subtitle?: string;
 }
 
-export default function StatsSection({
+function StatsSection({
     videoSrc = "/video/vecteezy-workers-optimized.mp4",
     title = "Engineered & Verified",
     subtitle = "Built for the detail-oriented professional.",
@@ -224,8 +225,8 @@ export default function StatsSection({
     );
 
     return (
-        <section id="specs" ref={sectionRef} className="relative z-20 bg-brand-dark">
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-brand-dark to-transparent z-10" />
+        <section id="specs" ref={sectionRef} className="relative z-20 bg-[#231711] text-black">
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-white/65 to-transparent z-10" />
 
             <div className="grid min-h-[92vh] grid-cols-1 lg:grid-cols-2">
                 <div className="stats-image relative min-h-[58vh] overflow-hidden lg:min-h-[92vh]">
@@ -252,25 +253,25 @@ export default function StatsSection({
 
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/40 to-transparent lg:hidden"
+                        className="absolute inset-0 bg-linear-to-r from-white/45 via-white/12 to-transparent lg:hidden"
                     />
                     <div
                         aria-hidden
-                        className="absolute inset-0 bg-gradient-to-t from-brand-dark via-transparent to-brand-dark/20"
+                        className="absolute inset-0 bg-linear-to-t from-white/40 via-transparent to-white/6"
                     />
 
                     {(!isVideoLoaded || videoStalled) && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-brand-dark" aria-hidden="true">
-                            <div className="w-12 h-12 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-white" aria-hidden="true">
+                            <div className="w-12 h-12 rounded-full border-2 border-black/15 border-t-black animate-spin" />
                         </div>
                     )}
 
-                    <div className="absolute inset-0 lg:hidden bg-brand-dark/20" />
+                    <div className="absolute inset-0 lg:hidden bg-white/4" />
                 </div>
 
-                <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0 bg-black/40">
+                <div className="relative flex flex-col justify-center px-8 py-18 md:px-14 lg:px-20 lg:py-0 bg-[#231711]">
                     <div className="max-w-xl">
-                        <p className="stats-subtitle mb-4 text-xs font-semibold tracking-[0.28em] text-white/52 uppercase">
+                        <p className="stats-subtitle mb-4 text-xs font-semibold tracking-[0.28em] text-white/48 uppercase">
                             Performance Snapshot
                         </p>
                         <h2 className="stats-title text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
@@ -280,28 +281,28 @@ export default function StatsSection({
                             {subtitle}
                         </p>
 
-                        <dl>
+                        <div>
                             {STATS.map((stat) => (
                                 <div
                                     key={stat.label}
                                     className="stats-row border-b border-white/10 py-7 last:border-0"
                                 >
                                     <div className="group flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-6 transition-transform duration-500 ease-out hover:translate-x-2">
-                                        <dt className="flex items-baseline gap-4">
+                                        <div className="flex items-baseline gap-4">
                                             <span className="text-4xl font-light tracking-tight text-white md:text-5xl">
                                                 {stat.value}
                                             </span>
-                                            <span className="text-[11px] tracking-[0.26em] text-white/52 uppercase transition-colors group-hover:text-white/72">
+                                            <span className="text-[11px] tracking-[0.26em] text-white/48 uppercase transition-colors group-hover:text-white/72">
                                                 {stat.label}
                                             </span>
-                                        </dt>
-                                        <dd className="max-w-xs text-sm leading-relaxed text-white/62 transition-colors group-hover:text-white/80 md:text-right">
+                                        </div>
+                                        <p className="max-w-xs text-sm leading-relaxed text-white/62 transition-colors group-hover:text-white/80 md:text-right">
                                             {stat.description}
-                                        </dd>
+                                        </p>
                                     </div>
                                 </div>
                             ))}
-                        </dl>
+                        </div>
 
                         <p className="stats-row mt-7 max-w-md text-xs leading-relaxed text-white/45">
                             Specifications are validated through internal tests and partner verification flows before release.
@@ -312,3 +313,5 @@ export default function StatsSection({
         </section>
     );
 }
+
+export default memo(StatsSection);

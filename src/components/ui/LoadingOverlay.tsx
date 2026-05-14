@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { preloadAssets } from "@/lib/assets";
 
 interface LoadingOverlayProps {
     minimumDuration?: number;
@@ -43,12 +44,6 @@ export default function LoadingOverlay({
     const progressTweenRef = useRef({ value: 0 });
     const topProgressRef = useRef<HTMLDivElement>(null);
     const railProgressRef = useRef<HTMLDivElement>(null);
-    const assetsLoadedRef = useRef(0);
-    const totalAssetsRef = useRef(0);
-
-    const criticalAssets = useRef<string[]>([
-        "/satset3d/glb/bener-final.glb",
-    ]);
 
     const animateProgress = useCallback((nextProgress: number) => {
         const clampedProgress = Math.min(100, Math.max(0, nextProgress));
@@ -65,128 +60,15 @@ export default function LoadingOverlay({
         });
     }, []);
 
-    const updateProgress = useCallback(() => {
-        if (totalAssetsRef.current <= 0) {
+    const updateProgress = useCallback((completed: number, total: number) => {
+        if (total <= 0) {
             animateProgress(100);
             return;
         }
 
-        const calculated = Math.min(
-            100,
-            Math.round((assetsLoadedRef.current / totalAssetsRef.current) * 100)
-        );
-
+        const calculated = Math.min(100, Math.round((completed / total) * 100));
         animateProgress(calculated);
     }, [animateProgress]);
-
-    const preloadAssets = useCallback(async () => {
-        const cleanupFns: Array<() => void> = [];
-        assetsLoadedRef.current = 0;
-        totalAssetsRef.current = 0;
-
-        const markLoaded = () => {
-            assetsLoadedRef.current += 1;
-            updateProgress();
-        };
-
-        const markAndDetach = (detach?: () => void) => {
-            markLoaded();
-            detach?.();
-        };
-
-        const isMobile = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
-        const assets = [
-            ...criticalAssets.current,
-            isMobile ? "/video/vecteezy-workers-mobile.mp4" : "/video/vecteezy-workers-optimized.mp4",
-        ];
-        totalAssetsRef.current += assets.length;
-
-        assets.forEach((src) => {
-            if (src.endsWith(".glb") || src.endsWith(".gltf") || src.endsWith(".stl")) {
-                fetch(src, { cache: "force-cache" })
-                    .then((res) => res.arrayBuffer())
-                    .then(() => markLoaded())
-                    .catch(() => markLoaded());
-                return;
-            }
-
-            if (src.endsWith(".mp4") || src.endsWith(".webm")) {
-                const video = document.createElement("video");
-                const onDone = () => markAndDetach(cleanup);
-                const cleanup = () => {
-                    video.oncanplaythrough = null;
-                    video.onerror = null;
-                    video.removeAttribute("src");
-                    video.load();
-                };
-
-                video.preload = "metadata";
-                video.muted = true;
-                video.playsInline = true;
-                video.onloadedmetadata = onDone;
-                video.onerror = onDone;
-                video.src = src;
-                video.load();
-                return;
-            }
-
-            const image = new Image();
-            const onDone = () => markAndDetach(cleanup);
-            const cleanup = () => {
-                image.onload = null;
-                image.onerror = null;
-            };
-
-            image.onload = onDone;
-            image.onerror = onDone;
-            image.src = src;
-        });
-
-        const domImages = Array.from(document.querySelectorAll("img"));
-        const domVideos = Array.from(document.querySelectorAll("video"));
-
-        totalAssetsRef.current += domImages.length + domVideos.length;
-
-        domImages.forEach((img) => {
-            if (img.complete) {
-                markLoaded();
-                return;
-            }
-
-            const onDone = () => markAndDetach(detach);
-            const detach = () => {
-                img.removeEventListener("load", onDone);
-                img.removeEventListener("error", onDone);
-            };
-
-            img.addEventListener("load", onDone, { once: true });
-            img.addEventListener("error", onDone, { once: true });
-            cleanupFns.push(detach);
-        });
-
-        domVideos.forEach((video) => {
-            if (video.readyState >= 3) {
-                markLoaded();
-                return;
-            }
-
-            const onDone = () => markAndDetach(detach);
-            const detach = () => {
-                video.removeEventListener("canplaythrough", onDone);
-                video.removeEventListener("error", onDone);
-            };
-
-            video.addEventListener("canplaythrough", onDone, { once: true });
-            video.addEventListener("error", onDone, { once: true });
-            cleanupFns.push(detach);
-        });
-
-        updateProgress();
-
-        return () => {
-            cleanupFns.forEach((fn) => fn());
-        };
-    }, [updateProgress]);
 
     const completeLoading = useCallback(() => {
         if (isCompletingRef.current) {
@@ -233,6 +115,24 @@ export default function LoadingOverlay({
             );
     }, [animateProgress, onComplete]);
 
+    const finishWhenAllowed = useCallback(() => {
+        const elapsed = Date.now() - startTimeRef.current;
+        const remaining = Math.max(0, minimumDuration - elapsed);
+
+        if (remaining === 0) {
+            completeLoading();
+            return;
+        }
+
+        if (completionTimeoutRef.current !== null) {
+            window.clearTimeout(completionTimeoutRef.current);
+        }
+
+        completionTimeoutRef.current = window.setTimeout(() => {
+            completeLoading();
+        }, remaining);
+    }, [completeLoading, minimumDuration]);
+
     useEffect(() => {
         gsap.set(topProgressRef.current, { scaleX: progress / 100, transformOrigin: "left center" });
         gsap.set(railProgressRef.current, { scaleX: progress / 100, transformOrigin: "left center" });
@@ -240,51 +140,23 @@ export default function LoadingOverlay({
 
     useEffect(() => {
         let isCancelled = false;
-        let settleIntervalId: number | null = null;
-        let detachTrackedListeners: (() => void) | undefined;
+        const isMobile = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
 
         startTimeRef.current = Date.now();
+        animateProgress(0);
 
-        const finishWhenAllowed = () => {
-            const elapsed = Date.now() - startTimeRef.current;
-            const remaining = Math.max(0, minimumDuration - elapsed);
-
-            if (remaining === 0) {
-                completeLoading();
-                return;
-            }
-
-            completionTimeoutRef.current = window.setTimeout(() => {
+        void preloadAssets({
+            includeMobileVideo: isMobile,
+            onProgress: ({ completed, total }) => {
                 if (!isCancelled) {
-                    completeLoading();
+                    updateProgress(completed, total);
                 }
-            }, remaining);
-        };
-
-        void preloadAssets().then((detach) => {
-            detachTrackedListeners = detach;
-        });
-
-        settleIntervalId = window.setInterval(() => {
-            if (isCancelled || isCompletingRef.current) {
-                return;
-            }
-
-            if (assetsLoadedRef.current < totalAssetsRef.current) {
-                assetsLoadedRef.current += 1;
-                updateProgress();
-                return;
-            }
-
-            if (totalAssetsRef.current > 0 && assetsLoadedRef.current >= totalAssetsRef.current) {
-                animateProgress(100);
+            },
+        }).finally(() => {
+            if (!isCancelled) {
                 finishWhenAllowed();
-                if (settleIntervalId !== null) {
-                    window.clearInterval(settleIntervalId);
-                    settleIntervalId = null;
-                }
             }
-        }, 140);
+        });
 
         return () => {
             isCancelled = true;
@@ -292,14 +164,8 @@ export default function LoadingOverlay({
             if (completionTimeoutRef.current !== null) {
                 window.clearTimeout(completionTimeoutRef.current);
             }
-
-            if (settleIntervalId !== null) {
-                window.clearInterval(settleIntervalId);
-            }
-
-            detachTrackedListeners?.();
         };
-    }, [animateProgress, completeLoading, minimumDuration, preloadAssets, updateProgress]);
+    }, [animateProgress, finishWhenAllowed, updateProgress]);
 
     useGSAP(
         () => {
@@ -339,9 +205,9 @@ export default function LoadingOverlay({
     return (
         <div
             ref={containerRef}
-            className={`loading-overlay-root fixed inset-0 flex items-center justify-center bg-brand-dark ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
+            className={`loading-overlay-root fixed inset-0 flex items-center justify-center bg-[#231711] ${isVisible ? "loading-overlay-active" : "loading-overlay-inactive"}`}
         >
-            <div className="absolute inset-0 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark" />
+            <div className="absolute inset-0 bg-linear-to-br from-[#231711] via-[#231711] to-[#231711]" />
 
             <div className="loading-grid absolute inset-0 opacity-[0.03]" />
 
@@ -378,18 +244,6 @@ export default function LoadingOverlay({
 
                 <p className="text-sm uppercase tracking-[0.25em] text-white/40">
                     {status}
-                </p>
-
-                <div className="mt-8 flex justify-center gap-2">
-                    <div className="loading-dot loading-dot-1" />
-                    <div className="loading-dot loading-dot-2" />
-                    <div className="loading-dot loading-dot-3" />
-                </div>
-            </div>
-
-            <div className="absolute bottom-8 left-0 right-0 text-center">
-                <p className="text-xs uppercase tracking-widest text-white/30">
-                    Define Your Carry. Snap Your World.
                 </p>
             </div>
         </div>

@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { Skeleton3DViewer } from "../ui/Skeleton";
+import { SWATCHES, RENDER_MODES, SWATCH_BG_CLASS } from "@/config/swatches";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,29 +14,6 @@ const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
     ssr: false,
     loading: () => <Skeleton3DViewer />,
 });
-
-export const SWATCHES = [
-    { id: "graphite", label: "Graphite", hex: "var(--color-brand-primary)", description: "Muted graphite anodized finish" },
-    { id: "onyx", label: "Onyx", hex: "var(--color-brand-dark)", description: "Low-glare black finish" },
-    { id: "steel", label: "Steel", hex: "var(--color-brand-mountain)", description: "Cool brushed alloy tone" },
-    { id: "stone", label: "Stone", hex: "var(--color-brand-sand)", description: "Soft archival stone tone" },
-    { id: "walnut", label: "Walnut", hex: "var(--color-brand-darker)", description: "Dark walnut tone" },
-    { id: "champagne", label: "Champagne", hex: "var(--color-brand-primary)", description: "Muted metallic champagne" },
-];
-
-const RENDER_MODES = [
-    { id: "normal", label: "Normal", icon: "grid_view" },
-    { id: "glass", label: "Glass", icon: "blur_on" },
-    { id: "wireframe", label: "Wireframe", icon: "view_in_ar" },
-];
-
-const SWATCH_BG_CLASS: Record<string, string> = {
-    "var(--color-brand-primary)": "bg-brand-primary",
-    "var(--color-brand-dark)": "bg-brand-dark",
-    "var(--color-brand-mountain)": "bg-brand-mountain",
-    "var(--color-brand-sand)": "bg-brand-sand",
-    "var(--color-brand-darker)": "bg-brand-darker",
-};
 
 interface MaterialSectionProps {
     activeColor: string;
@@ -56,10 +34,9 @@ export default function MaterialSection({
     // Preload and ready the 3D viewer
     useEffect(() => {
         if (!show3DModel) return;
-        const timer = setTimeout(() => {
+        requestAnimationFrame(() => {
             setIsViewerReady(true);
-        }, 600);
-        return () => clearTimeout(timer);
+        });
     }, [show3DModel]);
 
     useGSAP(
@@ -149,56 +126,56 @@ export default function MaterialSection({
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
+            className="relative py-32 md:py-40 bg-white text-black overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
-            <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/2 blur-3xl" />
+            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-white via-white to-white" />
+            <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/2 blur-3xl" />
 
             {/* Animated ambient orbs */}
-            <div aria-hidden className="absolute top-1/4 right-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" />
-            <div aria-hidden className="absolute bottom-1/4 left-0 w-80 h-80 bg-blue-500/3 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
+            <div aria-hidden className="absolute top-1/4 right-0 w-80 h-80 bg-black/3 rounded-full blur-3xl animate-pulse" />
+            <div aria-hidden className="absolute bottom-1/4 left-0 w-80 h-80 bg-black/2 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
                 <div className="text-center mb-16 md:mb-20">
-                    <p className="material-subtitle text-xs uppercase tracking-[0.35em] text-white/50 mb-4">
+                    <p className="material-subtitle text-xs uppercase tracking-[0.35em] text-black/50 mb-4">
                         Office Edition
                     </p>
-                    <h2 className="material-title text-4xl md:text-6xl font-bold text-white mb-6">
+                    <h2 className="material-title text-4xl md:text-6xl font-bold text-[#231711] mb-6">
                         Product Material Studio
                     </h2>
-                    <p className="material-subtitle text-white/72 text-lg max-w-2xl mx-auto">
+                    <p className="material-subtitle text-black/68 text-lg max-w-2xl mx-auto">
                         Review finishes, rotate the chassis, and compare which surface looks most at home in your workspace.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
                     <div className="material-controls space-y-4">
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
-                            <h3 className="text-white font-medium mb-3">Orbit Controls</h3>
-                            <p className="text-white/68 text-sm leading-relaxed">
+                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
+                            <h3 className="text-black font-medium mb-3">Orbit Controls</h3>
+                            <p className="text-black/68 text-sm leading-relaxed">
                                 Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
                             </p>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
-                            <h3 className="text-white font-medium mb-3">Performance</h3>
-                            <div className="flex items-center gap-2 text-white/70 text-sm">
-                                <span className="w-2 h-2 rounded-full bg-green-500/60" />
+                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
+                            <h3 className="text-black font-medium mb-3">Performance</h3>
+                            <div className="flex items-center gap-2 text-black/70 text-sm">
+                                <span className="w-2 h-2 rounded-full bg-black/50" />
                                 60 FPS | High Fidelity
                             </div>
                         </div>
 
                         <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white text-brand-dark font-medium hover:bg-white/90 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-black/90 transition-colors text-sm">
                                 Customize
                             </button>
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/18 text-white/92 font-medium hover:bg-white/16 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white border border-black/10 text-black font-medium hover:bg-black/5 transition-colors text-sm">
                                 Add to Cart
                             </button>
                         </div>
                     </div>
 
-                    <div suppressHydrationWarning className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-white/14 bg-linear-to-br from-brand-dark via-brand-dark to-brand-dark">
+                    <div suppressHydrationWarning className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-black/10 bg-[#f8f4ee]">
                         {show3DModel && isViewerReady ? (
                             <CardHolderScene
                                 color={activeColor}
@@ -210,23 +187,21 @@ export default function MaterialSection({
                                 cameraLookAt={[0, 0, 0]}
                                 introFromPosition={[1.8, 2.2, 12]}
                                 introDuration={1.15}
-                                modelRotation={[Math.PI / 2, 0.2, 0]}
+                                modelRotation={[0, 0, 0]}
                                 modelOffset={[0, 0, 0]}
                                 modelScaleMultiplier={4}
                                 className="w-full h-full"
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                                <p className="text-white/40 text-sm">3D Viewer Loading...</p>
+                                <p className="text-black/40 text-sm">3D Viewer Loading...</p>
                             </div>
                         )}
-
-                        <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-dark/36 via-transparent to-brand-dark/28 pointer-events-none" />
                     </div>
 
                     <div className="material-controls space-y-4">
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
+                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-4">
                                 Render Mode
                             </p>
                             <div className="space-y-2">
@@ -235,8 +210,8 @@ export default function MaterialSection({
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
                                         className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
-                                            ? "bg-white/12 text-white border border-white/15"
-                                            : "bg-transparent text-white/76 border border-transparent hover:bg-white/8"
+                                            ? "bg-black text-white border border-black"
+                                            : "bg-transparent text-black/76 border border-transparent hover:bg-black/5"
                                             }`}
                                     >
                                         <span className="flex items-center gap-2">
@@ -251,8 +226,8 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-4">
+                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-4">
                                 Material Color
                             </p>
                             <div className="grid grid-cols-3 gap-3 mb-4">
@@ -262,14 +237,14 @@ export default function MaterialSection({
                                         onClick={() => onColorChange(swatch.hex)}
                                         type="button"
                                         className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                            ? "ring-2 ring-white ring-offset-2 ring-offset-brand-dark"
+                                            ? "ring-2 ring-black ring-offset-2 ring-offset-white"
                                             : "hover:scale-105"
                                             } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
                                         aria-label={`Select ${swatch.label}`}
                                     >
                                         {activeColor === swatch.hex && (
                                             <span className="absolute inset-0 flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-white text-sm drop-shadow-lg">
+                                                <span className="material-symbols-outlined text-black text-sm drop-shadow-lg">
                                                     check
                                                 </span>
                                             </span>
@@ -277,15 +252,23 @@ export default function MaterialSection({
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-white/76 text-sm">{activeSwatch.label}</p>
-                            <p className="text-white/58 text-xs mt-1">{activeSwatch.description}</p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-8 h-8 rounded-md border border-black/10 flex items-center justify-center text-xs text-black/60">
+                                    <span aria-hidden> </span>
+                                </div>
+                                <div>
+                                    <p className="text-black/76 text-sm">{activeSwatch.label}</p>
+                                    <p className="text-black/58 text-xs mt-1">{activeSwatch.description}</p>
+                                    <ResolvedColorText activeColor={activeColor} />
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="bg-brand-dark/68 backdrop-blur-sm border border-white/14 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-white/40 mb-3">
+                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
+                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-3">
                                 Input: Active
                             </p>
-                            <div className="space-y-2 text-xs text-white/66">
+                            <div className="space-y-2 text-xs text-black/66">
                                 <p>Render Tier: High</p>
                                 <p>Camera: Orbit + Zoom</p>
                                 <p>Material: {renderMode}</p>
@@ -296,4 +279,46 @@ export default function MaterialSection({
             </div>
         </section>
     );
+}
+
+function ResolvedColorText({ activeColor }: { activeColor: string }) {
+    const [resolved, setResolved] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isCancelled = false;
+
+        const resolveCss = (input: string) => {
+            if (!input) return input;
+            const t = input.trim();
+            if (t.startsWith("var(")) {
+                try {
+                    const m = t.match(/^var\(\s*([^,\)]+)\s*(?:,\s*([^\)]+))?\s*\)$/);
+                    const varName = m ? m[1].trim() : null;
+                    if (varName) {
+                        const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+                        if (val) return val;
+                    }
+                } catch {
+                    // fall through
+                }
+            }
+
+            return t;
+        };
+
+        const v = resolveCss(activeColor);
+        if (!isCancelled) {
+            const raf = requestAnimationFrame(() => {
+                if (!isCancelled) setResolved(v);
+            });
+
+            return () => cancelAnimationFrame(raf);
+        }
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [activeColor]);
+
+    return <p className="text-xs text-black/50 mt-1">{resolved ?? activeColor}</p>;
 }

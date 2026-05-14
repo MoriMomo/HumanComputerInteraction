@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -80,7 +81,7 @@ const PRODUCT_ID_TO_SLUG: Record<string, string> = {
     executive: "desk-organizer",
 };
 
-export default function ShopSection() {
+function ShopSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const [cart, setCart] = useState<Record<string, number>>({});
     const { addItem } = useCart();
@@ -171,16 +172,20 @@ export default function ShopSection() {
         <section
             id="shop"
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-brand-dark overflow-hidden"
+            className="relative py-32 md:py-40 bg-white overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
+            {/* Grid overlay */}
             <div
                 aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-brand-dark/12 blur-3xl"
+                className="pointer-events-none absolute inset-0 z-10 [background:linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-size-[120px_120px]"
             />
             <div
                 aria-hidden
-                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-brand-dark/8 blur-3xl"
+                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#231711]/12 blur-3xl"
+            />
+            <div
+                aria-hidden
+                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-black/5 blur-3xl"
             />
             <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                 {/* Label + title */}
@@ -188,11 +193,11 @@ export default function ShopSection() {
                     Shop
                 </p>
                 <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                    <h2 className="shop-title max-w-lg text-4xl font-bold leading-tight text-white md:text-5xl">
+                    <h2 className="shop-title max-w-lg text-4xl font-bold leading-tight text-[#231711] md:text-5xl">
                         Choose your{" "}
                         <span className="italic text-primary">perfect carry</span>.
                     </h2>
-                    <p className="shop-title max-w-xs text-sm leading-relaxed text-white/50">
+                    <p className="shop-title max-w-xs text-sm leading-relaxed text-[#231711]/60">
                         Premium cardholder for the discerning professional. Crafted to last.
                     </p>
                 </div>
@@ -206,69 +211,58 @@ export default function ShopSection() {
                         return (
                             <div
                                 key={product.id}
-                                className={`shop-card group relative flex flex-col overflow-hidden rounded-3xl border backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-brand-primary/20 hover:shadow-brand-hover ${isPopular
-                                    ? "border-brand-primary/20 bg-linear-to-b from-brand-primary/10 to-brand-primary/5 shadow-brand-hover"
-                                    : "border-brand-mountain/10 bg-linear-to-b from-brand-mountain/5 to-transparent"
+                                className={`shop-card group relative flex flex-col overflow-hidden rounded-3xl border backdrop-blur-sm transition-all duration-500 hover:-translate-y-2 hover:border-brand-primary/20 hover:shadow-xl hover:shadow-black/5 bg-white ${isPopular
+                                    ? "border-brand-primary/20 shadow-lg shadow-brand-primary/10"
+                                    : "border-black/5"
                                     }`}
                             >
                                 {/* Badge */}
                                 {product.badge && (
                                     <div
                                         className={`absolute right-5 top-5 z-10 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${isPopular
-                                            ? "bg-white/20 text-white/90"
-                                            : "bg-white/10 text-white/60"
+                                            ? "bg-brand-primary text-white"
+                                            : "bg-black/5 text-[#231711]/60"
                                             }`}
                                     >
                                         {product.badge}
                                     </div>
                                 )}
 
-                                {/* Color preview */}
-                                <div
-                                    className={`relative flex h-48 items-center justify-center overflow-hidden bg-white/2`}
-                                >
-                                    <div
-                                        className={`h-28 w-28 rounded-2xl shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${product.bgSolidClass}`}
+                                {/* Product render preview */}
+                                <div className="relative flex h-48 items-center justify-center overflow-hidden bg-black/3">
+                                    <img
+                                        src={`/products/${product.id === 'pro' ? 'wallet-elite.svg' : product.id === 'executive' ? 'desk-organizer.svg' : 'cardholder-pro.svg'}`}
+                                        alt={`${product.name} render`}
+                                        className="h-36 w-auto object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-transform duration-500 group-hover:scale-105"
                                     />
-                                    <div
-                                        aria-hidden="true"
-                                        className={`pointer-events-none absolute inset-0 opacity-20 mix-blend-screen ${product.glowClass}`}
-                                    />
+                                    <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />
                                 </div>
 
                                 {/* Content */}
                                 <div className="flex flex-1 flex-col gap-6 p-7">
                                     <div>
-                                        <p className="mb-1 text-xs font-medium uppercase tracking-widest text-white/40">
+                                        <p className="mb-1 text-sm font-medium uppercase tracking-widest text-[#231711]/60">
                                             {product.colorLabel} · {product.capacity}
                                         </p>
-                                        <h3 className="text-xl font-bold text-white group-hover:text-primary/90 transition-colors">
+                                        <h3 className="text-2xl font-semibold text-[#231711] group-hover:text-primary/90 transition-colors">
                                             {product.name}
                                         </h3>
                                     </div>
 
                                     {/* Price */}
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-3xl font-bold text-white">
+                                        <span className="text-3xl font-semibold text-[#231711]">
                                             ${product.price}
                                         </span>
-                                        <span className="text-sm text-white/40">USD</span>
+                                        <span className="text-base font-medium text-[#231711]/60">USD</span>
                                     </div>
 
                                     {/* Feature list */}
                                     <ul className="flex flex-1 flex-col gap-2.5">
                                         {product.features.map((f) => (
-                                            <li key={f} className="flex items-center gap-2.5 text-sm text-white/60">
-                                                <svg
-                                                    className={`h-5 w-5 shrink-0 text-primary/70`}
-                                                    fill="currentColor"
-                                                    viewBox="0 0 20 20"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                        clipRule="evenodd"
-                                                    />
+                                            <li key={f} className="flex items-center gap-3 text-base font-medium text-[#231711]/95">
+                                                <svg className="h-5 w-5 shrink-0 text-[#231711]/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                 </svg>
                                                 {f}
                                             </li>
@@ -278,9 +272,9 @@ export default function ShopSection() {
                                     {/* CTA */}
                                     <button
                                         onClick={() => addToCart(product.id)}
-                                        className={`group/btn mt-2 h-12 w-full rounded-full text-sm font-semibold tracking-wide transition-all duration-300 relative overflow-hidden ${isPopular
-                                            ? "bg-white text-black hover:shadow-lg hover:shadow-white/20"
-                                            : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
+                                        className={`group/btn mt-2 h-12 w-full rounded-full text-base font-semibold tracking-wide transition-all duration-300 relative overflow-hidden ${isPopular
+                                            ? "bg-white text-[#111111] hover:bg-white/95"
+                                            : "bg-black/5 text-[#231711] border border-black/10 hover:bg-black/10"
                                             }`}
                                     >
                                         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -316,23 +310,35 @@ export default function ShopSection() {
                 </div>
 
                 {/* Trust signals */}
-                <div className="mt-20 flex flex-col gap-12 border-t border-white/8 pt-12">
+                <div className="mt-20 flex flex-col gap-12 border-t border-black/5 pt-12">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-white">30-Day</p>
-                            <p className="text-xs text-white/40 mt-2">Free Returns</p>
+                            <div className="mb-3 flex items-center justify-center">
+                                <svg className="h-8 w-8 text-[#231711]/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M3 12h18M3 17h18" /></svg>
+                            </div>
+                            <p className="text-3xl font-semibold text-[#231711]">30-Day</p>
+                            <p className="text-sm font-medium text-[#231711]/70 mt-2">Free Returns</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-white">2-Year</p>
-                            <p className="text-xs text-white/40 mt-2">Warranty</p>
+                            <div className="mb-3 flex items-center justify-center">
+                                <svg className="h-8 w-8 text-[#231711]/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3 6 6 .5-4.5 3.5L19 20l-7-4-7 4 1.5-7L2 8.5 8 8z" /></svg>
+                            </div>
+                            <p className="text-3xl font-semibold text-[#231711]">2-Year</p>
+                            <p className="text-sm font-medium text-[#231711]/70 mt-2">Warranty</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-white">Free</p>
-                            <p className="text-xs text-white/40 mt-2">Worldwide Shipping</p>
+                            <div className="mb-3 flex items-center justify-center">
+                                <svg className="h-8 w-8 text-[#231711]/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7-5 7 5v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></svg>
+                            </div>
+                            <p className="text-3xl font-semibold text-[#231711]">Free</p>
+                            <p className="text-sm font-medium text-[#231711]/70 mt-2">Worldwide Shipping</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-white">4.9★</p>
-                            <p className="text-xs text-white/40 mt-2">2,400+ Reviews</p>
+                            <div className="mb-3 flex items-center justify-center">
+                                <svg className="h-8 w-8 text-[#231711]/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.389 2.455a1 1 0 00-.364 1.118l1.286 3.966c.3.921-.755 1.688-1.539 1.118l-3.389-2.455a1 1 0 00-1.175 0l-3.389 2.455c-.784.57-1.838-.197-1.539-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.036 9.393c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69L11.05 2.927z" /></svg>
+                            </div>
+                            <p className="text-3xl font-semibold text-[#231711]">4.9★</p>
+                            <p className="text-sm font-medium text-[#231711]/70 mt-2">2,400+ Reviews</p>
                         </div>
                     </div>
                 </div>
@@ -340,3 +346,5 @@ export default function ShopSection() {
         </section>
     );
 }
+
+export default memo(ShopSection);

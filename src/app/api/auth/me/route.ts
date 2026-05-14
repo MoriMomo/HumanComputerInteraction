@@ -10,7 +10,7 @@ export async function GET() {
     const sessionUser = readSessionToken(token);
 
     if (!sessionUser) {
-        return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+        return NextResponse.json({ user: null });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -19,7 +19,7 @@ export async function GET() {
     });
 
     if (!existingUser) {
-        return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+        return NextResponse.json({ user: null });
     }
 
     return NextResponse.json({ user: existingUser });
