@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LoadingLink from "@/components/ui/LoadingLink";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { BLOG_POSTS } from "@/data/blog";
@@ -118,12 +119,27 @@ export default function BlogPage() {
 
                             <div className="grid grid-cols-1 lg:grid-cols-2">
                                 <div className="relative min-h-80 border-b border-black/10 bg-linear-to-br from-black/5 to-black/2 lg:border-b-0 lg:border-r">
-                                    <div className="absolute inset-0 office-grid opacity-[0.08]" />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="flex h-32 w-32 items-center justify-center rounded-full border border-black/10 bg-black/5 shadow-md">
-                                            <span className="material-symbols-outlined text-6xl text-[#231711]/18">article</span>
+                                    {featured.image ? (
+                                        <div className="absolute inset-0">
+                                            <Image
+                                                src={featured.image}
+                                                alt={featured.title}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                                                className="object-cover"
+                                            />
+                                            <div className="absolute inset-0 office-grid opacity-[0.08]" />
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <>
+                                            <div className="absolute inset-0 office-grid opacity-[0.08]" />
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                <div className="flex h-32 w-32 items-center justify-center rounded-full border border-black/10 bg-black/5 shadow-md">
+                                                    <span className="material-symbols-outlined text-6xl text-[#231711]/18">article</span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                                 <div className="flex flex-col justify-center p-10 lg:p-12">
                                     <span className="mb-6 inline-block text-xs font-semibold uppercase tracking-[0.32em] text-primary">
@@ -187,10 +203,25 @@ export default function BlogPage() {
                                         <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary/12 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
                                         <div className={`relative border-b border-black/10 bg-linear-to-br from-black/5 to-black/2 ${isFeatured ? "aspect-video" : "aspect-square"}`}>
-                                            <div className="absolute inset-0 office-grid opacity-[0.08]" />
-                                            <div className={`absolute inset-0 flex items-center justify-center ${isFeatured ? "text-6xl" : "text-5xl"}`}>
-                                                <span className="material-symbols-outlined text-[#231711]/16">article</span>
-                                            </div>
+                                            {post.image ? (
+                                                <div className="absolute inset-0">
+                                                    <Image
+                                                        src={post.image}
+                                                        alt={post.title}
+                                                        fill
+                                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 office-grid opacity-[0.08]" />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="absolute inset-0 office-grid opacity-[0.08]" />
+                                                    <div className={`absolute inset-0 flex items-center justify-center ${isFeatured ? "text-6xl" : "text-5xl"}`}>
+                                                        <span className="material-symbols-outlined text-[#231711]/16">article</span>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                         <div className={`flex flex-col ${isFeatured ? "p-10" : "p-8"}`}>
                                             {isFeatured && (

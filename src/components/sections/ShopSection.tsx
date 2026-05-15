@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { memo } from "react";
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
@@ -230,9 +231,12 @@ function ShopSection() {
 
                                 {/* Product render preview */}
                                 <div className="relative flex h-48 items-center justify-center overflow-hidden bg-black/3">
-                                    <img
+                                    <Image
                                         src={`/products/${product.id === 'pro' ? 'wallet-elite.svg' : product.id === 'executive' ? 'desk-organizer.svg' : 'cardholder-pro.svg'}`}
                                         alt={`${product.name} render`}
+                                        width={480}
+                                        height={360}
+                                        priority={false}
                                         className="h-36 w-auto object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-transform duration-500 group-hover:scale-105"
                                     />
                                     <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />

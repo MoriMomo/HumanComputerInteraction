@@ -3,6 +3,7 @@ export const BLOG_POSTS = [
         slug: "minimalist-carry-essentials",
         title: "The Art of Minimalist Carry",
         excerpt: "Discover how to streamline your everyday carry for maximum efficiency and clarity.",
+        image: "/blog/Gemini_Generated_Image_wvk3bqwvk3bqwvk3.png",
         date: "March 10, 2026",
         readTime: "5 min read",
         content: `Everyday carry has become something of an art form among professionals who value both form and function. The principle is simple: carry only what you need, and make sure every item earns its place.
@@ -19,6 +20,7 @@ The goal is not minimalism for its own sake — it is intentionality. Carry less
         slug: "premium-materials-guide",
         title: "Understanding Premium Materials",
         excerpt: "A deep dive into aluminium, anodising, and the materials that define professional carry.",
+        image: "/blog/hci 3.jpeg",
         date: "March 5, 2026",
         readTime: "7 min read",
         content: `Not all aluminium is created equal. When we say 6061-T6, we mean a specific alloy — 97.9% aluminium with controlled additions of magnesium and silicon — then tempered to a precise hardness. It machines cleanly, holds tight tolerances, and resists corrosion better than most alternatives.
@@ -35,6 +37,7 @@ When you hold a well-made aluminium object, you are holding the result of materi
         slug: "office-organization-tips",
         title: "The Organised Desk, Revisited",
         excerpt: "Rethinking desk organisation for the professional who needs their environment to think clearly.",
+        image: "/blog/hci 4.jpeg",
         date: "February 28, 2026",
         readTime: "4 min read",
         content: `A cluttered desk is not a sign of a creative mind. It is a tax on your attention. Every object that does not serve your current task competes for cognitive bandwidth you need for the work itself.
@@ -51,6 +54,7 @@ The desk organiser is not optional equipment for a serious professional. It is i
         slug: "how-we-test-daily-carry",
         title: "How We Test Everyday Carry Objects",
         excerpt: "Behind the scenes of fit checks, drop tests, and surface wear trials in our product process.",
+        image: "/blog/hci 5.jpeg",
         date: "February 22, 2026",
         readTime: "6 min read",
         content: `Most product failures are not dramatic. They are small points of friction repeated a thousand times: a corner that catches fabric, a finish that fingerprints too easily, a latch that feels vague in one hand.
@@ -67,6 +71,7 @@ The final stage is silent confidence: if you can use the object without thinking
         slug: "why-weight-distribution-matters",
         title: "Why Weight Distribution Matters More Than Total Weight",
         excerpt: "A lighter object is not always better. Balance and center of mass define comfort in daily use.",
+        image: "/blog/hci 6.jpeg",
         date: "February 15, 2026",
         readTime: "5 min read",
         content: `People often ask for lighter products, but weight alone is a poor metric. The key variable is where that weight sits relative to your hand and pocket orientation.
@@ -83,6 +88,7 @@ Designing for balance means designing for repetition: the 200th interaction shou
         slug: "rfid-myths-and-real-utility",
         title: "RFID Shielding: Myths and Real Utility",
         excerpt: "What RFID protection actually does, where it helps, and how to avoid false security assumptions.",
+        image: "/blog/hci 7.jpeg",
         date: "February 8, 2026",
         readTime: "6 min read",
         content: `RFID shielding is often marketed as total digital protection. In reality, it solves one specific issue: blocking short-range scans of contactless cards in close proximity.
@@ -99,6 +105,7 @@ The best implementation is invisible in daily use. You do not think about it, bu
         slug: "finish-selection-for-long-term-use",
         title: "Choosing a Finish for Long-Term Use",
         excerpt: "A practical guide to matte, satin, and darker finishes based on wear patterns and handling style.",
+        image: "/blog/hci blog 1.jpeg",
         date: "January 30, 2026",
         readTime: "5 min read",
         content: `Finish is not only visual preference. It directly affects fingerprint visibility, scratch perception, and how the object ages over time.
@@ -115,6 +122,7 @@ The right finish is the one that matches your real usage pattern, not the one th
         slug: "designing-for-one-handed-use",
         title: "Designing for One-Handed Use",
         excerpt: "How subtle geometry and texture choices make products faster and safer when used with one hand.",
+        image: "/blog/hci blog 2.jpeg",
         date: "January 24, 2026",
         readTime: "4 min read",
         content: `One-handed interaction is where product ergonomics are exposed. If grip transitions are unclear, users compensate with awkward wrist angles and slower movement.

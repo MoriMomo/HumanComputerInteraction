@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useParams } from "next/navigation";
@@ -75,11 +76,23 @@ export default function BlogPostPage() {
 
                 <section className="mx-auto max-w-5xl px-6 py-14 md:px-12">
                     <div className="post-body mb-12 aspect-video overflow-hidden rounded-4xl border border-white/10 bg-linear-to-br from-white/10 to-white/2">
-                        <div className="flex h-full items-center justify-center">
-                            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-white/14 bg-white/8">
-                                <span className="material-symbols-outlined text-6xl text-white/14">article</span>
+                        {post.image ? (
+                            <div className="relative h-full w-full">
+                                <Image
+                                    src={post.image}
+                                    alt={post.title}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 1200px"
+                                    className="object-cover"
+                                />
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex h-full items-center justify-center">
+                                <div className="flex h-24 w-24 items-center justify-center rounded-full border border-white/14 bg-white/8">
+                                    <span className="material-symbols-outlined text-6xl text-white/14">article</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <article className="post-body">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, useMemo } from "react";
 import useResolvedColor from "@/hooks/useResolvedColor";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, Float, Html, OrbitControls, useProgress } from "@react-three/drei";
@@ -92,6 +92,7 @@ function SceneContent({
     const { camera, invalidate } = useThree();
     const controlsRef = useRef<OrbitControlsImpl | null>(null);
     const hasAnimatedRef = useRef(false);
+    const [introFinished, setIntroFinished] = useState(false);
     const rimLightRef = useRef<THREE.PointLight | null>(null);
     const rimFillRef = useRef<THREE.PointLight | null>(null);
     const resolvedColor = useResolvedColor(color);
@@ -101,8 +102,10 @@ function SceneContent({
         if (hasAnimatedRef.current || introDuration === 0) return;
         hasAnimatedRef.current = true;
 
+        // Start camera from intro position
         camera.position.set(...introFromPosition);
 
+        // Try to initialize controls target if ready
         if (controlsRef.current) {
             controlsRef.current.target.set(...cameraLookAt);
             controlsRef.current.update();
@@ -115,8 +118,11 @@ function SceneContent({
             duration: introDuration,
             ease: "power2.out",
             onUpdate: () => {
-                camera.lookAt(...cameraLookAt);
+                // Let OrbitControls manage camera orientation; just update it here
                 controlsRef.current?.update();
+            },
+            onComplete: () => {
+                setIntroFinished(true);
             },
         });
 
@@ -124,6 +130,24 @@ function SceneContent({
             tween.kill();
         };
     }, [camera, cameraLookAt, cameraPosition, introDuration, introFromPosition]);
+
+    // Reset the animation guard when intro config changes so the intro can replay when intentionally changed
+    useEffect(() => {
+        hasAnimatedRef.current = false;
+        const raf = requestAnimationFrame(() => setIntroFinished(false));
+        return () => cancelAnimationFrame(raf);
+    }, [cameraPosition, introFromPosition, introDuration]);
+
+    // Ensure controls target is initialized when the ref becomes available
+    useEffect(() => {
+        const id = window.setTimeout(() => {
+            if (controlsRef.current) {
+                controlsRef.current.target.set(...cameraLookAt);
+                controlsRef.current.update();
+            }
+        }, 50);
+        return () => window.clearTimeout(id);
+    }, [cameraLookAt]);
 
     useEffect(() => {
         if (isActive) {
@@ -165,6 +189,7 @@ function SceneContent({
                     blur={4.8}
                     far={7}
                     resolution={512}
+                    key={energySaving ? "shadows-static" : "shadows-dynamic"}
                     frames={energySaving ? 1 : 60}
                     color="#2d241d"
                 />
@@ -193,7 +218,7 @@ function SceneContent({
             {/* OrbitControls with snappy damping and smooth auto-rotation */}
             <OrbitControls
                 ref={controlsRef}
-                enabled={isActive && !compactExperience}
+                enabled={introFinished && isActive && !compactExperience}
                 enableZoom={enableZoom}
                 enablePan={false}
                 target={cameraLookAt}
@@ -254,13 +279,13 @@ export default function CardHolderScene({
     className = "",
     renderMode = "normal",
     enableZoom = true,
-    cameraPosition = [0, 0, 10],
+    cameraPosition = [0, 0, 50],
     cameraLookAt = [0, 0, 0],
-    introFromPosition = [1.8, 2.2, 12],
+    introFromPosition = [5, 8, 80],
     introDuration = 1.4,
     isActive = true,
     modelRotation = [Math.PI / 2, 0, 0],
-    modelOffset = [0, 0, 0],
+    modelOffset = [0, -6, 0],
     modelScaleMultiplier = 4,
     onModelReady,
 }: CardHolderSceneProps) {
@@ -319,41 +344,53 @@ export default function CardHolderScene({
     const compactExperience = energySaving || !isDesktopViewport;
     const dynamicPowerPreference = energySaving ? "low-power" : "high-performance";
     const cameraFar = energySaving ? 220 : 1000;
-    const responsiveCameraPosition: [number, number, number] = isDesktopViewport
-        ? [cameraPosition[0], cameraPosition[1], cameraPosition[2] * 0.88]
-        : cameraPosition;
-    const responsiveIntroFromPosition: [number, number, number] = isDesktopViewport
-        ? [introFromPosition[0], introFromPosition[1], introFromPosition[2] * 0.92]
-        : introFromPosition;
-    const responsiveModelScaleMultiplier = isDesktopViewport
-        ? modelScaleMultiplier * 1.18
-        : modelScaleMultiplier;
+    const responsiveCameraPosition = useMemo<[number, number, number]>(
+        () => (isDesktopViewport ? [cameraPosition[0], cameraPosition[1], cameraPosition[2] * 0.88] : cameraPosition),
+        [isDesktopViewport, cameraPosition]
+    );
 
-    const dprRange = useMemo<[number, number]>(() => {
-        if (energySaving) {
-            return [1, 1];
-        }
+    const responsiveIntroFromPosition = useMemo<[number, number, number]>(
+        () => (isDesktopViewport ? [introFromPosition[0], introFromPosition[1], introFromPosition[2] * 0.92] : introFromPosition),
+        [isDesktopViewport, introFromPosition]
+    );
 
-        return isDesktopViewport ? [1, 1.5] : [1, 1.25];
-    }, [energySaving, isDesktopViewport]);
+    const responsiveModelScaleMultiplier = useMemo(
+        () => (isDesktopViewport ? modelScaleMultiplier * 1.18 : modelScaleMultiplier),
+        [isDesktopViewport, modelScaleMultiplier]
+    );
+
+    // Camera config — memoized so we don't recreate the camera object every render.
+    type CameraBase = { position: [number, number, number]; near: number; far: number };
+    const cameraConfig = useMemo(() => {
+        const base: CameraBase = { position: responsiveCameraPosition, near: 0.1, far: cameraFar };
+        return useOrthographic
+            ? { ...base, zoom: isDesktopViewport ? 120 : 110 }
+            : { ...base, fov: 35 };
+    }, [responsiveCameraPosition, cameraFar, useOrthographic, isDesktopViewport]);
+
+    // Use a conservative DPR to reduce GPU pressure and avoid GL context loss.
+    // When energySaving is enabled, use 1 (single DPR); otherwise clamp to [1,1].
+    // Keep DPR low to improve stability on constrained devices and shared contexts.
+    const canvasDpr = energySaving ? 1 : [1, 1] as [number, number];
+
+    // Remount key for Canvas when switching camera projection (ortho vs perspective)
+    const canvasKey = useOrthographic ? "ortho" : "persp";
 
     return (
         <div className={`w-full h-full relative ${className}`}>
             <Canvas
+                key={canvasKey}
                 className={enableZoom && isActive ? "gpu-canvas" : "gpu-canvas pointer-events-none"}
                 frameloop={isActive && !energySaving ? "always" : "demand"}
                 orthographic={useOrthographic}
-                camera={useOrthographic
-                    ? { position: responsiveCameraPosition, zoom: isDesktopViewport ? 96 : 90, near: 0.1, far: cameraFar }
-                    : { position: responsiveCameraPosition, fov: 45, near: 0.1, far: cameraFar }
-                }
+                camera={cameraConfig}
                 onCreated={({ gl }) => {
                     gl.shadowMap.enabled = false;
                     gl.outputColorSpace = THREE.SRGBColorSpace;
                     gl.toneMapping = THREE.ACESFilmicToneMapping;
                     gl.toneMappingExposure = energySaving ? 1 : 1.2;
                 }}
-                dpr={energySaving ? 1 : dprRange}
+                dpr={canvasDpr}
                 gl={{
                     antialias: !compactExperience,
                     alpha: true,
