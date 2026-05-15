@@ -248,6 +248,7 @@ export default function Navbar() {
                         }
                     }}
                 >
+                    <h2 className="sr-only">Mobile navigation</h2>
                     <div className="max-w-lg mx-auto px-6 py-12">
                         <div className="flex flex-col gap-2">
                             {NAV_LINKS.map((link) => (
