@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -24,6 +25,36 @@ const TEAM = [
         name: "Reza Maulana",
         role: "Operations",
         bio: "Supply chain specialist ensuring every unit meets our zero-compromise quality standard.",
+    },
+    {
+        name: "Aqsha Rahman",
+        role: "Product Engineer",
+        bio: "Mechanical engineer focused on tolerance and assembly processes.",
+        image: "/aboutUs/aqsha.jpeg",
+    },
+    {
+        name: "Cent Prabowo",
+        role: "Surface Finish Lead",
+        bio: "Responsible for coating, PVD processes and tactile finish quality.",
+        image: "/aboutUs/cent.jpeg",
+    },
+    {
+        name: "Jes Kartika",
+        role: "Materials Scientist",
+        bio: "Studies alloy behavior and long-term corrosion resistance.",
+        image: "/aboutUs/jes.jpeg",
+    },
+    {
+        name: "Kelvin Wijaya",
+        role: "Prototype Technician",
+        bio: "Builds and validates early prototypes for fit, form and function.",
+        image: "/aboutUs/kelvin.jpeg",
+    },
+    {
+        name: "Ken Prasetya",
+        role: "Customer Experience",
+        bio: "Leads customer insights and ensures post-purchase satisfaction.",
+        image: "/aboutUs/ken.jpeg",
     },
 ];
 
@@ -308,8 +339,12 @@ export default function AboutPage() {
                                 className="about-team-card relative overflow-hidden rounded-3xl border border-black/10 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-8"
                             >
                                 <div className="relative mb-6 flex items-center justify-between gap-4">
-                                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-black/10 bg-black/5">
-                                        <span className="material-symbols-outlined text-[#231711]/60">person</span>
+                                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-black/10 bg-black/5 overflow-hidden">
+                                        {member.image ? (
+                                            <Image src={member.image} alt={member.name} width={56} height={56} className="object-cover" />
+                                        ) : (
+                                            <span className="material-symbols-outlined text-[#231711]/60">person</span>
+                                        )}
                                     </div>
                                     <span className="rounded-full border border-black/10 bg-black/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[#231711]/60">
                                         Team
