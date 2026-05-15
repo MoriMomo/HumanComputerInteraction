@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookie";
 import { readSessionToken } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, CartItem } from "@prisma/client";
 import { PRODUCT_MAP } from "@/data/products";
 
 interface CartMutationBody {
@@ -107,12 +107,12 @@ export async function POST(request: Request) {
 
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // Optimization: Fetch all existing items for this user in one query to avoid N+1 inside transaction
-            const existingItems: Prisma.CartItem[] = await tx.cartItem.findMany({
+            const existingItems: CartItem[] = await tx.cartItem.findMany({
                 where: { userId },
             });
 
             const existingMap = new Map(
-                existingItems.map((item: Prisma.CartItem) => [`${item.slug}:${item.color ?? ""}`, item])
+                existingItems.map((item: CartItem) => [`${item.slug}:${item.color ?? ""}`, item])
             );
 
             const operations = Array.from(aggregatedItems.values()).map((item) => {
