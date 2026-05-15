@@ -101,6 +101,7 @@ export default function AboutPage() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });
     const [formStatus, setFormStatus] = useState<"idle" | "sending" | "sent">("idle");
+    const whatsappNum = process.env.NEXT_PUBLIC_WHATSAPP || "";
 
     useGSAP(
         () => {
@@ -404,6 +405,19 @@ export default function AboutPage() {
                                         <span className="text-sm">{item.label}</span>
                                     </div>
                                 ))}
+                                {whatsappNum && (
+                                    <div className="mt-4">
+                                        <a
+                                            href={`https://wa.me/${whatsappNum}?text=Hi%20SatSet,%20I%20have%20a%20question`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white hover:opacity-95"
+                                        >
+                                            <span className="material-symbols-outlined">chat</span>
+                                            Chat on WhatsApp
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

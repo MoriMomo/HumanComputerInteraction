@@ -3,6 +3,7 @@
 import { memo } from "react";
 
 function Footer() {
+    const whatsappNum = process.env.NEXT_PUBLIC_WHATSAPP || "";
     const navLinks = [
         { group: "Product", links: ["Showcase", "Features", "Specs", "Shop"] },
         { group: "Company", links: ["About", "Press Kit", "Careers", "Contact"] },
@@ -34,18 +35,23 @@ function Footer() {
                         </p>
                         {/* Social icons */}
                         <div className="flex gap-4 mt-2">
-                            {["twitter", "instagram", "linkedin"].map((platform) => (
-                                <a
-                                    key={platform}
-                                    href="#"
-                                    aria-label={platform}
-                                    className="w-9 h-9 rounded-full border border-white/12 flex items-center justify-center text-white/72 hover:border-primary hover:text-primary transition-colors"
-                                >
-                                    <span className="material-symbols-outlined text-base">
-                                        {platform === "twitter" ? "alternate_email" : platform === "instagram" ? "photo_camera" : "business"}
-                                    </span>
-                                </a>
-                            ))}
+                            {["twitter", "instagram", "linkedin", "whatsapp"].map((platform) => {
+                                const isWhatsApp = platform === "whatsapp";
+                                const href = isWhatsApp && whatsappNum ? `https://wa.me/${whatsappNum}` : "#";
+                                return (
+                                    <a
+                                        key={platform}
+                                        href={href}
+                                        aria-label={isWhatsApp ? "WhatsApp" : platform}
+                                        className={`w-9 h-9 rounded-full border border-white/12 flex items-center justify-center text-white/72 hover:border-primary hover:text-primary transition-colors ${isWhatsApp && whatsappNum ? "bg-[#25D366]/8 hover:bg-[#25D366]/12" : ""}`}
+                                        {...(isWhatsApp && whatsappNum ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                                    >
+                                        <span className="material-symbols-outlined text-base">
+                                            {isWhatsApp ? "chat" : platform === "twitter" ? "alternate_email" : platform === "instagram" ? "photo_camera" : "business"}
+                                        </span>
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
 
