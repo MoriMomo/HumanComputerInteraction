@@ -24,19 +24,19 @@ export default function ShowcasePage() {
     let isCancelled = false;
     const timers: number[] = [];
 
-      if (isLoading) {
-        // Defer state updates to avoid calling setState synchronously inside
-        // the effect (triggers react-hooks/set-state-in-effect).
-        const id = window.setTimeout(() => {
-          if (!isCancelled) {
-            setContentVisible(false);
-            setAssetsReady(!ENABLE_3D_MODEL);
-          }
-        }, 0);
+    if (isLoading) {
+      // Defer state updates to avoid calling setState synchronously inside
+      // the effect (triggers react-hooks/set-state-in-effect).
+      const id = window.setTimeout(() => {
+        if (!isCancelled) {
+          setContentVisible(false);
+          setAssetsReady(!ENABLE_3D_MODEL);
+        }
+      }, 0);
 
-        timers.push(id);
-        return undefined;
-      }
+      timers.push(id);
+      return undefined;
+    }
 
     timers.push(
       window.setTimeout(() => {

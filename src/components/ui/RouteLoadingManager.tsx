@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useLoading } from "@/contexts/LoadingProvider";
 
 export default function RouteLoadingManager() {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const { isLoading, startLoading } = useLoading();
     const previousRouteRef = useRef<string | null>(null);
 
     useEffect(() => {
-        const currentRoute = `${pathname}?${searchParams.toString()}`;
+        const currentRoute = pathname;
 
         if (previousRouteRef.current === null) {
             previousRouteRef.current = currentRoute;
@@ -23,7 +22,7 @@ export default function RouteLoadingManager() {
         }
 
         previousRouteRef.current = currentRoute;
-    }, [isLoading, pathname, searchParams, startLoading]);
+    }, [isLoading, pathname, startLoading]);
 
     return null;
 }
