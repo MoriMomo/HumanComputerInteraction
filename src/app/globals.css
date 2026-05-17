@@ -6,23 +6,23 @@
   --color-brand-sand: #CEC1A8;
   --color-brand-mountain: #AAA396;
   --color-brand-primary: #B59E7D;
-  --color-brand-dark: #584738;
+  --color-brand-dark: #231711;
   --color-brand-darker: #413429;
 
   --color-primary: var(--color-brand-primary);
   --color-primary-light: var(--color-brand-sand);
   --color-primary-dark: var(--color-brand-mountain);
   --color-secondary: var(--color-brand-mountain);
-  --color-charcoal: var(--color-brand-dark);
+  --color-charcoal: #231711;
   --color-charcoal-light: var(--color-brand-primary);
   --color-soft-grey: var(--color-brand-sand);
   --color-background-light: var(--color-brand-cream);
   --color-surface: #FFFFFF;
-  --color-overlay: rgba(88,71,56,0.55);
+  --color-overlay: rgba(35,23,17,0.55);
 
   /* ── Swatch colours ── */
   --color-swatch-bronze: var(--color-brand-primary);
-  --color-swatch-midnight: var(--color-brand-dark);
+  --color-swatch-midnight: #231711;
   --color-swatch-steel: var(--color-brand-mountain);
 
   /* ── Typography ── */
@@ -34,10 +34,10 @@
   --radius-3xl: 1.5rem;
 
   /* ── Shadows ── */
-  --shadow-soft: 0 4px 24px rgba(88,71,56,0.08);
-  --shadow-card: 0 8px 40px rgba(88,71,56,0.12);
+  --shadow-soft: 0 4px 24px rgba(35,23,17,0.08);
+  --shadow-card: 0 8px 40px rgba(35,23,17,0.12);
   --shadow-glow: 0 0 40px rgba(181,158,125,0.25);
-  --shadow-brand-hover: 0 12px 48px rgba(88,71,56,0.2);
+  --shadow-brand-hover: 0 12px 48px rgba(35,23,17,0.2);
 
   /* ── Z-index layers ── */
   --z-canvas: 0;

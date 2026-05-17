@@ -1,124 +1,99 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import dynamic from "next/dynamic";
-import { Skeleton3DViewer } from "../ui/Skeleton";
-import { SWATCHES, RENDER_MODES, SWATCH_BG_CLASS } from "@/config/swatches";
+import dynamic from 'next/dynamic';
+
+// Lazy load the 3D scene
+const CardHolderScene = dynamic(
+    () => import("@/components/3d/CardHolderScene"),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="w-full h-full flex items-center justify-center bg-stone-100">
+                <div className="text-stone-400 text-sm">Loading 3D viewer...</div>
+            </div>
+        ),
+    }
+);
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
-    ssr: false,
-    loading: () => <Skeleton3DViewer />,
-});
+// Simple swatch config
+const SWATCHES = [
+    { id: "bronze", hex: "#B48A63", label: "Desert Bronze", description: "Warm metallic finish" },
+    { id: "steel", hex: "#8E9AA6", label: "Storm Grey", description: "Industrial steel tone" },
+    { id: "black", hex: "#1C1C1E", label: "Midnight Black", description: "Premium dark finish" },
+    { id: "silver", hex: "#C0C0C0", label: "Brushed Silver", description: "Classic metallic" },
+    { id: "gold", hex: "#D4AF37", label: "Champagne Gold", description: "Luxe golden tone" },
+    { id: "copper", hex: "#B87333", label: "Aged Copper", description: "Vintage patina" },
+];
+
+const RENDER_MODES = [
+    { id: "normal", label: "Normal", icon: "grid_view" },
+    { id: "glass", label: "Glass", icon: "opacity" },
+    { id: "wireframe", label: "Wireframe", icon: "dashboard" },
+];
 
 interface MaterialSectionProps {
-    activeColor: string;
-    onColorChange: (hex: string) => void;
+    activeColor?: string;
+    onColorChange?: (hex: string) => void;
     show3DModel?: boolean;
 }
 
 export default function MaterialSection({
-    activeColor,
-    onColorChange,
+    activeColor = "#B48A63",
+    onColorChange = () => { },
     show3DModel = true,
 }: MaterialSectionProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
-    const [isViewerReady, setIsViewerReady] = useState(false);
     const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
-
-    // Preload and ready the 3D viewer
-    useEffect(() => {
-        if (!show3DModel) return;
-        requestAnimationFrame(() => {
-            setIsViewerReady(true);
-        });
-    }, [show3DModel]);
 
     useGSAP(
         () => {
-            const sectionEl = sectionRef.current;
-            if (!sectionEl) return;
+            if (!sectionRef.current) return;
 
-            const ctx = gsap.context(() => {
-                gsap.set(".material-title, .material-subtitle, .material-viewer, .material-controls", {
-                    clearProps: "all",
-                });
+            gsap.from(".material-title", {
+                y: 60,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top 80%",
+                    once: true,
+                },
+            });
 
-                gsap.fromTo(
-                    ".material-title",
-                    { y: 60, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        duration: 1,
-                        ease: "power4.out",
-                        scrollTrigger: {
-                            trigger: sectionEl,
-                            start: "top 85%",
-                            once: true,
-                        },
-                    }
-                );
+            gsap.from(".material-viewer", {
+                scale: 0.95,
+                opacity: 0,
+                duration: 1,
+                delay: 0.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top 75%",
+                    once: true,
+                },
+            });
 
-                gsap.fromTo(
-                    ".material-subtitle",
-                    { y: 40, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        duration: 0.8,
-                        delay: 0.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: sectionEl,
-                            start: "top 85%",
-                            once: true,
-                        },
-                    }
-                );
-
-                gsap.fromTo(
-                    ".material-viewer",
-                    { scale: 0.95, opacity: 0 },
-                    {
-                        scale: 1,
-                        opacity: 1,
-                        duration: 1.2,
-                        delay: 0.3,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: sectionEl,
-                            start: "top 82%",
-                            once: true,
-                        },
-                    }
-                );
-
-                gsap.fromTo(
-                    ".material-controls",
-                    { y: 40, opacity: 0 },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        duration: 0.8,
-                        stagger: 0.1,
-                        delay: 0.5,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: sectionEl,
-                            start: "top 82%",
-                            once: true,
-                        },
-                    }
-                );
-            }, sectionRef);
-
-            return () => ctx.revert();
+            gsap.from(".material-controls", {
+                y: 40,
+                opacity: 0,
+                stagger: 0.1,
+                duration: 0.8,
+                delay: 0.3,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top 75%",
+                    once: true,
+                },
+            });
         },
         { scope: sectionRef }
     );
@@ -126,82 +101,76 @@ export default function MaterialSection({
     return (
         <section
             ref={sectionRef}
-            className="relative py-32 md:py-40 bg-white text-black overflow-hidden"
+            className="relative py-32 bg-linear-to-b from-stone-50 to-white overflow-hidden"
         >
-            <div aria-hidden className="absolute inset-0 bg-linear-to-b from-white via-white to-white" />
-            <div aria-hidden className="absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/2 blur-3xl" />
+            {/* Background decorations */}
+            <div className="absolute top-1/4 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+            <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-stone-500/5 rounded-full blur-3xl" />
 
-            {/* Animated ambient orbs */}
-            <div aria-hidden className="absolute top-1/4 right-0 w-80 h-80 bg-black/3 rounded-full blur-3xl animate-pulse" />
-            <div aria-hidden className="absolute bottom-1/4 left-0 w-80 h-80 bg-black/2 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
-
-            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-                <div className="text-center mb-16 md:mb-20">
-                    <p className="material-subtitle text-xs uppercase tracking-[0.35em] text-black/50 mb-4">
-                        Office Edition
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <p className="text-xs uppercase tracking-widest text-stone-500 mb-4">
+                        Studio Edition
                     </p>
-                    <h2 className="material-title text-4xl md:text-6xl font-bold text-[#231711] mb-6">
-                        Product Material Studio
+                    <h2 className="material-title text-4xl md:text-6xl font-bold text-stone-900 mb-6">
+                        Material Studio
                     </h2>
-                    <p className="material-subtitle text-black/68 text-lg max-w-2xl mx-auto">
-                        Review finishes, rotate the chassis, and compare which surface looks most at home in your workspace.
+                    <p className="text-stone-600 text-lg max-w-2xl mx-auto">
+                        Explore finishes, rotate the model, and find the perfect surface for your workspace.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-6 lg:gap-8 items-start">
+                {/* Main Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] gap-8 items-start">
+
+                    {/* Left Controls */}
                     <div className="material-controls space-y-4">
-                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
-                            <h3 className="text-black font-medium mb-3">Orbit Controls</h3>
-                            <p className="text-black/68 text-sm leading-relaxed">
-                                Left click and drag to rotate. Scroll to zoom in and out. Right click to pan.
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <h3 className="text-stone-900 font-semibold mb-3">Controls</h3>
+                            <p className="text-stone-600 text-sm leading-relaxed">
+                                Drag to rotate • Scroll to zoom • Right-click to pan
                             </p>
                         </div>
 
-                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
-                            <h3 className="text-black font-medium mb-3">Performance</h3>
-                            <div className="flex items-center gap-2 text-black/70 text-sm">
-                                <span className="w-2 h-2 rounded-full bg-black/50" />
-                                60 FPS | High Fidelity
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <h3 className="text-stone-900 font-semibold mb-3">Performance</h3>
+                            <div className="flex items-center gap-2 text-stone-600 text-sm">
+                                <span className="w-2 h-2 rounded-full bg-green-500" />
+                                Optimized • 60 FPS
                             </div>
                         </div>
 
                         <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-black text-white font-medium hover:bg-black/90 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors">
                                 Customize
                             </button>
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white border border-black/10 text-black font-medium hover:bg-black/5 transition-colors text-sm">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors">
                                 Add to Cart
                             </button>
                         </div>
                     </div>
 
-                    <div suppressHydrationWarning className="material-viewer relative aspect-square lg:aspect-auto lg:min-h-150 rounded-3xl overflow-hidden border border-black/10 bg-[#f8f4ee]">
-                        {show3DModel && isViewerReady ? (
+                    {/* Center Viewer */}
+                    <div className="material-viewer relative aspect-square lg:aspect-auto lg:h-150 rounded-3xl overflow-hidden border border-stone-200 bg-stone-100 shadow-xl">
+                        {show3DModel ? (
                             <CardHolderScene
                                 color={activeColor}
-                                autoRotate={true}
-                                show3DModel={true}
-                                renderMode={renderMode}
                                 enableZoom={true}
-                                cameraPosition={[0, 0, 8]}
-                                cameraLookAt={[0, 0, 0]}
-                                introFromPosition={[1.8, 2.2, 12]}
-                                introDuration={1.15}
-                                modelRotation={[0, 0, 0]}
-                                modelOffset={[0, 0, 0]}
-                                modelScaleMultiplier={4}
-                                className="w-full h-full"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <p className="text-black/40 text-sm">3D Viewer Loading...</p>
+                            <div className="flex h-full w-full items-center justify-center text-stone-500">
+                                3D viewer disabled
                             </div>
                         )}
                     </div>
 
+                    {/* Right Controls */}
                     <div className="material-controls space-y-4">
-                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-4">
+
+                        {/* Render Mode */}
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">
                                 Render Mode
                             </p>
                             <div className="space-y-2">
@@ -210,14 +179,11 @@ export default function MaterialSection({
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
                                         className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
-                                            ? "bg-black text-white border border-black"
-                                            : "bg-transparent text-black/76 border border-transparent hover:bg-black/5"
+                                                ? "bg-stone-900 text-white"
+                                                : "bg-stone-50 text-stone-700 hover:bg-stone-100"
                                             }`}
                                     >
-                                        <span className="flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-base">{mode.icon}</span>
-                                            {mode.label}
-                                        </span>
+                                        <span>{mode.label}</span>
                                         {renderMode === mode.id && (
                                             <span className="w-2 h-2 rounded-full bg-white" />
                                         )}
@@ -226,8 +192,9 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-4">
+                        {/* Color Swatches */}
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">
                                 Material Color
                             </p>
                             <div className="grid grid-cols-3 gap-3 mb-4">
@@ -235,43 +202,42 @@ export default function MaterialSection({
                                     <button
                                         key={swatch.id}
                                         onClick={() => onColorChange(swatch.hex)}
-                                        type="button"
-                                        className={`group relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                            ? "ring-2 ring-black ring-offset-2 ring-offset-white"
-                                            : "hover:scale-105"
-                                            } ${SWATCH_BG_CLASS[swatch.hex] ?? "bg-swatch-steel"}`}
+                                        className={`relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
+                                                ? "ring-2 ring-stone-900 ring-offset-2"
+                                                : "hover:scale-105"
+                                            }`}
                                         aria-label={`Select ${swatch.label}`}
                                     >
+                                        <svg className="w-full h-full rounded-xl" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+                                            <rect x="0" y="0" width="100" height="100" rx="12" fill={swatch.hex} />
+                                        </svg>
+
                                         {activeColor === swatch.hex && (
                                             <span className="absolute inset-0 flex items-center justify-center">
-                                                <span className="material-symbols-outlined text-black text-sm drop-shadow-lg">
-                                                    check
-                                                </span>
+                                                <svg className="w-5 h-5 text-white drop-shadow" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
                                             </span>
                                         )}
                                     </button>
                                 ))}
                             </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-8 h-8 rounded-md border border-black/10 flex items-center justify-center text-xs text-black/60">
-                                    <span aria-hidden> </span>
-                                </div>
-                                <div>
-                                    <p className="text-black/76 text-sm">{activeSwatch.label}</p>
-                                    <p className="text-black/58 text-xs mt-1">{activeSwatch.description}</p>
-                                    <ResolvedColorText activeColor={activeColor} />
-                                </div>
+                            <div>
+                                <p className="text-stone-900 text-sm font-medium">{activeSwatch.label}</p>
+                                <p className="text-stone-500 text-xs mt-1">{activeSwatch.description}</p>
+                                <p className="text-stone-400 text-xs mt-1 font-mono">{activeColor}</p>
                             </div>
                         </div>
 
-                        <div className="bg-white backdrop-blur-sm border border-black/10 rounded-2xl p-6">
-                            <p className="text-xs uppercase tracking-[0.2em] text-black/40 mb-3">
-                                Input: Active
+                        {/* Status */}
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-3">
+                                Status
                             </p>
-                            <div className="space-y-2 text-xs text-black/66">
-                                <p>Render Tier: High</p>
-                                <p>Camera: Orbit + Zoom</p>
-                                <p>Material: {renderMode}</p>
+                            <div className="space-y-2 text-xs text-stone-600">
+                                <p>Tier: High Quality</p>
+                                <p>Camera: Interactive</p>
+                                <p>Mode: {renderMode}</p>
                             </div>
                         </div>
                     </div>
@@ -279,46 +245,4 @@ export default function MaterialSection({
             </div>
         </section>
     );
-}
-
-function ResolvedColorText({ activeColor }: { activeColor: string }) {
-    const [resolved, setResolved] = useState<string | null>(null);
-
-    useEffect(() => {
-        let isCancelled = false;
-
-        const resolveCss = (input: string) => {
-            if (!input) return input;
-            const t = input.trim();
-            if (t.startsWith("var(")) {
-                try {
-                    const m = t.match(/^var\(\s*([^,\)]+)\s*(?:,\s*([^\)]+))?\s*\)$/);
-                    const varName = m ? m[1].trim() : null;
-                    if (varName) {
-                        const val = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-                        if (val) return val;
-                    }
-                } catch {
-                    // fall through
-                }
-            }
-
-            return t;
-        };
-
-        const v = resolveCss(activeColor);
-        if (!isCancelled) {
-            const raf = requestAnimationFrame(() => {
-                if (!isCancelled) setResolved(v);
-            });
-
-            return () => cancelAnimationFrame(raf);
-        }
-
-        return () => {
-            isCancelled = true;
-        };
-    }, [activeColor]);
-
-    return <p className="text-xs text-black/50 mt-1">{resolved ?? activeColor}</p>;
 }

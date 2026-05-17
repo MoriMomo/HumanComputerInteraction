@@ -6,14 +6,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useScroll } from "@/contexts/ScrollProvider";
-import { ANIMATION, MODEL_CONFIG, SCROLL } from "@/config/constants";
+import { ANIMATION, SCROLL } from "@/config/constants";
 import { EASING, TIMELINE_DEFAULTS } from "@/config/animations";
 import HeroActions from "./HeroActions";
 const ReactiveBackground = dynamic(() => import("@/components/ui/ReactiveBackground"), { ssr: false });
 
 gsap.registerPlugin(ScrollTrigger);
 
-const CardHolderScene = dynamic(() => import("../3d/CardHolderScene"), {
+const CardHolderScene = dynamic(() => import("@/components/3d/CardHolderScene"), {
     ssr: false,
     loading: () => (
         <div className="w-full h-full flex items-center justify-center rounded-3xl border border-white/12 bg-brand-dark">
@@ -268,19 +268,7 @@ export default function HeroSection({
                                 {show3DModel ? (
                                     <CardHolderScene
                                         color={activeColor}
-                                        autoRotate={isInView && !isScrolling}
-                                        show3DModel={true}
-                                        isActive={isInView}
-                                        renderMode="normal"
                                         enableZoom={false}
-                                        cameraPosition={[0, 0.5, 8]}
-                                        cameraLookAt={MODEL_CONFIG.CAMERA_LOOK_AT}
-                                        introFromPosition={MODEL_CONFIG.INTRO_FROM_POSITION}
-                                        introDuration={MODEL_CONFIG.INTRO_DURATION}
-                                        modelRotation={[0, 0.3, 0]}
-                                        modelOffset={[0, -0.15, 0]}
-                                        modelScaleMultiplier={MODEL_CONFIG.MODEL_SCALE_MULTIPLIER}
-                                        className="w-full h-full"
                                     />
                                 ) : (
                                     <div className="h-full w-full rounded-4xl border border-black/10 bg-white flex items-center justify-center">

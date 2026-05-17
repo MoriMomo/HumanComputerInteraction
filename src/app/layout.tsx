@@ -6,6 +6,7 @@ import { LoadingProvider } from "@/contexts/LoadingProvider";
 import { ScrollProvider } from "@/contexts/ScrollProvider";
 import { AuthProvider } from "@/contexts/AuthProvider";
 import { CartProvider } from "@/contexts/CartProvider";
+import { CurrencyProvider } from "@/contexts/CurrencyProvider";
 import GlobalLoadingLayer from "@/components/ui/GlobalLoadingLayer";
 import RouteLoadingManager from "@/components/ui/RouteLoadingManager";
 import ExitIntentOffer from "@/components/ui/ExitIntentOffer";
@@ -76,21 +77,23 @@ export default function RootLayout({
         </a>
         <AuthProvider>
           <CartProvider>
-            <LoadingProvider>
-              <ScrollProvider>
-                <Suspense fallback={null}>
-                  <RouteLoadingManager />
-                </Suspense>
-                <GlobalLoadingLayer />
-                <ExitIntentOffer />
-                <div id="main-content" tabIndex={-1}>
-                  <PageTransition>
-                    {children}
-                  </PageTransition>
-                </div>
-                <GPUMonitorClient />
-              </ScrollProvider>
-            </LoadingProvider>
+            <CurrencyProvider>
+              <LoadingProvider>
+                <ScrollProvider>
+                  <Suspense fallback={null}>
+                    <RouteLoadingManager />
+                  </Suspense>
+                  <GlobalLoadingLayer />
+                  <ExitIntentOffer />
+                  <div id="main-content" tabIndex={-1}>
+                    <PageTransition>
+                      {children}
+                    </PageTransition>
+                  </div>
+                  <GPUMonitorClient />
+                </ScrollProvider>
+              </LoadingProvider>
+            </CurrencyProvider>
           </CartProvider>
         </AuthProvider>
         {/* Persistent micro-CTA to anchor navigation flow */}

@@ -19,6 +19,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+async function readJsonResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+        return (await response.json()) as T;
+    }
+
+    const text = await response.text();
+    throw new Error(`Expected JSON but received ${contentType || "an unknown content type"}: ${text.slice(0, 120)}`);
+}
+
 async function postAuth<TBody extends Record<string, string>>(endpoint: string, body?: TBody) {
     const response = await fetch(`${getApiBaseUrl()}/auth/${endpoint}`, {
         method: "POST",
@@ -28,7 +39,7 @@ async function postAuth<TBody extends Record<string, string>>(endpoint: string, 
         body: body ? JSON.stringify(body) : undefined,
     });
 
-    const data = (await response.json()) as { message?: string; user?: User };
+    const data = await readJsonResponse<{ message?: string; user?: User }>(response);
 
     if (!response.ok || !data.user) {
         throw new Error(data.message || "Authentication request failed.");
@@ -76,14 +87,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsAuthLoading(true);
             try {
                 const response = await fetch(`${getApiBaseUrl()}/auth/me`, { cache: "no-store" });
-                const data = (await response.json()) as { user?: User | null };
+
                 if (!response.ok) {
+                    // No logged-in user or endpoint not found — silently continue
                     return;
                 }
 
+                const contentType = response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    // Received HTML or other non-JSON response during bootstrap; ignore
+                    return;
+                }
+
+                const data = (await response.json()) as { user?: User | null };
                 if (isMounted && data.user) {
                     setUser(data.user);
                 }
+            } catch (error) {
+                // Avoid noisy stack traces during bootstrap; log minimal info
+                console.warn("Auth bootstrap failed:", error instanceof Error ? error.message : error);
             } finally {
                 if (isMounted) {
                     setIsAuthLoading(false);

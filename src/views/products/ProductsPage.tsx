@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { PRODUCTS } from "@/data/products";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,13 +17,14 @@ const COLOR_PREVIEW_COUNT = 3;
 
 const SWATCH_BG_CLASS: Record<string, string> = {
     "var(--color-brand-primary)": "bg-brand-primary",
-    "var(--color-brand-dark)": "bg-brand-dark",
+    "#231711": "bg-brand-dark",
     "var(--color-brand-mountain)": "bg-brand-mountain",
     "var(--color-brand-sand)": "bg-brand-sand",
     "var(--color-brand-darker)": "bg-brand-darker",
 };
 
 export default function ProductsPage() {
+    const { format } = useCurrency();
     const containerRef = useRef<HTMLDivElement>(null);
     const featuredProduct = PRODUCTS[0];
 
@@ -173,14 +175,14 @@ export default function ProductsPage() {
                                     <ProductImagePlaceholder
                                         title={product.name}
                                         subtitle="Product image slot"
-                                        className="mb-6 aspect-square p-5 relative z-10 bg-black/[0.02] rounded-3xl"
-                                        accent="from-black/5 via-black/[0.02] to-transparent"
+                                        className="mb-6 aspect-square p-5 relative z-10 bg-[rgba(0,0,0,0.02)] rounded-3xl"
+                                        accent="from-black/5 via-[rgba(0,0,0,0.02)] to-transparent"
                                         imageSrc={product.image?.src}
                                         imageAlt={product.image?.alt}
                                         imageSizes={product.image?.sizes}
                                     />
 
-                                    <div className="mb-6 rounded-3xl border border-black/5 bg-black/[0.03] p-5 relative z-10">
+                                    <div className="mb-6 rounded-3xl border border-black/5 bg-[rgba(0,0,0,0.03)] p-5 relative z-10">
                                         <h3 className="text-xl font-semibold text-[#231711] transition-colors group-hover:text-primary/90">
                                             {product.name}
                                         </h3>
@@ -206,7 +208,7 @@ export default function ProductsPage() {
                                     </div>
 
                                     <div className="flex items-center justify-between border-t border-black/5 pt-5 relative z-10">
-                                        <span className="text-lg font-semibold text-[#231711]">${product.price}</span>
+                                        <span className="text-lg font-semibold text-[#231711]">{format(product.price)}</span>
                                         <span className="flex items-center gap-1 text-sm text-[#231711]/70 transition-colors group-hover:text-[#231711]">
                                             View details
                                             <span className="material-symbols-outlined text-base">arrow_forward</span>

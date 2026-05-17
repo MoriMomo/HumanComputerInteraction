@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useResolvedColor from "@/hooks/useResolvedColor";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import useResolvedColor from "@/hooks/useResolvedColor";
+
+type EffectType = "wave" | "magnetic" | "ripple" | "vortex" | "pulse";
 
 interface ReactiveBackgroundProps {
     active?: boolean;
@@ -11,7 +13,7 @@ interface ReactiveBackgroundProps {
     blockCount?: number;
     opacity?: number;
     mode?: "fixed" | "absolute";
-    effect?: "wave" | "magnetic" | "ripple" | "vortex" | "pulse";
+    effect?: EffectType;
     intensity?: number;
 }
 
@@ -20,7 +22,7 @@ interface ReactiveBlocksProps {
     color: string;
     blockCount: number;
     opacity: number;
-    effect: "wave" | "magnetic" | "ripple" | "vortex" | "pulse";
+    effect: EffectType;
     intensity: number;
 }
 
@@ -30,180 +32,132 @@ function ReactiveBlocks({
     blockCount,
     opacity,
     effect,
-    intensity
+    intensity,
 }: ReactiveBlocksProps) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const { viewport } = useThree();
 
-    const pointerRef = useRef({ x: -1000, y: -1000, velocityX: 0, velocityY: 0 });
-    const prevPointerRef = useRef({ x: -1000, y: -1000 });
+    const rawPointer = useRef({ x: -1000, y: -1000 });
+    const smoothPointer = useRef({ x: -1000, y: -1000, vx: 0, vy: 0 });
     const dummyRef = useRef(new THREE.Object3D());
     const frameColorRef = useRef(new THREE.Color());
-    const timeRef = useRef(0);
 
     const resolved = useResolvedColor(color);
-    const darkColor = useMemo(() => {
-        try {
-            return new THREE.Color(resolved).multiplyScalar(0.12);
-        } catch {
-            return new THREE.Color("#000").multiplyScalar(0.12);
-        }
-    }, [resolved]);
-
-    const lightColor = useMemo(() => {
-        try {
-            return new THREE.Color(resolved).multiplyScalar(0.8);
-        } catch {
-            return new THREE.Color("#fff").multiplyScalar(0.8);
-        }
-    }, [resolved]);
-
-    const accentColor = useMemo(() => {
-        try {
-            // Create a vibrant accent by shifting hue
-            const c = new THREE.Color(resolved);
-            const hsl: { h: number; s: number; l: number } = { h: 0, s: 0, l: 0 };
-            c.getHSL(hsl);
-            hsl.h = (hsl.h + 0.1) % 1; // Shift hue slightly
-            hsl.s = Math.min(hsl.s * 1.5, 1); // More saturation
-            c.setHSL(hsl.h, hsl.s, hsl.l);
-            return c;
-        } catch {
-            return new THREE.Color("#fff");
-        }
+    const { darkColor, lightColor, accentColor } = useMemo(() => {
+        const base = new THREE.Color(resolved || "#ffffff");
+        return {
+            darkColor: base.clone().multiplyScalar(0.12),
+            lightColor: base.clone().multiplyScalar(0.8),
+            accentColor: base.clone().offsetHSL(0.1, 0.5, 0.2),
+        };
     }, [resolved]);
 
     const total = blockCount * blockCount;
     const span = Math.max(viewport.width, viewport.height) * 1.3;
     const cell = span / blockCount;
+    const baseScale = 0.85;
 
     const positions = useMemo(() => {
-        const next: Float32Array[] = [];
+        const next = new Float32Array(total * 2);
         for (let i = 0; i < total; i += 1) {
             const col = i % blockCount;
             const row = Math.floor(i / blockCount);
-            const x = -span / 2 + col * cell + cell * 0.5;
-            const y = span / 2 - row * cell - cell * 0.5;
-            next.push(new Float32Array([x, y]));
+            next[i * 2] = -span / 2 + col * cell + cell * 0.5;
+            next[i * 2 + 1] = span / 2 - row * cell - cell * 0.5;
         }
         return next;
     }, [blockCount, cell, span, total]);
 
-    const handlePointerMove = useCallback((event: PointerEvent) => {
-        const prev = prevPointerRef.current;
-        const curr = pointerRef.current;
-
-        // Calculate velocity for more dynamic effects
-        curr.velocityX = (event.clientX - prev.x) * 0.1;
-        curr.velocityY = (event.clientY - prev.y) * 0.1;
-
-        prev.x = curr.x;
-        prev.y = curr.y;
-        curr.x = event.clientX;
-        curr.y = event.clientY;
-    }, []);
-
     useEffect(() => {
         if (!active) return;
 
+        const handlePointerMove = (e: PointerEvent) => {
+            rawPointer.current.x = (e.clientX / window.innerWidth) * viewport.width - viewport.width / 2;
+            rawPointer.current.y = -(e.clientY / window.innerHeight) * viewport.height + viewport.height / 2;
+        };
+
         window.addEventListener("pointermove", handlePointerMove, { passive: true });
         return () => window.removeEventListener("pointermove", handlePointerMove);
-    }, [active, handlePointerMove]);
+    }, [active, viewport]);
 
-    useFrame((_, delta) => {
-        if (!active) return;
+    useFrame((state, delta) => {
+        if (!active || !meshRef.current) return;
 
+        const time = state.clock.getElapsedTime();
         const mesh = meshRef.current;
-        if (!mesh) return;
-
-        timeRef.current += delta;
-        const time = timeRef.current;
-
+        const pointer = smoothPointer.current;
         const dummy = dummyRef.current;
-        const pointer = pointerRef.current;
         const frameColor = frameColorRef.current;
 
-        const worldX = (pointer.x / window.innerWidth) * viewport.width - viewport.width / 2;
-        const worldY = -(pointer.y / window.innerHeight) * viewport.height + viewport.height / 2;
+        const lerpFactor = 1 - Math.exp(-10 * delta);
+        const prevX = pointer.x;
+        const prevY = pointer.y;
+
+        pointer.x = THREE.MathUtils.lerp(pointer.x, rawPointer.current.x, lerpFactor);
+        pointer.y = THREE.MathUtils.lerp(pointer.y, rawPointer.current.y, lerpFactor);
+        pointer.vx = (pointer.x - prevX) / delta;
+        pointer.vy = (pointer.y - prevY) / delta;
 
         const influenceRadius = cell * (3 + intensity * 2);
+        const velocityStrength = Math.hypot(pointer.vx, pointer.vy) * 0.05;
 
-        for (let i = 0; i < positions.length; i += 1) {
-            const pos = positions[i];
-            const x = pos[0];
-            const y = pos[1];
+        for (let i = 0; i < total; i += 1) {
+            const x = positions[i * 2];
+            const y = positions[i * 2 + 1];
 
-            const dx = x - worldX;
-            const dy = y - worldY;
+            const dx = x - pointer.x;
+            const dy = y - pointer.y;
             const distance = Math.hypot(dx, dy);
 
-            let scale = 0.7;
+            let scale = baseScale;
             let rotation = 0;
             let zOffset = 0;
-            let influence = 0;
 
-            if (distance < influenceRadius) {
-                influence = 1 - distance / influenceRadius;
-                const smoothInfluence = influence * influence; // Ease out
+            const influence = THREE.MathUtils.smoothstep(influenceRadius - distance, 0, influenceRadius);
 
+            if (influence > 0.01) {
                 switch (effect) {
                     case "wave":
-                        // Rippling wave effect
-                        zOffset = Math.sin(distance * 0.1 - time * 3) * smoothInfluence * 0.5;
-                        scale = 0.6 + smoothInfluence * 0.5 + zOffset * 0.3;
-                        rotation = Math.sin(time * 2 + i * 0.1) * smoothInfluence * 0.3;
+                        zOffset = Math.sin(distance * 0.5 - time * 3) * influence * 1.5;
+                        scale = baseScale + influence * 0.4 + zOffset * 0.1;
+                        rotation = Math.sin(time * 2 + i) * influence * 0.5;
                         break;
-
                     case "magnetic":
-                        // Blocks attracted to cursor
-                        const pullStrength = smoothInfluence * intensity * 0.3;
-                        const offsetX = -dx * pullStrength * 0.1;
-                        const offsetY = -dy * pullStrength * 0.1;
-                        dummy.position.set(x + offsetX, y + offsetY, 0);
-                        scale = 0.65 + smoothInfluence * 0.5;
+                        const pull = influence * intensity * 0.4;
+                        dummy.position.set(x - dx * pull, y - dy * pull, 0);
+                        scale = baseScale + influence * 0.6;
                         rotation = Math.atan2(dy, dx);
                         break;
-
                     case "ripple":
-                        // Concentric ripple effect
-                        const ripple = Math.sin(distance * 0.15 - time * 4) * smoothInfluence;
-                        scale = 0.6 + Math.abs(ripple) * 0.6;
+                        const ripple = Math.sin(distance * 0.2 - time * 5) * influence;
+                        scale = baseScale + Math.abs(ripple) * 0.8;
                         rotation = ripple * Math.PI * 0.25;
-                        zOffset = ripple * 0.3;
+                        zOffset = ripple * 0.5;
                         break;
-
                     case "vortex":
-                        // Spinning vortex effect
-                        const angle = Math.atan2(dy, dx) + time * 2 * smoothInfluence;
-                        const spiral = distance * 0.01;
-                        rotation = angle + spiral;
-                        scale = 0.6 + smoothInfluence * 0.5 + Math.sin(angle * 3 + time * 2) * 0.2;
-                        zOffset = Math.sin(angle * 2 - time * 3) * smoothInfluence * 0.4;
+                        const angle = Math.atan2(dy, dx) + time * 2 * influence;
+                        rotation = angle + distance * 0.01;
+                        scale = baseScale + influence * 0.5 + Math.sin(angle * 3 + time * 2) * 0.2;
+                        zOffset = Math.sin(angle * 2 - time * 3) * influence * 0.5;
                         break;
-
                     case "pulse":
-                        // Pulsing with velocity
                         const pulse = Math.sin(time * 5 + distance * 0.2) * 0.5 + 0.5;
-                        const velocityInfluence = Math.hypot(pointer.velocityX, pointer.velocityY) * 0.01;
-                        scale = 0.65 + smoothInfluence * 0.5 + pulse * 0.2 * smoothInfluence;
-                        rotation = velocityInfluence * smoothInfluence * Math.PI;
-                        zOffset = pulse * smoothInfluence * 0.3;
+                        scale = baseScale + influence * 0.5 + pulse * 0.3 * influence;
+                        rotation = velocityStrength * influence * 0.2;
+                        zOffset = pulse * influence * 0.4;
                         break;
                 }
 
-                // Color interpolation with accent
-                if (influence > 0.7) {
-                    frameColor.copy(accentColor).lerp(lightColor, (1 - influence) * 2);
+                if (influence > 0.8) {
+                    frameColor.copy(accentColor).lerp(lightColor, (1 - influence) * 5);
                 } else {
-                    frameColor.copy(darkColor).lerp(lightColor, influence);
+                    frameColor.copy(darkColor).lerp(accentColor, influence);
                 }
-                mesh.setColorAt(i, frameColor);
             } else {
-                // Ambient animation when not influenced
-                const ambient = Math.sin(time * 0.5 + i * 0.1) * 0.02;
-                scale = 0.68 + ambient;
-                rotation = ambient * 0.1;
-                mesh.setColorAt(i, darkColor);
+                const ambient = Math.sin(time * 1.5 + x * 0.05 + y * 0.05) * 0.05;
+                scale = baseScale + ambient;
+                rotation = ambient * 0.2;
+                frameColor.copy(darkColor);
             }
 
             if (effect !== "magnetic") {
@@ -212,9 +166,10 @@ function ReactiveBlocks({
 
             dummy.scale.set(cell * scale, cell * scale, 1);
             dummy.rotation.z = rotation;
-
             dummy.updateMatrix();
+
             mesh.setMatrixAt(i, dummy.matrix);
+            mesh.setColorAt(i, frameColor);
         }
 
         mesh.instanceMatrix.needsUpdate = true;
@@ -229,7 +184,7 @@ function ReactiveBlocks({
                 toneMapped={false}
                 depthWrite={false}
                 opacity={opacity}
-                blending={THREE.AdditiveBlending} // Changed to additive for glow effect
+                blending={THREE.AdditiveBlending}
             />
         </instancedMesh>
     );
@@ -254,23 +209,18 @@ export default function ReactiveBackground({
         if (!containerEl) return;
 
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                setIsVisible(entry.isIntersecting);
-            },
+            ([entry]) => setIsVisible(entry.isIntersecting),
             { threshold: 0.1 }
         );
 
         observer.observe(containerEl);
-
-        return () => {
-            observer.disconnect();
-        };
+        return () => observer.disconnect();
     }, []);
 
     return (
         <div
             ref={containerRef}
-            aria-hidden
+            aria-hidden="true"
             className={`${positionClass} inset-0 z-0 pointer-events-none overflow-hidden`}
         >
             <Canvas
@@ -285,7 +235,6 @@ export default function ReactiveBackground({
                     powerPreference: "high-performance",
                     preserveDrawingBuffer: false,
                 }}
-                performance={{ min: 0.5 }}
             >
                 <ReactiveBlocks
                     active={shouldAnimate}

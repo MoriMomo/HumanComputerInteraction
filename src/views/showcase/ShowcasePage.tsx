@@ -9,13 +9,14 @@ import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 import MaterialSection from "@/components/sections/MaterialSection";
+import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ShopSection from "@/components/sections/ShopSection";
 import StatsSection from "@/components/sections/StatsSection";
 
 const ENABLE_3D_MODEL = true;
 
 export default function ShowcasePage() {
-  const [activeColor, setActiveColor] = useState(() => SWATCHES[0]?.hex ?? "var(--color-brand-dark)");
+  const [activeColor, setActiveColor] = useState(() => SWATCHES[0]?.hex ?? "#231711");
   const { isLoading } = useLoading();
   const [assetsReady, setAssetsReady] = useState(() => !ENABLE_3D_MODEL);
   const [contentVisible, setContentVisible] = useState(false);
@@ -93,6 +94,8 @@ export default function ShowcasePage() {
           />
 
           <FeaturesSection />
+
+          <TestimonialsSection />
 
           <ShopSection />
 

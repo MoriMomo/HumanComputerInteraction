@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import LoadingLink from "@/components/ui/LoadingLink";
 import SmartImage from "@/components/ui/SmartImage";
 import { PRODUCT_MAP, Product } from "@/data/products";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 const MAX_RECENT_ITEMS = 4;
 
@@ -54,6 +55,8 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
         .map((slug) => PRODUCT_MAP.get(slug))
         .filter((p): p is Product => Boolean(p));
 
+    const { format } = useCurrency();
+
     if (recentProducts.length === 0) {
         return null;
     }
@@ -83,7 +86,7 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
                         </div>
                         <div className="p-5">
                             <p className="text-sm font-semibold text-white">{product.name}</p>
-                            <p className="mt-1 text-xs text-white/56">${product.price}</p>
+                            <p className="mt-1 text-xs text-white/56">{format(product.price)}</p>
                         </div>
                     </LoadingLink>
                 ))}

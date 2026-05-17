@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import SmartImage from "@/components/ui/SmartImage";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 
 const SHIPPING_ESTIMATE = 12;
 
@@ -12,6 +13,9 @@ export default function CartPage() {
     const { items, itemCount, subtotal, updateQuantity, removeItem, clearCart } = useCart();
     const shipping = itemCount > 0 ? SHIPPING_ESTIMATE : 0;
     const total = subtotal + shipping;
+    const whatsappUrl = getWhatsAppUrl(
+        `Hi SatSet, I need help with my cart.\nItems: ${itemCount}\nSubtotal: $${subtotal.toFixed(2)}\nTotal: $${total.toFixed(2)}`
+    );
 
     return (
         <>
@@ -126,13 +130,23 @@ export default function CartPage() {
                                     <span>${total.toFixed(2)}</span>
                                 </div>
 
-                                <button
-                                    type="button"
-                                    className="mt-6 w-full rounded-full bg-white px-6 py-3 text-sm font-semibold text-brand-dark transition-colors hover:bg-white/90"
+                                <LoadingLink
+                                    href="/checkout"
+                                    className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-brand-dark transition-colors hover:bg-white/90"
                                 >
                                     Continue to checkout
-                                </button>
-                                <p className="mt-3 text-center text-xs text-white/45">Secure checkout coming next phase</p>
+                                </LoadingLink>
+                                {whatsappUrl ? (
+                                    <a
+                                        href={whatsappUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-white/14 bg-white/6 px-6 py-3 text-sm font-medium text-white/84 transition-colors hover:border-white/28 hover:bg-white/10"
+                                    >
+                                        Chat Customer Service
+                                    </a>
+                                ) : null}
+                                <p className="mt-3 text-center text-xs text-white/45">Checkout now routes to a dedicated order review page.</p>
                             </aside>
                         </div>
                     )}

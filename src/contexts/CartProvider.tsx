@@ -34,6 +34,17 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+async function readJsonResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+        return (await response.json()) as T;
+    }
+
+    const text = await response.text();
+    throw new Error(`Expected JSON but received ${contentType || "an unknown content type"}: ${text.slice(0, 120)}`);
+}
+
 function getItemKey(slug: string, color?: string) {
     return `${slug}::${color ?? "default"}`;
 }
@@ -73,11 +84,11 @@ async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unk
     });
 
     if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+        const payload = await readJsonResponse<{ message?: string }>(response).catch(() => null);
         throw new Error(payload?.message || "Failed to sync cart.");
     }
 
-    const payload = (await response.json()) as { items?: CartItem[] };
+    const payload = await readJsonResponse<{ items?: CartItem[] }>(response);
     return payload.items || [];
 }
 

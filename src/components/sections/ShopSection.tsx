@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCart } from "@/contexts/CartProvider";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -56,7 +57,7 @@ const products = [
         id: "executive",
         name: "SatSet Executive",
         price: 199,
-        color: "var(--color-brand-dark)",
+        color: "#231711",
         colorLabel: "Midnight Black",
         capacity: "4–8 cards + cash",
         features: [
@@ -71,7 +72,7 @@ const products = [
         cta: "Add to Cart",
         bgPaleClass: "bg-brand-dark/8",
         bgSolidClass: "bg-brand-dark",
-        glowClass: "[background:radial-gradient(circle_at_50%_50%,var(--color-brand-dark),transparent_70%)]",
+        glowClass: "[background:radial-gradient(circle_at_50%_50%,#231711,transparent_70%)]",
         textColorClass: "text-brand-dark",
     },
 ];
@@ -83,6 +84,7 @@ const PRODUCT_ID_TO_SLUG: Record<string, string> = {
 };
 
 function ShopSection() {
+    const { format } = useCurrency();
     const sectionRef = useRef<HTMLElement>(null);
     const [cart, setCart] = useState<Record<string, number>>({});
     const { addItem } = useCart();
@@ -256,9 +258,8 @@ function ShopSection() {
                                     {/* Price */}
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-3xl font-semibold text-[#231711]">
-                                            ${product.price}
+                                            {format(product.price)}
                                         </span>
-                                        <span className="text-base font-medium text-[#231711]/60">USD</span>
                                     </div>
 
                                     {/* Feature list */}

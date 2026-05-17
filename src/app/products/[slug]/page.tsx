@@ -14,6 +14,8 @@ import { trackEvent } from "@/lib/analytics";
 import SafeJsonLd from "@/components/ui/SafeJsonLd";
 import RecentlyViewed from "@/components/products/RecentlyViewed";
 import ProductReviews from "@/components/products/ProductReviews";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 const PRODUCT_REVIEW_SNIPPETS = [
     { name: "Reza", note: "The finish still looks clean after daily commute use.", rating: 5 },
@@ -29,7 +31,7 @@ const PRODUCT_RELATED_JOURNAL: Record<string, string[]> = {
 
 const SWATCH_BG_CLASS: Record<string, string> = {
     "var(--color-brand-primary)": "bg-brand-primary",
-    "var(--color-brand-dark)": "bg-brand-dark",
+    "#231711": "bg-brand-dark",
     "var(--color-brand-mountain)": "bg-brand-mountain",
     "var(--color-brand-sand)": "bg-brand-sand",
     "var(--color-brand-darker)": "bg-brand-darker",
@@ -42,6 +44,9 @@ export default function ProductDetailPage() {
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();
+    const { format, currency, rate } = useCurrency();
+
+    const whatsappUrl = getWhatsAppUrl(`Hi SatSet, I want help choosing ${product.name}. Color: ${selectedColor}`);
     const productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -51,8 +56,8 @@ export default function ProductDetailPage() {
         brand: { "@type": "Brand", name: "SatSet" },
         offers: {
             "@type": "Offer",
-            priceCurrency: "USD",
-            price: product.price,
+            priceCurrency: currency,
+            price: currency === "IDR" ? Math.round(product.price * rate) : product.price,
             availability: "https://schema.org/InStock",
         },
         aggregateRating: {
@@ -155,7 +160,7 @@ export default function ProductDetailPage() {
                             </p>
 
                             <div className="mt-8 flex items-end gap-4 border-b border-white/10 pb-8">
-                                <p className="text-4xl font-light text-white/88 md:text-5xl">${product.price}</p>
+                                <p className="text-4xl font-light text-white/88 md:text-5xl">{format(product.price)}</p>
                                 <p className="pb-1 text-sm uppercase tracking-[0.24em] text-white/40">Starting price</p>
                             </div>
 
@@ -219,7 +224,7 @@ export default function ProductDetailPage() {
                                         .map((entry) => (
                                             <div key={entry.slug} className="rounded-2xl border border-white/10 bg-white/6 p-4">
                                                 <p className="text-sm font-semibold text-white">{entry.name}</p>
-                                                <p className="mt-1 text-xs text-white/56">${entry.price}</p>
+                                                <p className="mt-1 text-xs text-white/56">{format(entry.price)}</p>
                                                 <div className="mt-4 flex items-center gap-2">
                                                     <button
                                                         type="button"
@@ -255,6 +260,17 @@ export default function ProductDetailPage() {
                                     Continue shopping
                                 </LoadingLink>
                             </div>
+
+                            {whatsappUrl ? (
+                                <a
+                                    href={whatsappUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="detail-feature mt-4 inline-flex w-full items-center justify-center rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-8 py-4 text-sm font-semibold text-white transition-colors hover:bg-[#25D366]/18"
+                                >
+                                    Chat Customer Service
+                                </a>
+                            ) : null}
                         </div>
                     </div>
                 </section>
@@ -299,7 +315,7 @@ export default function ProductDetailPage() {
                 <div className="mx-auto flex max-w-7xl items-center gap-3">
                     <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-white">{product.name}</p>
-                        <p className="text-xs text-white/60">From ${product.price}</p>
+                        <p className="text-xs text-white/60">From {format(product.price)}</p>
                     </div>
                     <button
                         type="button"

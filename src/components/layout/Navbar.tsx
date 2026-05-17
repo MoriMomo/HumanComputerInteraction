@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { usePathname } from "next/navigation";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
+import CurrencyToggle from "@/components/ui/CurrencyToggle";
 import { NAV_LINKS, OBSERVED_SECTION_IDS, MOBILE_MENU_ID, isNavLinkActive } from "@/config/navigation";
 
 export default function Navbar() {
@@ -199,6 +200,9 @@ export default function Navbar() {
                                 <span className="relative z-10">Log in</span>
                                 <div className="absolute inset-0 bg-white/12 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                             </LoadingLink>
+                            <div className="ml-2">
+                                <CurrencyToggle />
+                            </div>
                         </div>
 
                         {/* Mobile Menu Toggle */}

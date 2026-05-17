@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { PRODUCTS, PRODUCT_MAP, type Product } from "@/data/products";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 export default function ProductComparePage() {
     const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ export default function ProductComparePage() {
             .filter((product): product is Product => Boolean(product));
         return resolved.length >= 2 ? resolved : PRODUCTS.slice(0, 2);
     }, [compare]);
+    const { format } = useCurrency();
 
     return (
         <>
@@ -54,7 +56,7 @@ export default function ProductComparePage() {
                                         {selected.map((product) => (
                                             <div key={product.slug} className="border-l border-white/10 p-4">
                                                 <p className="text-lg font-semibold text-white">{product.name}</p>
-                                                <p className="mt-1 text-sm text-white/64">${product.price}</p>
+                                                <p className="mt-1 text-sm text-white/64">{format(product.price)}</p>
                                             </div>
                                         ))}
                                     </div>
