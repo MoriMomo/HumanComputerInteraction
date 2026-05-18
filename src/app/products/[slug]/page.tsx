@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import GridMap from "@/components/ui/GridMap";
 import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
@@ -110,7 +111,7 @@ export default function ProductDetailPage() {
             <SafeJsonLd data={productSchema} />
             <main ref={containerRef} className="min-h-screen bg-brand-dark pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.18),transparent_26%),radial-gradient(circle_at_80%_18%,rgba(180,138,99,0.12),transparent_24%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
+                    <GridMap spacing={140} opacity={0.06} color="rgba(181,158,125,0.18)" />
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40">
                         <div className="detail-visual">
                             <LoadingLink

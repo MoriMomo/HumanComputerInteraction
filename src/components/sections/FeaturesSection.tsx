@@ -6,6 +6,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GridMap from "@/components/ui/GridMap";
 import { Draggable } from "gsap/all";
 
 gsap.registerPlugin(ScrollTrigger, Draggable);
@@ -20,14 +21,6 @@ const FEATURES = [
         accent: "from-brand-primary/30 to-brand-primary/22",
         glowClass: "from-brand-primary/40 to-transparent",
         stat: "100%",
-    },
-    {
-        icon: "scale",
-        title: "Ultralight 18g",
-        description: "Aircraft-grade aluminium body machined to 18 grams. Barely there in your pocket, unmistakable in your hand.",
-        accent: "from-brand-primary/28 to-brand-primary/20",
-        glowClass: "from-brand-primary/40 to-transparent",
-        stat: "18g",
     },
     {
         icon: "widgets",
@@ -62,6 +55,25 @@ const FEATURES = [
         stat: "2yr",
     },
 ];
+
+const FEATURE_IMAGES = [
+    "/featureSelection/download%20(4).png",
+    "/featureSelection/download%20(5).png",
+    "/featureSelection/download%20(6).png",
+    "/featureSelection/download%20(7).png",
+    "/featureSelection/download%20(8).png",
+    "/featureSelection/Wallet_giving_RFID_shielding_202605181022.jpeg",
+];
+
+// Map specific feature titles to images so each slide matches its content
+const FEATURE_IMAGE_MAP: Record<string, string> = {
+    "RFID Shielding": "/featureSelection/Wallet_giving_RFID_shielding_202605181022.jpeg",
+    "Ultralight 18g": "/featureSelection/download%20(4).png",
+    "Modular System": "/featureSelection/download%20(5).png",
+    "Premium Finish": "/featureSelection/download%20(6).png",
+    "8-Card Capacity": "/featureSelection/download%20(7).png",
+    "2-Year Warranty": "/featureSelection/download%20(8).png",
+};
 
 function FeaturesSection() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -284,6 +296,7 @@ function FeaturesSection() {
             className="relative py-40 md:py-52 bg-[#20140f] overflow-hidden"
             aria-labelledby="features-heading"
         >
+            <GridMap spacing={120} opacity={0.03} color="rgba(255,255,255,0.03)" />
             {/* Top border */}
             <div
                 aria-hidden
@@ -369,14 +382,13 @@ function FeaturesSection() {
                                         </div>
 
                                         <div className="relative flex items-center justify-center border-t border-white/8 bg-[#1d110c] lg:border-t-0 lg:border-l">
-                                            <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.06),transparent_45%)]" />
                                             <Image
-                                                src="/products/cardholder-pro.svg"
-                                                alt="CardHolder Pro product render"
+                                                src={FEATURE_IMAGE_MAP[feature.title] ?? FEATURE_IMAGES[FEATURES.indexOf(feature) % FEATURE_IMAGES.length]}
+                                                alt={`${feature.title} image`}
                                                 width={1200}
                                                 height={900}
                                                 priority
-                                                className="relative z-10 h-full w-full max-h-112 object-contain px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12 drop-shadow-[0_30px_80px_rgba(0,0,0,0.55)]"
+                                                className="relative z-10 h-full w-full max-h-112 object-cover px-6 py-8 md:px-10 md:py-10 lg:px-12 lg:py-12 drop-shadow-[0_30px_80px_rgba(0,0,0,0.55)]"
                                             />
                                             <div className="absolute bottom-6 right-6 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-white/60">
                                                 SatSet Pro

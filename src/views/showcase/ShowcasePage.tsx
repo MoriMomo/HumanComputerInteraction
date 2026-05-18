@@ -85,7 +85,7 @@ export default function ShowcasePage() {
             />
           </div>
 
-          <StatsSection />
+          <StatsSection videoSrc="/video/Create_video_of_cards_engineered_202605181051.mp4" />
 
           <MaterialSection
             activeColor={activeColor}

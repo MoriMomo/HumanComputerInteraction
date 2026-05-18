@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import GridMap from "@/components/ui/GridMap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -217,7 +218,7 @@ export default function AboutPage() {
             <Navbar />
             <main id="main-content" ref={containerRef} className="min-h-screen bg-white text-[#231711]">
                 <section className="relative overflow-hidden border-b border-black/5">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50" />
+                    <GridMap spacing={16} opacity={0.5} color="#e5e7eb" />
 
                     <div className="relative mx-auto grid max-w-7xl gap-10 px-6 py-12 pb-16 pt-20 md:px-12 md:pb-20 md:pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
                         <div>

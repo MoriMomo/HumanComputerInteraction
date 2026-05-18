@@ -38,7 +38,7 @@ interface StatsSectionProps {
 }
 
 function StatsSection({
-    videoSrc = "/video/vecteezy-workers-optimized.mp4",
+    videoSrc = "/video/Create_video_of_cards_engineered_202605181051.mp4",
     title = "Engineered & Verified",
     subtitle = "Built for the detail-oriented professional.",
 }: StatsSectionProps) {

@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GridMap from "@/components/ui/GridMap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,17 +106,7 @@ export default function SpecsSection() {
                 onEnter: runCounters,
             });
 
-            gsap.to(".specs-orb", {
-                xPercent: -8,
-                yPercent: -12,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                },
-            });
+            // removed animated gradient orbs — using grid map overlay instead
 
             ScrollTrigger.refresh();
         },
@@ -130,10 +121,8 @@ export default function SpecsSection() {
         >
             <div aria-hidden className="absolute inset-0 bg-linear-to-b from-brand-dark via-brand-dark to-brand-dark" />
 
-            {/* Animated ambient gradient orbs */}
-            <div aria-hidden className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/4 rounded-full blur-3xl animate-pulse" />
-            <div aria-hidden className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-purple-500/3 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
-            <div aria-hidden className="specs-orb section-orb pointer-events-none absolute right-[-6%] top-10 h-112 w-md rounded-full bg-brand-dark/12 blur-3xl" />
+            {/* Grid overlay */}
+            <GridMap spacing={120} opacity={0.04} />
 
             <div className="relative z-10 max-w-350 mx-auto px-6 md:px-12 lg:px-20">
                 {/* Label + title */}

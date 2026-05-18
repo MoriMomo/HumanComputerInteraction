@@ -10,6 +10,7 @@ import { ANIMATION, SCROLL } from "@/config/constants";
 import { EASING, TIMELINE_DEFAULTS } from "@/config/animations";
 import HeroActions from "./HeroActions";
 const ReactiveBackground = dynamic(() => import("@/components/ui/ReactiveBackground"), { ssr: false });
+import GridMap from "@/components/ui/GridMap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -141,29 +142,7 @@ export default function HeroSection({
                 },
             });
 
-            gsap.to(".hero-orb-a", {
-                xPercent: 10,
-                yPercent: 14,
-                ease: EASING.NONE,
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: SCROLL.SCRUB_VALUE,
-                },
-            });
-
-            gsap.to(".hero-orb-b", {
-                xPercent: -8,
-                yPercent: -18,
-                ease: EASING.NONE,
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: SCROLL.SCRUB_VALUE,
-                },
-            });
+            // removed animated gradient orbs — using grid map overlay instead
 
             ScrollTrigger.create({
                 trigger: sectionEl,
@@ -195,20 +174,10 @@ export default function HeroSection({
             )}
 
             {/* Grid overlay */}
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-10 [background:linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[120px_120px]"
-            />
+            <GridMap spacing={120} opacity={0.04} />
 
             {/* Background glows */}
-            <div
-                aria-hidden
-                className="hero-orb-a section-orb pointer-events-none absolute inset-0 z-10 [background:radial-gradient(circle_at_18%_18%,rgba(0,0,0,0.05),transparent_42%),radial-gradient(circle_at_82%_24%,rgba(0,0,0,0.04),transparent_38%),radial-gradient(circle_at_50%_80%,rgba(0,0,0,0.03),transparent_50%)] blur-2xl"
-            />
-            <div
-                aria-hidden
-                className="hero-orb-b section-orb pointer-events-none absolute right-[-12%] top-[22%] z-10 h-104 w-104 rounded-full bg-black/5 blur-2xl"
-            />
+            {/* removed floating gradient orbs */}
 
             {/* Bottom fade to dark – matches StatsSection bg */}
             <div

@@ -157,6 +157,7 @@ export default function MaterialSection({
                             <CardHolderScene
                                 color={activeColor}
                                 enableZoom={true}
+                                renderMode={renderMode}
                             />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center text-stone-500">
@@ -179,8 +180,8 @@ export default function MaterialSection({
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
                                         className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
-                                                ? "bg-stone-900 text-white"
-                                                : "bg-stone-50 text-stone-700 hover:bg-stone-100"
+                                            ? "bg-stone-900 text-white"
+                                            : "bg-stone-50 text-stone-700 hover:bg-stone-100"
                                             }`}
                                     >
                                         <span>{mode.label}</span>
@@ -203,8 +204,8 @@ export default function MaterialSection({
                                         key={swatch.id}
                                         onClick={() => onColorChange(swatch.hex)}
                                         className={`relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
-                                                ? "ring-2 ring-stone-900 ring-offset-2"
-                                                : "hover:scale-105"
+                                            ? "ring-2 ring-stone-900 ring-offset-2"
+                                            : "hover:scale-105"
                                             }`}
                                         aria-label={`Select ${swatch.label}`}
                                     >

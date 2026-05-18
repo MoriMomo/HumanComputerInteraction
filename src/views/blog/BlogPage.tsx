@@ -8,6 +8,7 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import GridMap from "@/components/ui/GridMap";
 import { BLOG_POSTS } from "@/data/blog";
 import { BLOG_CATEGORIES, formatCategoryLabel } from "@/lib/blog-categories";
 import { trackEvent } from "@/lib/analytics";
@@ -61,7 +62,7 @@ export default function BlogPage() {
             <Navbar />
             <main id="main-content" ref={containerRef} className="min-h-screen bg-white text-[#231711]">
                 <section className="relative overflow-hidden border-b border-black/5">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50" />
+                    <GridMap spacing={16} opacity={0.5} color="#e5e7eb" />
 
                     <div className="relative mx-auto grid max-w-7xl gap-8 px-6 pb-20 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-24 lg:pt-40">
                         <div>
@@ -237,7 +238,7 @@ export default function BlogPage() {
                                             <h3 className={`mb-3 font-serif font-semibold text-[#231711] transition-colors group-hover:text-primary ${isFeatured ? "text-3xl" : "text-lg"}`}>
                                                 {post.title}
                                             </h3>
-                                            <p className={`flex-grow text-[#231711]/60 leading-relaxed ${isFeatured ? "text-base" : "text-sm"}`}>
+                                            <p className={`grow text-[#231711]/60 leading-relaxed ${isFeatured ? "text-base" : "text-sm"}`}>
                                                 {post.excerpt}
                                             </p>
                                             <div className="mt-4 inline-flex items-center gap-2 pt-4 text-xs uppercase tracking-widest text-primary/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

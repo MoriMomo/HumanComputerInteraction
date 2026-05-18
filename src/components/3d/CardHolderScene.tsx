@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -9,11 +8,13 @@ import CardHolderModel from "./CardHolderModel";
 interface CardHolderSceneProps {
     color?: string;
     enableZoom?: boolean;
+    renderMode?: "normal" | "glass" | "wireframe";
 }
 
 export default function CardHolderScene({
     color = "#B48A63",
     enableZoom = true,
+    renderMode = "normal",
 }: CardHolderSceneProps) {
     // Avoid server-side rendering of WebGL canvas by returning null on server
     if (typeof window === "undefined") return null;
@@ -37,7 +38,7 @@ export default function CardHolderScene({
                     <directionalLight position={[-3, 2, -2]} intensity={0.4} />
 
                     {/* Model */}
-                    <CardHolderModel color={color} />
+                    <CardHolderModel color={color} renderMode={renderMode} />
 
                     {/* Controls */}
                     <OrbitControls

@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCart } from "@/contexts/CartProvider";
 import { useCurrency } from "@/contexts/CurrencyProvider";
+import GridMap from "@/components/ui/GridMap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,6 +84,12 @@ const PRODUCT_ID_TO_SLUG: Record<string, string> = {
     executive: "desk-organizer",
 };
 
+const PRODUCT_PREVIEW_IMAGES: Record<string, string> = {
+    standard: "/productIImg/download%20(1).png",
+    pro: "/productIImg/download%20(2).png",
+    executive: "/productIImg/download%20(3).png",
+};
+
 function ShopSection() {
     const { format } = useCurrency();
     const sectionRef = useRef<HTMLElement>(null);
@@ -142,17 +149,7 @@ function ShopSection() {
                 }
             );
 
-            gsap.to(".shop-orb", {
-                xPercent: 10,
-                yPercent: -14,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sectionEl,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                },
-            });
+            // removed animated gradient orbs — using grid map overlay instead
 
             ScrollTrigger.refresh();
         },
@@ -178,18 +175,7 @@ function ShopSection() {
             className="relative py-32 md:py-40 bg-white overflow-hidden"
         >
             {/* Grid overlay */}
-            <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 z-10 [background:linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] bg-size-[120px_120px]"
-            />
-            <div
-                aria-hidden
-                className="shop-orb section-orb pointer-events-none absolute right-[5%] -top-24 h-96 w-96 rounded-full bg-[#231711]/12 blur-3xl"
-            />
-            <div
-                aria-hidden
-                className="pointer-events-none absolute left-[5%] bottom-0 h-96 w-96 rounded-full bg-black/5 blur-3xl"
-            />
+            <GridMap spacing={120} opacity={0.04} />
             <div className="relative z-10 mx-auto max-w-7xl px-6 md:px-12 lg:px-20">
                 {/* Label + title */}
                 <p className="shop-title mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
@@ -210,6 +196,7 @@ function ShopSection() {
                     {products.map((product) => {
                         const inCart = cart[product.id] || 0;
                         const isPopular = product.badge === "Most Popular";
+                        const productImageSrc = PRODUCT_PREVIEW_IMAGES[product.id] ?? "/productIImg/download%20(1).png";
 
                         return (
                             <div
@@ -231,15 +218,14 @@ function ShopSection() {
                                     </div>
                                 )}
 
-                                {/* Product render preview */}
-                                <div className="relative flex h-48 items-center justify-center overflow-hidden bg-black/3">
+                                {/* Product render preview (now full-bleed image) */}
+                                <div className="relative h-48 w-full overflow-hidden bg-black/3">
                                     <Image
-                                        src={`/products/${product.id === 'pro' ? 'wallet-elite.svg' : product.id === 'executive' ? 'desk-organizer.svg' : 'cardholder-pro.svg'}`}
+                                        src={productImageSrc}
                                         alt={`${product.name} render`}
-                                        width={480}
-                                        height={360}
+                                        fill
                                         priority={false}
-                                        className="h-36 w-auto object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-transform duration-500 group-hover:scale-105"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
                                     <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />
                                 </div>

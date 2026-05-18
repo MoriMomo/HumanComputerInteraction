@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import GridMap from "@/components/ui/GridMap";
 
 function Footer() {
     const whatsappNum = process.env.NEXT_PUBLIC_WHATSAPP || "";
@@ -16,10 +17,7 @@ function Footer() {
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-white/0 via-black/10 to-[#20140f]"
             />
-            <div
-                aria-hidden
-                className="section-orb pointer-events-none absolute left-[-8%] top-0 h-72 w-72 rounded-full bg-brand-primary/8 blur-3xl"
-            />
+            <GridMap spacing={160} opacity={0.03} color="rgba(181,158,125,0.08)" />
             <div className="max-w-350 mx-auto p-4 md:p-10 lg:p-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/12">
                     {/* Brand */}

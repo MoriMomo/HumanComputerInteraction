@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import GridMap from "@/components/ui/GridMap";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { BLOG_POSTS } from "@/data/blog";
 
@@ -45,7 +46,7 @@ export default function BlogPostPage() {
             <Navbar />
             <main ref={containerRef} className="min-h-screen bg-brand-dark text-white">
                 <section className="relative overflow-hidden border-b border-white/8">
-                    <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,158,125,0.14),transparent_24%),radial-gradient(circle_at_75%_15%,rgba(180,138,99,0.12),transparent_22%),linear-gradient(180deg,#584738_0%,#584738_100%)]" />
+                    <GridMap spacing={140} opacity={0.06} color="rgba(181,158,125,0.14)" />
                     <div className="relative mx-auto max-w-5xl px-6 pb-16 pt-36 md:px-12 lg:pt-40">
                         <LoadingLink
                             href="/blog"
