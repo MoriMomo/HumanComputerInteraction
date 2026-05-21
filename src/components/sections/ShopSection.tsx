@@ -225,6 +225,7 @@ function ShopSection() {
                                         alt={`${product.name} render`}
                                         fill
                                         priority={false}
+                                        sizes="(max-width: 768px) 100vw, 33vw"
                                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
                                     <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />

@@ -23,6 +23,7 @@ const SWATCH_BG_CLASS: Record<string, string> = {
     "var(--color-brand-darker)": "bg-brand-darker",
 };
 
+
 export default function ProductsPage() {
     const { format } = useCurrency();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -125,11 +126,14 @@ export default function ProductsPage() {
                             accent="from-black/5 via-black/[0.02] to-transparent"
                             imageSrc={featuredProduct.image?.src}
                             imageAlt={featuredProduct.image?.alt}
+                            productSlug={featuredProduct.slug}
                             imagePriority
                             imageSizes={featuredProduct.image?.sizes}
                         />
                     </div>
                 </section>
+
+
 
                 <section className="products-grid mx-auto max-w-7xl px-6 py-16 md:px-12 lg:px-20">
                     <div className="mb-8 flex items-end justify-between gap-6">
@@ -180,6 +184,7 @@ export default function ProductsPage() {
                                         imageSrc={product.image?.src}
                                         imageAlt={product.image?.alt}
                                         imageSizes={product.image?.sizes}
+                                        productSlug={product.slug}
                                     />
 
                                     <div className="mb-6 rounded-3xl border border-black/5 bg-[rgba(0,0,0,0.03)] p-5 relative z-10">

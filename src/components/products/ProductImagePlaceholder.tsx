@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SmartImage from "@/components/ui/SmartImage";
+import { PRODUCT_PAGE_GALLERY } from "@/data/productGallery";
 
 interface ProductImagePlaceholderProps {
     title: string;
@@ -12,6 +13,7 @@ interface ProductImagePlaceholderProps {
     imageAlt?: string;
     imagePriority?: boolean;
     imageSizes?: string;
+    productSlug?: string;
 }
 
 export default function ProductImagePlaceholder({
@@ -23,6 +25,7 @@ export default function ProductImagePlaceholder({
     imageAlt,
     imagePriority = false,
     imageSizes,
+    productSlug,
 }: ProductImagePlaceholderProps) {
     const [failedToLoad, setFailedToLoad] = useState(false);
     const hasRenderableImage = Boolean(imageSrc) && !failedToLoad;
@@ -79,6 +82,17 @@ export default function ProductImagePlaceholder({
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.24em] text-white/36">
                     <span>Preview frame</span>
                     <span>{hasRenderableImage ? "Lazy + blur" : "Future asset ready"}</span>
+                </div>
+            </div>
+
+            {/* Thumbnails: show only assets relevant to this product when `productSlug` is provided */}
+            <div className="mt-3 px-3 md:px-4">
+                <div className="flex gap-3 overflow-x-auto py-2">
+                    {PRODUCT_PAGE_GALLERY.filter((a) => (productSlug ? a.slugs?.includes(productSlug) : true)).map((asset) => (
+                        <div key={asset.src} className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border border-white/6 bg-black/6">
+                            <SmartImage src={asset.src} alt={asset.alt} fill sizes="120px" className="object-cover" />
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

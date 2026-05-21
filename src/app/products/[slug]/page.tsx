@@ -130,6 +130,7 @@ export default function ProductDetailPage() {
                                     accent="from-white/12 via-white/6 to-transparent"
                                     imageSrc={product.image?.src}
                                     imageAlt={product.image?.alt}
+                                    productSlug={product.slug}
                                     imagePriority
                                     imageSizes={product.image?.sizes}
                                 />

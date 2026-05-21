@@ -6,7 +6,7 @@ import { validateEmail, validateName } from '@/lib/auth-validation';
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
   if (!contactRateLimiter.check(ip)) {
-      return NextResponse.json({ error: "Too many requests, please try again later." }, { status: 429 });
+    return NextResponse.json({ error: "Too many requests, please try again later." }, { status: 429 });
   }
 
   try {
@@ -20,11 +20,11 @@ export async function POST(request: Request) {
     }
 
     if (!validateName(name) || !validateEmail(email)) {
-        return NextResponse.json({ error: 'Invalid name or email' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid name or email' }, { status: 400 });
     }
 
     if (message.length > 2000) {
-        return NextResponse.json({ error: 'Message is too long' }, { status: 400 });
+      return NextResponse.json({ error: 'Message is too long' }, { status: 400 });
     }
 
     // Try to use environment variables for SMTP, otherwise fallback to ethereal for local dev
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
     console.log("Message sent: %s", info.messageId);
     if (!process.env.SMTP_HOST) {
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     }
 
     return NextResponse.json({ success: true, messageId: info.messageId });
