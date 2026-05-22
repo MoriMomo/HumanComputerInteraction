@@ -14,6 +14,8 @@ interface ProductImagePlaceholderProps {
     imagePriority?: boolean;
     imageSizes?: string;
     productSlug?: string;
+    videoSrc?: string;
+    videoRotate?: number;
 }
 
 export default function ProductImagePlaceholder({
@@ -26,16 +28,36 @@ export default function ProductImagePlaceholder({
     imagePriority = false,
     imageSizes,
     productSlug,
+    videoSrc,
+    videoRotate = 0,
 }: ProductImagePlaceholderProps) {
     const [failedToLoad, setFailedToLoad] = useState(false);
     const hasRenderableImage = Boolean(imageSrc) && !failedToLoad;
+    const hasRenderableVideo = Boolean(videoSrc) && !failedToLoad;
 
     return (
         <div className={`relative overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/72 ${className}`}>
             <div aria-hidden className={`absolute inset-0 bg-linear-to-br ${accent}`} />
             <div aria-hidden className="absolute inset-0 office-grid opacity-[0.06]" />
 
-            {hasRenderableImage && (
+            {hasRenderableVideo ? (
+                <>
+                    <video
+                        src={videoSrc}
+                        className="object-cover w-full h-full block"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        onError={() => setFailedToLoad(true)}
+                        style={{ transform: `rotate(${videoRotate}deg)`, transformOrigin: "center center" }}
+                    />
+                    <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 bg-linear-to-t from-brand-dark/24 via-transparent to-transparent"
+                    />
+                </>
+            ) : hasRenderableImage && (
                 <>
                     <SmartImage
                         src={imageSrc!}

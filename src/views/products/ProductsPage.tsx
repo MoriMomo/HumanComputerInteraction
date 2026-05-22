@@ -121,7 +121,7 @@ export default function ProductsPage() {
 
                         <ProductImagePlaceholder
                             title={featuredProduct.name}
-                            subtitle="Featured image slot"
+                            subtitle="Featured product image"
                             className="products-hero-text min-h-128 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.08)] bg-white rounded-3xl"
                             accent="from-black/5 via-black/[0.02] to-transparent"
                             imageSrc={featuredProduct.image?.src}

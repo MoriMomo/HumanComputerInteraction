@@ -85,9 +85,9 @@ const PRODUCT_ID_TO_SLUG: Record<string, string> = {
 };
 
 const PRODUCT_PREVIEW_IMAGES: Record<string, string> = {
-    standard: "/productIImg/download%20(1).png",
-    pro: "/productIImg/download%20(2).png",
-    executive: "/productIImg/download%20(3).png",
+    standard: "/productIImg/download-1.png",
+    pro: "/productIImg/download-2.png",
+    executive: "/productIImg/download-3.png",
 };
 
 function ShopSection() {
@@ -196,7 +196,7 @@ function ShopSection() {
                     {products.map((product) => {
                         const inCart = cart[product.id] || 0;
                         const isPopular = product.badge === "Most Popular";
-                        const productImageSrc = PRODUCT_PREVIEW_IMAGES[product.id] ?? "/productIImg/download%20(1).png";
+                        const productImageSrc = PRODUCT_PREVIEW_IMAGES[product.id] ?? "/productIImg/download-1.png";
 
                         return (
                             <div

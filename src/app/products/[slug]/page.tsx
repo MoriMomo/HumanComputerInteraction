@@ -1,13 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import GridMap from "@/components/ui/GridMap";
-import ProductImagePlaceholder from "@/components/products/ProductImagePlaceholder";
+import Product3DViewer from "@/components/products/Product3DViewer";
+import SmartImage from "@/components/ui/SmartImage";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { PRODUCTS, PRODUCT_MAP } from "@/data/products";
@@ -41,6 +42,8 @@ const SWATCH_BG_CLASS: Record<string, string> = {
 export default function ProductDetailPage() {
     const { slug } = useParams<{ slug: string }>();
     const containerRef = useRef<HTMLDivElement>(null);
+    const leftRef = useRef<HTMLDivElement | null>(null);
+    const fillerRef = useRef<HTMLDivElement | null>(null);
     const product = PRODUCT_MAP.get(slug) ?? PRODUCTS[0];
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
     const [addedToCart, setAddedToCart] = useState(false);
@@ -98,8 +101,37 @@ export default function ProductDetailPage() {
         { scope: containerRef }
     );
 
+    useEffect(() => {
+        function updateHeight() {
+            const rightEl = document.querySelector('.detail-info') as HTMLElement | null;
+            const leftEl = leftRef.current;
+            const fillerEl = fillerRef.current;
+            if (!rightEl || !leftEl || !fillerEl) return;
+
+            const rightRect = rightEl.getBoundingClientRect();
+            const leftRect = leftEl.getBoundingClientRect();
+            const fillerRect = fillerEl.getBoundingClientRect();
+
+            // filler top offset relative to left column top
+            const offset = Math.max(0, Math.round(fillerRect.top - leftRect.top));
+            const desired = Math.max(120, Math.round(rightRect.height - offset));
+            fillerEl.style.height = `${desired}px`;
+        }
+
+        updateHeight();
+
+        const ro = new ResizeObserver(() => updateHeight());
+        const rightEl = document.querySelector('.detail-info') as HTMLElement | null;
+        if (rightEl) ro.observe(rightEl);
+        window.addEventListener('resize', updateHeight);
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, [product.slug]);
+
     const handleAddToCart = () => {
-        addItem({ slug: product.slug, color: selectedColor });
         trackEvent("add_to_cart", { slug: product.slug, color: selectedColor, price: product.price });
         setAddedToCart(true);
         setTimeout(() => setAddedToCart(false), 2500);
@@ -112,7 +144,7 @@ export default function ProductDetailPage() {
             <main ref={containerRef} className="min-h-screen bg-brand-dark pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
                     <GridMap spacing={140} opacity={0.06} color="rgba(181,158,125,0.18)" />
-                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40">
+                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40 items-start">
                         <div className="detail-visual">
                             <LoadingLink
                                 href="/products"
@@ -122,18 +154,27 @@ export default function ProductDetailPage() {
                                 All Products
                             </LoadingLink>
 
-                            <div className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
-                                <ProductImagePlaceholder
-                                    title={product.name}
-                                    subtitle="Detail image slot"
-                                    className="min-h-120 p-4"
-                                    accent="from-white/12 via-white/6 to-transparent"
-                                    imageSrc={product.image?.src}
-                                    imageAlt={product.image?.alt}
-                                    productSlug={product.slug}
-                                    imagePriority
-                                    imageSizes={product.image?.sizes}
+                            <div ref={leftRef} className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
+                                <Product3DViewer
+                                    product={product}
+                                    color={selectedColor}
+                                    className="min-h-120 p-0"
                                 />
+
+                                <div className="mt-4">
+                                    <div
+                                        ref={fillerRef}
+                                        className="relative h-80 overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+                                    >
+                                        <SmartImage
+                                            src={product.image?.src ?? "/productIImg/download-1.png"}
+                                            alt={product.image?.alt ?? product.name}
+                                            fill
+                                            sizes="(max-width: 768px) 100vw, 40vw"
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="mt-4 grid gap-3 sm:grid-cols-3">

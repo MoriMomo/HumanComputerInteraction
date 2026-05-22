@@ -94,10 +94,25 @@ async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unk
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const { user, isAuthLoading } = useAuth();
-    // Initialize state from local storage when available. `getLocalCart`
-    // is safe to call on the server (it returns `[]` when `window` is undefined),
-    // so using a lazy initializer avoids setting state inside an effect.
-    const [items, setItems] = useState<CartItem[]>(() => getLocalCart());
+    const [items, setItems] = useState<CartItem[]>([]);
+
+    useEffect(() => {
+        if (isAuthLoading || user) {
+            return;
+        }
+
+        let cancelled = false;
+
+        queueMicrotask(() => {
+            if (!cancelled) {
+                setItems(getLocalCart());
+            }
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [isAuthLoading, user]);
 
     useEffect(() => {
         if (typeof window === "undefined" || user) {
