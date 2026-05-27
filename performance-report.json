@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-05-27T15:16:18.387Z",
+  "url": "http://localhost:3000/showcase",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "customMetrics": {
+    "fps": {
+      "current": 59.8623166713882,
+      "average": 54.6960857556528,
+      "min": 33.78714101172682,
+      "max": 59.98800239978821,
+      "samples": 5
+    },
+    "cwv": {
+      "ttfb": 388.79999999701977,
+      "cls": 0
+    },
+    "memory": {
+      "jsHeapSizeLimit": 3760000000,
+      "totalJSHeapSize": 17100000,
+      "usedJSHeapSize": 14300000
+    }
+  }
+}
