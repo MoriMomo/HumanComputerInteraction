@@ -133,6 +133,8 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         trackEvent("add_to_cart", { slug: product.slug, color: selectedColor, price: product.price });
+        // actually add the product to the cart
+        addItem({ slug: product.slug, color: selectedColor });
         setAddedToCart(true);
         setTimeout(() => setAddedToCart(false), 2500);
     };

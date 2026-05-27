@@ -94,25 +94,7 @@ async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unk
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const { user, isAuthLoading } = useAuth();
-    const [items, setItems] = useState<CartItem[]>([]);
-
-    useEffect(() => {
-        if (isAuthLoading || user) {
-            return;
-        }
-
-        let cancelled = false;
-
-        queueMicrotask(() => {
-            if (!cancelled) {
-                setItems(getLocalCart());
-            }
-        });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [isAuthLoading, user]);
+    const [items, setItems] = useState<CartItem[]>(() => getLocalCart());
 
     useEffect(() => {
         if (typeof window === "undefined" || user) {
@@ -144,7 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         quantity: entry.quantity,
                     }))
                 );
-                window.localStorage.removeItem(CART_STORAGE_KEY);
+                // keep localStorage intact to avoid clearing client-side cart during navigation
             }
 
             await syncFromServer();
@@ -161,29 +143,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }
 
             const q = Math.max(1, quantity);
-
             setItems((prev) => {
                 const key = getItemKey(slug, color);
                 const existingIndex = prev.findIndex((item) => getItemKey(item.slug, item.color) === key);
 
+                let next: CartItem[];
                 if (existingIndex >= 0) {
-                    const next = [...prev];
+                    next = [...prev];
                     const target = next[existingIndex];
                     next[existingIndex] = { ...target, quantity: target.quantity + q };
-                    return next;
+                } else {
+                    next = [
+                        ...prev,
+                        {
+                            slug: product.slug,
+                            name: product.name,
+                            price: product.price,
+                            quantity: q,
+                            color,
+                            imageSrc: product.image?.src,
+                        },
+                    ];
                 }
 
-                return [
-                    ...prev,
-                    {
-                        slug: product.slug,
-                        name: product.name,
-                        price: product.price,
-                        quantity: q,
-                        color,
-                        imageSrc: product.image?.src,
-                    },
-                ];
+                if (typeof window !== "undefined") {
+                    try {
+                        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(next));
+                    } catch {
+                        // ignore localStorage errors
+                    }
+                }
+
+                return next;
             });
 
             if (user) {
@@ -201,17 +192,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (slug: string, quantity: number, color?: string) => {
             setItems((prev) => {
                 const key = getItemKey(slug, color);
+                let next: CartItem[];
+
                 if (quantity <= 0) {
-                    return prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+                    next = prev.filter((item) => getItemKey(item.slug, item.color) !== key);
+                } else {
+                    next = prev.map((item) => {
+                        if (getItemKey(item.slug, item.color) !== key) {
+                            return item;
+                        }
+
+                        return { ...item, quantity };
+                    });
                 }
 
-                return prev.map((item) => {
-                    if (getItemKey(item.slug, item.color) !== key) {
-                        return item;
+                if (typeof window !== "undefined") {
+                    try {
+                        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(next));
+                    } catch {
+                        // ignore
                     }
+                }
 
-                    return { ...item, quantity };
-                });
+                return next;
             });
 
             if (user) {
@@ -226,7 +229,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const removeItem = useCallback(
         (slug: string, color?: string) => {
-            setItems((prev) => prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color)));
+            setItems((prev) => {
+                const next = prev.filter((item) => getItemKey(item.slug, item.color) !== getItemKey(slug, color));
+                if (typeof window !== "undefined") {
+                    try {
+                        window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(next));
+                    } catch {
+                        // ignore
+                    }
+                }
+                return next;
+            });
 
             if (user) {
                 void requestCart("DELETE", { slug, color }).then(setItems).catch((err) => {
@@ -240,6 +253,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const clearCart = useCallback(() => {
         setItems([]);
+
+        if (typeof window !== "undefined") {
+            try {
+                window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]));
+            } catch {
+                // ignore
+            }
+        }
 
         if (user) {
             void requestCart("DELETE").then(setItems).catch((err) => {

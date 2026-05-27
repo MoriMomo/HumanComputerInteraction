@@ -185,11 +185,12 @@ export default function Navbar() {
                             >
                                 <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
                                 <span className="ml-2">Cart</span>
-                                {itemCount > 0 && (
-                                    <span className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-darker">
-                                        {itemCount}
-                                    </span>
-                                )}
+                                <span
+                                    aria-hidden={itemCount === 0}
+                                    className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-darker"
+                                >
+                                    {itemCount || ""}
+                                </span>
                             </LoadingLink>
 
                             <LoadingLink
