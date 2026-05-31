@@ -13,14 +13,21 @@ export async function GET() {
         return NextResponse.json({ user: null });
     }
 
-    const existingUser = await prisma.user.findUnique({
-        where: { id: sessionUser.id },
-        select: { id: true, email: true, name: true },
-    });
+    try {
+        const existingUser = await prisma.user.findUnique({
+            where: { id: sessionUser.id },
+            select: { id: true, email: true, name: true },
+        });
 
-    if (!existingUser) {
+        if (!existingUser) {
+            return NextResponse.json({ user: null });
+        }
+
+        return NextResponse.json({ user: existingUser });
+    } catch {
+        // If the database/table isn't available (e.g. local dev without migrations),
+        // return `null` instead of crashing the route. This keeps the app usable
+        // while encouraging running Prisma migrations or `prisma db push`.
         return NextResponse.json({ user: null });
     }
-
-    return NextResponse.json({ user: existingUser });
 }

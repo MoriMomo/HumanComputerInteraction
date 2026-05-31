@@ -16,10 +16,10 @@ export async function POST(request: Request) {
 
     const body = (await request.json().catch(() => null)) as
         | {
-              name?: string;
-              email?: string;
-              password?: string;
-          }
+            name?: string;
+            email?: string;
+            password?: string;
+        }
         | null;
 
     const name = (body?.name || "").toString().trim();
