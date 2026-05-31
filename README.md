@@ -1,60 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SatSet Card Holder Website
 
-## Project Guide
+Premium card holder product showcase with 3D visualization, built with Next.js, React Three Fiber, and GSAP animations.
 
-- [MCP Playbook](./MCP_PLAYBOOK.md): Practical workflow for when and how to use MCP in this repo.
+## 🚀 Quick Start
 
-## Getting Started
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- PostgreSQL (or SQLite for local dev)
 
-First, run the development server:
+### Development Setup
 
+**One-command setup:**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run setup:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Environment Setup
-
-Create a local environment file by copying `.env.example` to `.env.local`.
-
-Then update at least the following values in `.env.local`:
-
-- `DATABASE_URL`
-- `AUTH_SESSION_SECRET`
-
-## Database Setup
-
-Generate Prisma client and push schema to your database:
+Or step-by-step:
 
 ```bash
-npm run prisma:generate
+# 1. Install dependencies
+npm install
+
+# 2. Set up database
 npm run prisma:push
+
+# 3. Seed demo users
+npm run seed
+
+# 4. Start dev server
+npm run dev
 ```
 
-If you use a fresh local Postgres instance, ensure the database in `DATABASE_URL` already exists before running `prisma:push`.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔧 Environment Variables
 
-## Learn More
+Create a `.env.local` file in the root directory:
 
-To learn more about Next.js, take a look at the following resources:
+```
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/satset"
+# For SQLite (local dev): DATABASE_URL="file:./prisma/dev.db"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Auth (REQUIRED FOR PRODUCTION)
+AUTH_SESSION_SECRET="your-random-secret-32-bytes-hex"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Node environment
+NODE_ENV="development"
+```
 
-## Deploy on Vercel
+Never commit `.env.local` — add it to `.gitignore`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📊 Database
+
+### View and Manage Data
+
+```
+# Open Prisma Studio (visual DB browser)
+npm run prisma:studio
+```
+
+### API routes
+
+POST /api/auth/signup — Create a new user
+
+POST /api/auth/login — Login user
+
+POST /api/auth/logout — Logout (clear session)
+
+GET /api/auth/me — Get current user
+
+---
+
+## 📈 Build & Deploy
+
+```bash
+npm run build
+npm start
+```
+
+### Vercel Deployment (Recommended)
+
+```
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+vercel --prod
+```
+
+---
+
+## 🔍 Code Quality
+
+```bash
+# Check for issues
+npm run lint
+npm run typecheck
+
+# Auto-fix lint issues
+npm run lint:fix
+```
+
+---
+
+## 🧪 Testing
+
+Unit tests: `npm test`
+E2E tests: `npm run test:e2e`
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch: `git checkout -b feat/your-feature`
+2. Run tests: `npm run test:ci && npm run e2e`
+3. Commit and open a PR
+
+---
+
+Last updated: 2026-06-01
