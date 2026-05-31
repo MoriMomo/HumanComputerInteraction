@@ -4,7 +4,7 @@ import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import type { Product3DConfig, Product3DVariant } from "@/data/products";
+import type { Product3DConfig } from "@/data/products";
 import type { RenderMode } from "@/types";
 import useResolvedColor from "@/hooks/useResolvedColor";
 
@@ -59,9 +59,8 @@ function LoadedModel({ modelSrc, scale }: { modelSrc: string; scale: number }) {
 }
 
 function ProductModel({
-    variant,
     color,
-    renderMode,
+    renderMode = "normal",
     scale = 1,
     autoRotate = true,
     modelSrc,
@@ -78,10 +77,14 @@ function ProductModel({
 
     return (
         <group ref={groupRef} scale={scale} rotation={[0, 0, 0]}>
-            <mesh>
-                <boxGeometry args={[1.6, 1.6, 1.6]} />
-                <meshStandardMaterial color={accent.getStyle()} roughness={0.45} metalness={0.15} />
-            </mesh>
+            {modelSrc ? (
+                <LoadedModel modelSrc={modelSrc} scale={scale} />
+            ) : (
+                <mesh>
+                    <boxGeometry args={[1.6, 1.6, 1.6]} />
+                    <Material color={accent.getStyle()} renderMode={renderMode} />
+                </mesh>
+            )}
         </group>
     );
 }

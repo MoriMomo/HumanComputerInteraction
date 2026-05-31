@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useLoading } from "@/contexts/LoadingProvider";
 
 export default function RouteLoadingManager() {
-    const pathname = usePathname();
+    const pathname = usePathname() ?? "";
     const { isLoading, startLoading } = useLoading();
     const previousRouteRef = useRef<string | null>(null);
 

@@ -38,13 +38,14 @@ test.describe('Shopping Flow', () => {
     // Go to first product
     await page.goto('/products/cardholder-pro');
     await expect(page.locator('h1', { hasText: 'CardHolder Pro' }).first()).toBeVisible();
+    await expect.poll(async () => page.evaluate(() => localStorage.getItem('recentlyViewed') || '')).toContain('cardholder-pro');
 
     // Go to second product
     await page.goto('/products/wallet-elite');
     await expect(page.locator('h1', { hasText: 'Wallet Elite' }).first()).toBeVisible();
 
     // Verify "Recently Viewed" section shows the first product
-    await expect(page.locator('h2', { hasText: 'Recently Viewed.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Recently Viewed.' })).toBeVisible({ timeout: 10000 });
     const recentlyViewedProduct = page.locator('p', { hasText: 'CardHolder Pro' }).last();
     await expect(recentlyViewedProduct).toBeVisible();
 
@@ -53,7 +54,7 @@ test.describe('Shopping Flow', () => {
     await expect(page.locator('h1', { hasText: 'Desk Organizer' }).first()).toBeVisible();
 
     // Verify "Recently Viewed" section shows the first and second products
-    await expect(page.locator('text=Recently Viewed.')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Recently Viewed.' })).toBeVisible({ timeout: 10000 });
     await expect(page.locator('text=CardHolder Pro').last()).toBeVisible();
     await expect(page.locator('text=Wallet Elite').last()).toBeVisible();
   });

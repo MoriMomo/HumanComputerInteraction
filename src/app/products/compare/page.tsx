@@ -10,7 +10,7 @@ import { useCurrency } from "@/contexts/CurrencyProvider";
 
 export default function ProductComparePage() {
     const searchParams = useSearchParams();
-    const compare = searchParams.get("compare");
+    const compare = searchParams?.get("compare") ?? null;
 
     const selected = useMemo(() => {
         const slugs = (compare ?? PRODUCTS.slice(0, 2).map((item) => item.slug).join(","))
@@ -50,7 +50,7 @@ export default function ProductComparePage() {
                         <div className="mt-10">
                             <p className="mb-3 block text-center text-xs text-white/48 md:hidden">← Scroll to compare →</p>
                             <div className="overflow-hidden rounded-4xl border border-white/10 bg-brand-dark/64 overflow-x-auto">
-                                <div className="min-w-[800px]\">
+                                <div className="min-w-[800px]">
                                     <div className="grid grid-cols-[200px_repeat(3,minmax(0,1fr))] border-b border-white/10">
                                         <div className="p-4 text-xs uppercase tracking-[0.22em] text-white/46">Spec</div>
                                         {selected.map((product) => (

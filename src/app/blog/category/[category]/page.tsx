@@ -10,7 +10,7 @@ import { BLOG_POSTS } from "@/data/blog";
 
 export default function BlogCategoryPage() {
     const params = useParams<{ category: string }>();
-    const activeCategory = params.category;
+    const activeCategory = params?.category ?? "";
 
     const posts = useMemo(() => {
         if (!BLOG_CATEGORIES.includes(activeCategory as (typeof BLOG_CATEGORIES)[number])) {

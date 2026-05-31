@@ -41,8 +41,9 @@ async function readJsonResponse<T>(response: Response): Promise<T> {
         return (await response.json()) as T;
     }
 
-    const text = await response.text();
-    throw new Error(`Expected JSON but received ${contentType || "an unknown content type"}: ${text.slice(0, 120)}`);
+    await response.text();
+    // Avoid showing raw HTML to the user; return a concise, non-sensitive message.
+    throw new Error(`Server returned an unexpected response (content-type: ${contentType || "unknown"}, status: ${response.status}).`);
 }
 
 function getItemKey(slug: string, color?: string) {

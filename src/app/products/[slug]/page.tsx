@@ -40,7 +40,8 @@ const SWATCH_BG_CLASS: Record<string, string> = {
 };
 
 export default function ProductDetailPage() {
-    const { slug } = useParams<{ slug: string }>();
+    const params = useParams<{ slug: string }>();
+    const slug = params?.slug ?? "";
     const containerRef = useRef<HTMLDivElement>(null);
     const leftRef = useRef<HTMLDivElement | null>(null);
     const fillerRef = useRef<HTMLDivElement | null>(null);

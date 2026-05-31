@@ -5,7 +5,7 @@ export function formatIDR(amount: number) {
             currency: "IDR",
             maximumFractionDigits: 0,
         }).format(amount);
-    } catch (e) {
+    } catch {
         return `Rp${amount}`;
     }
 }

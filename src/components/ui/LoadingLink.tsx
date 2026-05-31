@@ -27,7 +27,7 @@ const LoadingLink = forwardRef<HTMLAnchorElement, LoadingLinkProps>(function Loa
     { href, onClick, ...props },
     ref
 ) {
-    const pathname = usePathname();
+    const pathname = usePathname() ?? "";
     const { startLoading } = useLoading();
 
     const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {

@@ -79,7 +79,7 @@ class PerformanceCollector {
                 this.cwvMetrics.lcp = lastEntry.renderTime || lastEntry.loadTime;
             });
             lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
-        } catch (e) {
+        } catch {
             // LCP not supported
         }
 
@@ -93,7 +93,7 @@ class PerformanceCollector {
                 }
             });
             fidObserver.observe({ entryTypes: ["first-input"] });
-        } catch (e) {
+        } catch {
             // FID not supported
         }
 
@@ -109,7 +109,7 @@ class PerformanceCollector {
                 this.cwvMetrics.cls = clsValue;
             });
             clsObserver.observe({ entryTypes: ["layout-shift"] });
-        } catch (e) {
+        } catch {
             // CLS not supported
         }
 

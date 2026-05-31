@@ -5,6 +5,7 @@ import { createSessionToken } from "@/lib/auth-session";
 import { validateEmail, validateName, validatePassword } from "@/lib/auth-validation";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
+import * as devUsers from "@/lib/dev-users";
 import { authRateLimiter } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
@@ -33,22 +34,30 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "Invalid email or password." }, { status: 400 });
     }
 
-    const existingUser = await prisma.user.findUnique({
-        where: { email },
-    });
+    let createdUser: { id: string; email: string; name?: string } | null = null;
 
-    if (existingUser) {
-        return NextResponse.json({ message: "Email is already registered." }, { status: 409 });
+    try {
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return NextResponse.json({ message: "Email is already registered." }, { status: 409 });
+        }
+
+        const passwordHash = await hashPassword(password);
+        const u = await prisma.user.create({
+            data: { name, email, passwordHash },
+        });
+
+        createdUser = { id: u.id, email: u.email, name: u.name || undefined };
+    } catch {
+        // Prisma likely failed (no DATABASE_URL). Fall back to a simple dev JSON store.
+        const existingUser = await devUsers.findUserByEmail(email);
+        if (existingUser) {
+            return NextResponse.json({ message: "Email is already registered." }, { status: 409 });
+        }
+        const passwordHash = await hashPassword(password);
+        const u = await devUsers.createUser(name || undefined, email, passwordHash);
+        createdUser = { id: u.id, email: u.email, name: u.name || undefined };
     }
-
-    const passwordHash = await hashPassword(password);
-    const createdUser = await prisma.user.create({
-        data: {
-            name,
-            email,
-            passwordHash,
-        },
-    });
 
     const token = createSessionToken({
         id: createdUser.id,

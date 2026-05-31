@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { usePathname } from "next/navigation";
@@ -15,9 +15,13 @@ export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeSection, setActiveSection] = useState("");
-    const [mounted, setMounted] = useState(false);
-    const pathname = usePathname();
+    const pathname = usePathname() ?? "";
     const { itemCount } = useCart();
+    const mounted = useSyncExternalStore(
+        () => () => { },
+        () => true,
+        () => false
+    );
 
     const isActive = (href: string) => {
         return isNavLinkActive(href, activeSection, pathname);
@@ -74,10 +78,6 @@ export default function Navbar() {
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
-    }, []);
-
-    useEffect(() => {
-        setMounted(true);
     }, []);
 
     // Active section highlight

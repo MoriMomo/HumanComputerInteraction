@@ -16,6 +16,10 @@ function getSessionSecret() {
     const secret = process.env.AUTH_SESSION_SECRET?.trim();
 
     if (!secret) {
+        if (process.env.NODE_ENV !== "production") {
+            return "dev-auth-session-secret";
+        }
+
         throw new Error("AUTH_SESSION_SECRET environment variable is required.");
     }
 

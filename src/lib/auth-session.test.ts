@@ -1,4 +1,4 @@
-import { test, describe, it } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createSessionToken, readSessionToken } from "./auth-session";
 
@@ -19,12 +19,16 @@ describe("auth-session", () => {
     });
 
     it("should throw error if secret is missing", () => {
+        const env = process.env as NodeJS.ProcessEnv & { NODE_ENV?: string };
         const originalSecret = process.env.AUTH_SESSION_SECRET;
+        const originalNodeEnv = env.NODE_ENV;
         delete process.env.AUTH_SESSION_SECRET;
+        env.NODE_ENV = "production";
         try {
             assert.throws(() => createSessionToken({ id: "1", email: "test@example.com" }), /AUTH_SESSION_SECRET environment variable is required/);
         } finally {
             process.env.AUTH_SESSION_SECRET = originalSecret;
+            env.NODE_ENV = originalNodeEnv;
         }
     });
 

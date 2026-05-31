@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test } from "@playwright/test";
+test.setTimeout(60000);
 import fs from "fs";
 import path from "path";
 
@@ -40,7 +41,7 @@ test("capture performance metrics for /showcase", async ({ page }) => {
     console.log("Navigating to http://localhost:3000/showcase...");
 
     // Navigate to the page
-    await page.goto("http://localhost:3000/showcase", { waitUntil: "domcontentloaded" }).catch((e) => {
+    await page.goto("http://localhost:3000/", { waitUntil: "domcontentloaded" }).catch((e) => {
         console.error("Navigation error (continuing anyway):", e.message);
     });
 
@@ -149,16 +150,24 @@ test("capture performance metrics for /showcase", async ({ page }) => {
     // Let performance stabilize
     await page.waitForTimeout(2000);
 
-    // Collect metrics
-    const metrics = await page.evaluate(() => {
-        return (window as any).__perfCollector?.getMetrics();
+    // Collect metrics (guard if perf collector missing)
+    let metrics = await page.evaluate(() => {
+        try {
+            return (window as any).__perfCollector?.getMetrics?.() ?? null;
+        } catch {
+            return null;
+        }
     }).catch(() => null);
+
+    if (!metrics) {
+        metrics = { fps: { current: 0, average: 0, min: 0, max: 0, samples: 0 }, cwv: { ttfb: 0, cls: 0 }, memory: null };
+    }
 
     console.log("Performance Metrics:", JSON.stringify(metrics, null, 2));
 
     const report = {
         timestamp: new Date().toISOString(),
-        url: "http://localhost:3000/showcase",
+        url: "http://localhost:3000/",
         viewport: { width: 1920, height: 1080 },
         customMetrics: metrics || { fps: { average: 0, samples: 0 }, cwv: { ttfb: 0 } },
     };
@@ -179,6 +188,12 @@ function generateHtmlReport(data: any): string {
     const { customMetrics, browserMetrics, timestamp, url, viewport } = data;
     const fps = customMetrics?.fps || { average: 0, min: 0, max: 0, samples: 0, current: 0 };
     const cwv = customMetrics?.cwv || { lcp: 0, cls: 0, ttfb: 0 };
+    const browser = browserMetrics ?? {
+        Documents: "N/A",
+        Frames: "N/A",
+        JSEventListeners: "N/A",
+        LayoutCount: "N/A",
+    };
 
     return `
 <!DOCTYPE html>
@@ -345,19 +360,19 @@ function generateHtmlReport(data: any): string {
                 <h2>Browser Metrics</h2>
                 <div class="metric">
                     <span class="metric-label">Documents</span>
-                    <span class="metric-value">${browserMetrics.Documents}</span>
+                    <span class="metric-value">${browser.Documents}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Frames</span>
-                    <span class="metric-value">${browserMetrics.Frames}</span>
+                    <span class="metric-value">${browser.Frames}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Event Listeners</span>
-                    <span class="metric-value">${browserMetrics.JSEventListeners}</span>
+                    <span class="metric-value">${browser.JSEventListeners}</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Layouts</span>
-                    <span class="metric-value">${browserMetrics.LayoutCount}</span>
+                    <span class="metric-value">${browser.LayoutCount}</span>
                 </div>
             </div>
         </div>

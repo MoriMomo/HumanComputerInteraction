@@ -12,7 +12,8 @@ import LoadingLink from "@/components/ui/LoadingLink";
 import { BLOG_POSTS } from "@/data/blog";
 
 export default function BlogPostPage() {
-    const { slug } = useParams<{ slug: string }>();
+    const params = useParams<{ slug: string }>();
+    const slug = params?.slug ?? "";
     const containerRef = useRef<HTMLDivElement>(null);
     const post = BLOG_POSTS.find((p) => p.slug === slug) ?? BLOG_POSTS[0];
     const related = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 2);

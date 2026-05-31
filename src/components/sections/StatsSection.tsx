@@ -94,8 +94,8 @@ function StatsSection({
             try {
                 await video.play();
                 isVideoPlayingRef.current = true;
-            } catch (err) {
-                console.warn("Video autoplay failed:", err);
+            } catch {
+                console.warn("Video autoplay failed:");
             }
         };
 

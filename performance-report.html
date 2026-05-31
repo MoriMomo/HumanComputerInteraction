@@ -68,17 +68,21 @@
         .good { color: #4ade80; }
         .warn { color: #facc15; }
         .bad { color: #f87171; }
-        .summary {
-            background: rgba(77, 166, 255, 0.1);
-            border-left: 4px solid #4da6ff;
-            padding: 1.5rem;
+        .chart-container {
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-            margin-bottom: 2rem;
+            padding: 1rem;
+            margin-top: 1rem;
         }
         .bar {
             display: flex;
             align-items: center;
-            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .bar-label {
+            width: 100px;
+            font-size: 0.9rem;
+            color: #aaa;
         }
         .bar-fill {
             flex: 1;
@@ -86,6 +90,27 @@
             background: linear-gradient(90deg, #4da6ff, #4ade80);
             border-radius: 4px;
             margin: 0 0.5rem;
+            position: relative;
+        }
+        .bar-value {
+            width: 80px;
+            text-align: right;
+            font-family: 'Monaco', monospace;
+            font-size: 0.9rem;
+        }
+        .summary {
+            background: rgba(77, 166, 255, 0.1);
+            border-left: 4px solid #4da6ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .summary h3 {
+            margin-bottom: 0.5rem;
+        }
+        .summary p {
+            color: #ccc;
+            font-size: 0.95rem;
         }
     </style>
 </head>
@@ -93,53 +118,53 @@
     <div class="container">
         <h1>⚡ Performance Report</h1>
         <div class="meta">
-            <strong>URL:</strong> http://localhost:3000/showcase<br />
+            <strong>URL:</strong> http://localhost:3000/<br />
             <strong>Viewport:</strong> 1920×1080<br />
-            <strong>Tested:</strong> 2026-05-27T15:16:17.913Z
+            <strong>Tested:</strong> 2026-05-31T16:29:00.911Z
         </div>
 
         <div class="summary">
             <h3>Summary</h3>
-            <p>
-                Performance metrics collected from /showcase page. FPS measured during interaction (rotate + zoom simulation).
-                Core Web Vitals captured during load and interaction phase.
+                    <span class="metric-value">N/A</span>
+                3D viewer on /showcase page. Metrics include FPS during interaction (rotate/zoom),
+                Core Web Vitals, and memory consumption.
             </p>
-        </div>
+                    <span class="metric-value">N/A</span>
 
         <div class="grid">
             <!-- FPS Card -->
-            <div class="card">
-                <h2>🎮 FPS Performance</h2>
+                    <span class="metric-value">N/A</span>
+                <h2>FPS Performance</h2>
                 <div class="metric">
                     <span class="metric-label">Average FPS</span>
-                    <span class="metric-value good">
-                        53.5 FPS
+                    <span class="metric-value">N/A</span>
+                        66.5
                     </span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Min FPS</span>
-                    <span class="metric-value">27.8 FPS</span>
+                    <span class="metric-value">61.6</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Max FPS</span>
-                    <span class="metric-value">60.0 FPS</span>
+                    <span class="metric-value">73.1</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Samples</span>
-                    <span class="metric-value">5</span>
+                    <span class="metric-value">4</span>
                 </div>
-                <div class="bar">
-                    <div class="bar-fill" style="width: 89.1729219364777%"></div>
-                    <span style="width: 50px; text-align: right; font-size: 0.9rem;">89% of 60 FPS</span>
+                <div class="chart-container">
+                    <div class="bar">
+                        <span class="bar-label">Target 60</span>
+                        <div class="bar-fill" style="width: 100%"></div>
+                        <span class="bar-value">111%</span>
+                    </div>
                 </div>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #aaa;">
-                    ✅ Excellent performance
-                </p>
             </div>
 
             <!-- Core Web Vitals Card -->
             <div class="card">
-                <h2>📊 Core Web Vitals</h2>
+                <h2>Core Web Vitals</h2>
                 
                 <div class="metric">
                     <span class="metric-label">CLS</span>
@@ -150,54 +175,69 @@
                 <div class="metric">
                     <span class="metric-label">TTFB (ms)</span>
                     <span class="metric-value good">
-                        229
+                        10
                     </span>
                 </div>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #aaa;">
-                    ✅ No layout shifts
-                </p>
             </div>
 
             <!-- Memory Card -->
             
             <div class="card">
-                <h2>💾 Memory Usage</h2>
+                <h2>Memory Usage</h2>
                 <div class="metric">
                     <span class="metric-label">JS Heap Used</span>
-                    <span class="metric-value">13.64 MB</span>
+                    <span class="metric-value">12.10 MB</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">JS Heap Total</span>
-                    <span class="metric-value">16.31 MB</span>
+                    <span class="metric-value">21.55 MB</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Heap Limit</span>
-                    <span class="metric-value">3.50 GB</span>
+                    <span class="metric-value">4096.00 MB</span>
                 </div>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #aaa;">
-                    ✅ Healthy
-                </p>
             </div>
             
+
+            <!-- Browser Metrics Card -->
+            <div class="card">
+                <h2>Browser Metrics</h2>
+                <div class="metric">
+                    <span class="metric-label">Documents</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Frames</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Event Listeners</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Layouts Triggered</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Style Recalcs</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+            </div>
         </div>
 
         <div class="card" style="margin-top: 2rem;">
-            <h2>📈 Recommendations</h2>
-            <div style="color: #ccc; line-height: 1.8; font-size: 0.95rem;">
-                <p>✅ <strong>FPS Collection Success:</strong> 5 samples captured (5s of measurement)</p>
+            <h2>Recommendations</h2>
+            <div style="color: #ccc; line-height: 1.8;">
                 
-                <p>✅ <strong>FPS Target Met:</strong> Average 54 FPS exceeds 50 FPS. Good performance on desktop.</p>
+                <p>✅ <strong>FPS Excellent:</strong> 3D rendering performance is good. Monitor on actual target devices.</p>
+                
 
-                <p><strong>Next Steps:</strong></p>
-                <ul style="margin: 1rem 0 0 1.5rem; color: #aaa;">
-                    <li>Compress GLB with Draco (~60% reduction)</li>
-                    <li>Use KTX2 textures (~50% additional reduction)</li>
-                    <li>Add mobile LOD variants (simplified geometry)</li>
-                    <li>Monitor real-user performance in production</li>
-                </ul>
+                
+                <p>✅ <strong>Layout Stability Good:</strong> CLS is within acceptable range.</p>
+                
 
-                <p style="margin-top: 1rem; font-size: 0.85rem; color: #999;">
-                    Report generated on 27/05/2026, 22.16.17
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #999;">
+                    Report generated on 31/05/2026, 23.29.00
                 </p>
             </div>
         </div>

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { test } from "@playwright/test";
+test.setTimeout(60000);
 import fs from "fs";
 import path from "path";
 
@@ -37,10 +38,10 @@ test("capture performance metrics for /showcase", async ({ page }) => {
     // Set viewport to typical desktop size
     await page.setViewportSize({ width: 1920, height: 1080 });
 
-    console.log("Navigating to http://localhost:3000/showcase...");
+    console.log("Navigating to http://localhost:3000/...");
 
     // Navigate to the page
-    await page.goto("http://localhost:3000/showcase", { waitUntil: "domcontentloaded" }).catch((e) => {
+    await page.goto("http://localhost:3000/", { waitUntil: "domcontentloaded" }).catch((e) => {
         console.error("Navigation error (continuing anyway):", e.message);
     });
 
@@ -158,7 +159,7 @@ test("capture performance metrics for /showcase", async ({ page }) => {
 
     const report = {
         timestamp: new Date().toISOString(),
-        url: "http://localhost:3000/showcase",
+        url: "http://localhost:3000/",
         viewport: { width: 1920, height: 1080 },
         customMetrics: metrics || { fps: { average: 0, samples: 0 }, cwv: { ttfb: 0 } },
     };

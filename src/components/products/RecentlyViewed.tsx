@@ -28,8 +28,8 @@ export function useRecentlyViewed(currentSlug?: string) {
                 }
 
                 setRecentSlugs(slugs);
-            } catch (e) {
-                console.error("Failed to parse recentlyViewed from localStorage", e);
+            } catch {
+                console.error("Failed to parse recentlyViewed from localStorage");
             }
         };
 

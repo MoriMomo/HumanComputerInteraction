@@ -19,7 +19,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         try {
             const stored = localStorage.getItem("satset_currency");
             return (stored as Currency) || "IDR";
-        } catch (e) {
+        } catch {
             return "IDR";
         }
     });
@@ -32,7 +32,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         try {
             localStorage.setItem("satset_currency", currency);
-        } catch (e) {
+        } catch {
             // noop
         }
     }, [currency]);
