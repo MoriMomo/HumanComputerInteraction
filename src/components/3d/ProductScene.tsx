@@ -253,6 +253,32 @@ export default function ProductScene({
 
     const resolvedColor = useResolvedColor(color);
     const selectedRef = useRef<THREE.Object3D | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const handleWheel = (e: WheelEvent) => {
+            // Prevent default page scroll when zooming model
+            e.preventDefault();
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            // Prevent page scroll during two-finger scaling/pinch zoom
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        };
+
+        el.addEventListener("wheel", handleWheel, { passive: false });
+        el.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+        return () => {
+            el.removeEventListener("wheel", handleWheel);
+            el.removeEventListener("touchmove", handleTouchMove);
+        };
+    }, []);
 
     const resolvedModelSrc = useMemo(() => {
         if (!modelSrc) return undefined;
@@ -368,9 +394,8 @@ export default function ProductScene({
 
     return (
         <div
+            ref={containerRef}
             className="w-full h-full touch-none overscroll-contain"
-            onWheel={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
         >
             <Canvas
                 camera={{ position: camera ?? [1.2, 0.9, 2.4], fov: 45 }}

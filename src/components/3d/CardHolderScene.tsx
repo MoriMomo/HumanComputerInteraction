@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useRef, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import CardHolderModel from "./CardHolderModel";
@@ -18,11 +18,38 @@ export default function CardHolderScene({
     renderMode = "normal",
     modelSrc,
 }: CardHolderSceneProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const handleWheel = (e: WheelEvent) => {
+            // Prevent default page scroll when zooming model
+            e.preventDefault();
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            // Prevent page scroll during two-finger scaling/pinch zoom
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        };
+
+        el.addEventListener("wheel", handleWheel, { passive: false });
+        el.addEventListener("touchmove", handleTouchMove, { passive: false });
+
+        return () => {
+            el.removeEventListener("wheel", handleWheel);
+            el.removeEventListener("touchmove", handleTouchMove);
+        };
+    }, []);
+
     // Avoid server-side rendering of WebGL canvas by returning null on server
     if (typeof window === "undefined") return null;
 
     return (
-        <div className="w-full h-full">
+        <div ref={containerRef} className="w-full h-full touch-none overscroll-contain">
             <Canvas
                 camera={{ position: [0, 0, 5], fov: 50 }}
                 dpr={[1, 1.5]}
