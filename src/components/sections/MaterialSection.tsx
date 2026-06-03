@@ -37,6 +37,15 @@ const RENDER_MODES = [
     { id: "wireframe", label: "Wireframe", icon: "dashboard" },
 ];
 
+const PRODUCT_MODELS = [
+    { id: "cube", label: "Studio Cube", modelSrc: "" },
+    { id: "ridge_wallet", label: "Ridge Wallet", modelSrc: "/otherProducs/the_ridge_wallet.glb" },
+    { id: "plastic_card_holder", label: "Plastic Card Holder", modelSrc: "/otherProducs/plastic_card_holder.glb" },
+    { id: "old_wallet", label: "Old Wallet", modelSrc: "/otherProducs/old_wallet.glb" },
+    { id: "office_chair", label: "Office Chair", modelSrc: "/otherProducs/office_chair.glb" },
+    { id: "mouse_pad", label: "Keyboard & Mouse Pad", modelSrc: "/otherProducs/mouse_pad_keyboard_pad.glb" },
+];
+
 interface MaterialSectionProps {
     activeColor?: string;
     onColorChange?: (hex: string) => void;
@@ -50,6 +59,7 @@ export default function MaterialSection({
 }: MaterialSectionProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
+    const [selectedModel, setSelectedModel] = useState<string>("");
     const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
 
     useGSAP(
@@ -141,6 +151,25 @@ export default function MaterialSection({
                             </div>
                         </div>
 
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <h3 className="text-stone-900 font-semibold mb-3">Select Model</h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {PRODUCT_MODELS.map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setSelectedModel(item.modelSrc)}
+                                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                                            selectedModel === item.modelSrc
+                                                ? "bg-stone-900 border-stone-900 text-white shadow-sm"
+                                                : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                                        }`}
+                                    >
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         <div className="flex gap-3">
                             <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors">
                                 Customize
@@ -158,6 +187,7 @@ export default function MaterialSection({
                                 color={activeColor}
                                 enableZoom={true}
                                 renderMode={renderMode}
+                                modelSrc={selectedModel || undefined}
                             />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center text-stone-500">
