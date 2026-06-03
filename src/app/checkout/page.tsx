@@ -5,11 +5,13 @@ import Footer from "@/components/layout/Footer";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 const SHIPPING_ESTIMATE = 12;
 
 export default function CheckoutPage() {
     const { items, itemCount, subtotal } = useCart();
+    const { format } = useCurrency();
     const shipping = itemCount > 0 ? SHIPPING_ESTIMATE : 0;
     const total = subtotal + shipping;
 
@@ -18,7 +20,7 @@ export default function CheckoutPage() {
         .join("\n");
 
     const whatsappUrl = getWhatsAppUrl(
-        `Hi SatSet, I want to place an order.\n\nItems:\n${orderSummary || "No items"}\n\nSubtotal: $${subtotal.toFixed(2)}\nShipping: $${shipping.toFixed(2)}\nTotal: $${total.toFixed(2)}`
+        `Hi SatSet, I want to place an order.\n\nItems:\n${orderSummary || "No items"}\n\nSubtotal: ${format(subtotal)}\nShipping: ${format(shipping)}\nTotal: ${format(total)}`
     );
 
     return (
@@ -79,7 +81,7 @@ export default function CheckoutPage() {
                                         items.map((item) => (
                                             <div key={`${item.slug}-${item.color ?? "default"}`} className="flex items-center justify-between gap-4 border-b border-white/8 pb-3 last:border-0 last:pb-0">
                                                 <span>{item.name} × {item.quantity}</span>
-                                                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                                                <span>{format(item.price * item.quantity)}</span>
                                             </div>
                                         ))
                                     ) : (
@@ -94,16 +96,16 @@ export default function CheckoutPage() {
                             <div className="mt-5 space-y-3 border-b border-white/10 pb-5 text-sm text-white/72">
                                 <div className="flex items-center justify-between">
                                     <span>Items ({itemCount})</span>
-                                    <span>${subtotal.toFixed(2)}</span>
+                                    <span>{format(subtotal)}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span>Shipping</span>
-                                    <span>${shipping.toFixed(2)}</span>
+                                    <span>{format(shipping)}</span>
                                 </div>
                             </div>
                             <div className="mt-5 flex items-center justify-between text-lg font-semibold text-white">
                                 <span>Grand total</span>
-                                <span>${total.toFixed(2)}</span>
+                                <span>{format(total)}</span>
                             </div>
 
                             {whatsappUrl ? (

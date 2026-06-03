@@ -47,6 +47,8 @@ export default function ProductDetailPage() {
     const fillerRef = useRef<HTMLDivElement | null>(null);
     const product = PRODUCT_MAP.get(slug) ?? PRODUCTS[0];
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+    const [selected3D, setSelected3D] = useState<string | null>(null);
+    const [selected3DColor, setSelected3DColor] = useState<string | null>(null);
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();
     const { format, currency, rate } = useCurrency();
@@ -158,11 +160,56 @@ export default function ProductDetailPage() {
                             </LoadingLink>
 
                             <div ref={leftRef} className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
-                                <Product3DViewer
-                                    product={product}
-                                    color={selectedColor}
-                                    className="min-h-120 p-0"
-                                />
+                                <div className="relative">
+                                    <Product3DViewer
+                                        product={product}
+                                        color={selectedColor}
+                                        className="min-h-120 p-0"
+                                        onSelect={(name) => {
+                                            setSelected3D(name);
+                                            const m = name.match(/#?([0-9A-Fa-f]{6})/);
+                                            setSelected3DColor(m ? `#${m[1]}` : null);
+                                            // auto-clear badge after a few seconds
+                                            window.setTimeout(() => setSelected3D(null), 5000);
+                                        }}
+                                    />
+
+                                    {/* Selected-state badge */}
+                                    {selected3D && (
+                                        <div data-testid="product-3d-selected-badge" className="absolute top-4 right-4 z-50 pointer-events-auto">
+                                            <div className="flex items-center gap-3 rounded-full border border-white/12 bg-black/60 px-3 py-2 text-xs text-white">
+                                                <div className="text-xs font-semibold">Selected:</div>
+                                                <div className="max-w-[9rem] truncate font-medium">{selected3D}</div>
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (selected3DColor) setSelectedColor(selected3DColor);
+                                                        }}
+                                                        disabled={!selected3DColor}
+                                                        className={`rounded-full border px-3 py-1 text-[11px] transition-colors ${selected3DColor ? 'bg-white/8 border-white/16 text-white' : 'bg-transparent border-white/8 text-white/40'}`}
+                                                    >
+                                                        Use as color
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            // add item with the current selected color (prefers 3D-derived color if available)
+                                                            const colorToUse = selected3DColor ?? selectedColor;
+                                                            trackEvent("add_to_cart_from_3d", { slug: product.slug, color: colorToUse });
+                                                            addItem({ slug: product.slug, color: colorToUse });
+                                                            setAddedToCart(true);
+                                                            setTimeout(() => setAddedToCart(false), 2500);
+                                                        }}
+                                                        className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-brand-dark"
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
 
                                 <div className="mt-4">
                                     <div

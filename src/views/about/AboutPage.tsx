@@ -13,21 +13,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const TEAM = [
     {
-        name: "Aditya Putra",
-        role: "Founder & Designer",
-        bio: "Industrial designer with 12 years in premium goods. Former Braun and Leatherman design lead.",
-    },
-    {
-        name: "Sari Wijaya",
-        role: "Head of Engineering",
-        bio: "Materials engineer specialising in aluminium alloys and surface treatment processes.",
-    },
-    {
-        name: "Reza Maulana",
-        role: "Operations",
-        bio: "Supply chain specialist ensuring every unit meets our zero-compromise quality standard.",
-    },
-    {
         name: "Aqsha Rahman",
         role: "Product Engineer",
         bio: "Mechanical engineer focused on tolerance and assembly processes.",

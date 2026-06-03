@@ -17,10 +17,11 @@ const ProductScene = dynamic(() => import("@/components/3d/ProductScene"), {
 interface Product3DViewerProps {
     product: Product;
     color: string;
+    onSelect?: (objectName: string, raw?: unknown) => void;
     className?: string;
 }
 
-export default function Product3DViewer({ product, color, className = "" }: Product3DViewerProps) {
+export default function Product3DViewer({ product, color, onSelect, className = "" }: Product3DViewerProps) {
     const scene3d = product.scene3d;
     const galleryItems = PRODUCT_PAGE_GALLERY.filter((asset) => asset.slugs?.includes(product.slug)).slice(0, 2);
 
@@ -56,6 +57,11 @@ export default function Product3DViewer({ product, color, className = "" }: Prod
                     position={scene3d.position}
                     rotation={scene3d.rotation}
                     modelSrc={scene3d.modelSrc}
+                    onSelect={({ object }) => {
+                        const name = object.name || object.parent?.name || "unnamed object";
+                        onSelect?.(name, object);
+                    }}
+                    testAutoSelect={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('testSelect') === '1'}
                 />
             </div>
 

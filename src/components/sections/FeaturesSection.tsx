@@ -296,7 +296,7 @@ function FeaturesSection() {
             className="relative py-40 md:py-52 bg-[#20140f] overflow-hidden"
             aria-labelledby="features-heading"
         >
-            <GridMap spacing={120} opacity={0.03} color="rgba(255,255,255,0.03)" />
+            <GridMap variant="squares" spacing={80} opacity={0.06} color="rgba(255,255,255,0.045)" />
             {/* Top border */}
             <div
                 aria-hidden

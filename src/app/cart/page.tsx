@@ -6,15 +6,17 @@ import SmartImage from "@/components/ui/SmartImage";
 import LoadingLink from "@/components/ui/LoadingLink";
 import { useCart } from "@/contexts/CartProvider";
 import { getWhatsAppUrl } from "@/lib/whatsapp";
+import { useCurrency } from "@/contexts/CurrencyProvider";
 
 const SHIPPING_ESTIMATE = 12;
 
 export default function CartPage() {
     const { items, itemCount, subtotal, updateQuantity, removeItem, clearCart } = useCart();
+    const { format } = useCurrency();
     const shipping = itemCount > 0 ? SHIPPING_ESTIMATE : 0;
     const total = subtotal + shipping;
     const whatsappUrl = getWhatsAppUrl(
-        `Hi SatSet, I need help with my cart.\nItems: ${itemCount}\nSubtotal: $${subtotal.toFixed(2)}\nTotal: $${total.toFixed(2)}`
+        `Hi SatSet, I need help with my cart.\nItems: ${itemCount}\nSubtotal: ${format(subtotal)}\nTotal: ${format(total)}`
     );
 
     return (
@@ -73,7 +75,7 @@ export default function CartPage() {
                                                 {item.color && (
                                                     <p className="mt-1 text-xs uppercase tracking-[0.22em] text-white/45">Finish: {item.color.replace("#", "")}</p>
                                                 )}
-                                                <p className="mt-3 text-sm text-white/70">${item.price.toFixed(2)} each</p>
+                                                <p className="mt-3 text-sm text-white/70">{format(item.price)} each</p>
                                             </div>
 
                                             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -98,7 +100,7 @@ export default function CartPage() {
                                                 </div>
 
                                                 <div className="flex items-center gap-4">
-                                                    <p className="text-sm font-semibold text-white">${(item.price * item.quantity).toFixed(2)}</p>
+                                                    <p className="text-sm font-semibold text-white">{format(item.price * item.quantity)}</p>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeItem(item.slug, item.color)}
@@ -118,16 +120,16 @@ export default function CartPage() {
                                 <div className="mt-6 space-y-3 border-b border-white/10 pb-6 text-sm text-white/70">
                                     <div className="flex items-center justify-between">
                                         <span>Items ({itemCount})</span>
-                                        <span>${subtotal.toFixed(2)}</span>
+                                        <span>{format(subtotal)}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span>Estimated shipping</span>
-                                        <span>${shipping.toFixed(2)}</span>
+                                        <span>{format(shipping)}</span>
                                     </div>
                                 </div>
                                 <div className="mt-6 flex items-center justify-between text-lg font-semibold text-white">
                                     <span>Total</span>
-                                    <span>${total.toFixed(2)}</span>
+                                    <span>{format(total)}</span>
                                 </div>
 
                                 <LoadingLink

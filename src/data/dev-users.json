@@ -16,5 +16,11 @@
     "name": "werewrre",
     "email": "kentaronareswara@gmail.com",
     "passwordHash": "$2b$12$VFbnD2VyMIHpHjjdtMSyzOIh9ZpU8tO7zl.sz4YsRh1EMNXd4N9my"
+  },
+  {
+    "id": "dev-john-demo",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "passwordHash": "$2b$12$h2rapOkNewcS3giXMNTEjeaHxa0C9m5N8aZcuQi0xZ6E1kdyCYZ/C"
   }
 ]
