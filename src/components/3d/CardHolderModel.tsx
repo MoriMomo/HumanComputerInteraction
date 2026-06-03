@@ -20,10 +20,16 @@ interface LoadedModelProps {
 function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
     const gltf = useGLTF(modelSrc);
 
+    // 1. Scale and center the model once when the GLB model itself loads (idempotently)
     useEffect(() => {
         if (!gltf.scene) return;
 
-        // Auto-scale and center the loaded model
+        // Reset transforms so measurement is accurate
+        gltf.scene.position.set(0, 0, 0);
+        gltf.scene.scale.set(1, 1, 1);
+        gltf.scene.rotation.set(0, 0, 0);
+
+        // Compute original bounding box
         const box = new THREE.Box3().setFromObject(gltf.scene);
         const size = new THREE.Vector3();
         box.getSize(size);
@@ -36,8 +42,12 @@ function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
 
         gltf.scene.position.set(-center.x * scaleFactor, -center.y * scaleFactor, -center.z * scaleFactor);
         gltf.scene.scale.set(scaleFactor, scaleFactor, scaleFactor);
+    }, [gltf.scene]);
 
-        // Apply colors and render mode overrides
+    // 2. Override materials and colors whenever they change
+    useEffect(() => {
+        if (!gltf.scene) return;
+
         gltf.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
                 const mesh = child as THREE.Mesh;
@@ -85,7 +95,7 @@ function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
                 mesh.material = overrideMat;
             }
         });
-    }, [gltf, color, renderMode]);
+    }, [gltf.scene, color, renderMode]);
 
     return <primitive object={gltf.scene} />;
 }
