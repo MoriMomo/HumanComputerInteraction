@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from 'next/dynamic';
+import { useCart } from "@/contexts/CartProvider";
 
 // Lazy load the 3D scene
 const CardHolderScene = dynamic(
@@ -62,6 +63,14 @@ export default function MaterialSection({
     const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
     const [selectedModel, setSelectedModel] = useState<string>("");
     const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
+    const { addItem } = useCart();
+    const [addedToCart, setAddedToCart] = useState(false);
+
+    const handleAddToCart = () => {
+        addItem({ slug: "cardholder-pro", color: activeColor });
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
 
     useGSAP(
         () => {
@@ -137,18 +146,19 @@ export default function MaterialSection({
 
                     {/* Left Controls */}
                     <div className="material-controls space-y-4">
-                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-stone-900 font-semibold mb-3">Controls</h3>
-                            <p className="text-stone-600 text-sm leading-relaxed">
-                                Drag to rotate • Scroll to zoom • Right-click to pan
-                            </p>
-                        </div>
-
-                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
-                            <h3 className="text-stone-900 font-semibold mb-3">Performance</h3>
-                            <div className="flex items-center gap-2 text-stone-600 text-sm">
-                                <span className="w-2 h-2 rounded-full bg-green-500" />
-                                Optimized • 60 FPS
+                        <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm space-y-3">
+                            <div>
+                                <h3 className="text-stone-900 text-sm font-semibold mb-1">Controls</h3>
+                                <p className="text-stone-600 text-xs leading-relaxed">
+                                    Drag to rotate • Scroll to zoom • Right-click to pan
+                                </p>
+                            </div>
+                            <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
+                                <span className="font-semibold">Performance:</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                                    Optimized • 60 FPS
+                                </div>
                             </div>
                         </div>
 
@@ -159,7 +169,7 @@ export default function MaterialSection({
                                     <button
                                         key={item.id}
                                         onClick={() => setSelectedModel(item.modelSrc)}
-                                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                                             selectedModel === item.modelSrc
                                                 ? "bg-stone-900 border-stone-900 text-white shadow-sm"
                                                 : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
@@ -172,11 +182,15 @@ export default function MaterialSection({
                         </div>
 
                         <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors">
+                            <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors cursor-pointer">
                                 Customize
                             </button>
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors">
-                                Add to Cart
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={addedToCart}
+                                className="flex-1 px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors disabled:opacity-60 cursor-pointer"
+                            >
+                                {addedToCart ? "Added ✓" : "Add to Cart"}
                             </button>
                         </div>
                     </div>

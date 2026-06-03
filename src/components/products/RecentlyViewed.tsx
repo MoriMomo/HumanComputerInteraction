@@ -64,16 +64,16 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
     return (
         <section className="mx-auto max-w-7xl px-6 py-16 md:px-12 lg:px-20">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">Your History</p>
-            <h2 className="mt-4 font-serif text-3xl font-bold tracking-tight md:text-4xl">Recently Viewed.</h2>
+            <h2 className="mt-4 font-serif text-3xl font-bold tracking-tight md:text-4xl text-[#231711]">Recently Viewed.</h2>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {recentProducts.map((product) => (
                     <LoadingLink
                         key={product.slug}
                         href={`/products/${product.slug}`}
-                        className="group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition-colors hover:border-white/20 hover:bg-white/8"
+                        className="group flex flex-col overflow-hidden rounded-3xl border border-stone-200 bg-stone-50 transition-colors hover:border-stone-300 hover:bg-stone-100/50"
                     >
-                        <div className="relative aspect-square w-full bg-brand-dark p-6 flex items-center justify-center">
+                        <div className="relative aspect-square w-full bg-stone-100 p-6 flex items-center justify-center">
                             {product.image?.src ? (
                                 <SmartImage
                                     src={product.image.src}
@@ -84,9 +84,9 @@ export default function RecentlyViewed({ currentSlug }: RecentlyViewedProps) {
                                 />
                             ) : null}
                         </div>
-                        <div className="p-5">
-                            <p className="text-sm font-semibold text-white">{product.name}</p>
-                            <p className="mt-1 text-xs text-white/56">{format(product.price)}</p>
+                        <div className="p-5 bg-white border-t border-stone-100">
+                            <p className="text-sm font-semibold text-stone-900">{product.name}</p>
+                            <p className="mt-1 text-xs text-stone-500">{format(product.price)}</p>
                         </div>
                     </LoadingLink>
                 ))}

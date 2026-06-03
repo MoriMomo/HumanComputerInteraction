@@ -47,7 +47,7 @@ export default function SignupPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-brand-dark text-white">
+            <main className="min-h-screen pt-20 bg-brand-dark text-white">
                 <div className="grid min-h-screen lg:grid-cols-2">
                     <section className="flex items-center bg-brand-cream px-6 py-8 text-brand-dark sm:px-8 sm:py-10 lg:px-14 lg:py-12">
                         <div className="mx-auto w-full max-w-sm sm:max-w-md">

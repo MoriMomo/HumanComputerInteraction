@@ -207,7 +207,7 @@ export default function HeroSection({
                         <p className="hero-kicker text-base md:text-lg uppercase tracking-[0.24em] text-[#231711]/78 mt-4">
                             Premium Card Holder. Engineered.
                         </p>
-                        <div className="mt-8">
+                        <div className="mt-8 relative z-30 pointer-events-auto">
                             <HeroActions />
                         </div>
                     </div>

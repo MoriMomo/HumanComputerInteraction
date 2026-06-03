@@ -51,7 +51,7 @@ export const PRODUCTS: Product[] = [
         features: ["RFID Shielding", "18g Weight", "8-Card Capacity", "Anodised Finish"],
         scene3d: {
             variant: "cardholder",
-            modelSrc: "/satset3d/glb/bener-optimized.glb",
+            modelSrc: "/satset3d/glb/bener-final-optimized.glb",
             color: "var(--color-brand-primary)",
             renderMode: "normal",
             enableZoom: true,
@@ -76,7 +76,7 @@ export const PRODUCTS: Product[] = [
         features: ["Cash Strap", "Modular Rails", "6061-T6 Aluminium", "Lifetime Warranty"],
         scene3d: {
             variant: "wallet",
-            modelSrc: "/satset3d/glb/bener-optimized.glb",
+            modelSrc: "/satset3d/glb/bener-final-optimized.glb",
             color: "var(--color-brand-darker)",
             renderMode: "normal",
             enableZoom: true,

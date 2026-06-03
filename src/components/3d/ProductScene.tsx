@@ -282,13 +282,11 @@ export default function ProductScene({
 
     const resolvedModelSrc = useMemo(() => {
         if (!modelSrc) return undefined;
-        if (gpuTier === "low" || gpuTier === "mid") {
-            if (modelSrc.includes("bener-optimized.glb") || modelSrc.includes("bener.glb")) {
-                return "/satset3d/glb/bener-final-optimized.glb";
-            }
+        if (modelSrc.includes("bener-optimized.glb") || modelSrc.includes("bener.glb")) {
+            return "/satset3d/glb/bener-final-optimized.glb";
         }
         return modelSrc;
-    }, [modelSrc, gpuTier]);
+    }, [modelSrc]);
 
     const dpr = useMemo(() => {
         if (gpuTier === "low") return 1;

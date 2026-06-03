@@ -57,13 +57,6 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
-        <link
-          rel="preload"
-          href="/satset3d/glb/bener-final-optimized.glb"
-          as="fetch"
-          type="model/gltf-binary"
-          crossOrigin="anonymous"
-        />
       </head>
       <body
         suppressHydrationWarning
@@ -97,9 +90,9 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         {/* Persistent micro-CTA to anchor navigation flow */}
-        <div className="fixed bottom-4 left-0 right-0 flex justify-center pointer-events-none z-40">
-          <div className="pointer-events-auto rounded-full bg-slate-900/85 text-white px-4 py-2 shadow-lg">
-            <Link href="/products" className="font-semibold">Shop Collections</Link>
+        <div className="fixed bottom-6 left-6 pointer-events-none z-40">
+          <div className="pointer-events-auto rounded-full bg-slate-900/85 text-white px-4 py-2.5 shadow-lg hover:bg-slate-900 transition-all duration-300">
+            <Link href="/products" className="font-semibold text-xs uppercase tracking-wider">Shop Collections</Link>
           </div>
         </div>
       </body>

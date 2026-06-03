@@ -9,6 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useCart } from "@/contexts/CartProvider";
 import { useCurrency } from "@/contexts/CurrencyProvider";
 import GridMap from "@/components/ui/GridMap";
+import LoadingLink from "@/components/ui/LoadingLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -93,8 +94,7 @@ const PRODUCT_PREVIEW_IMAGES: Record<string, string> = {
 function ShopSection() {
     const { format } = useCurrency();
     const sectionRef = useRef<HTMLElement>(null);
-    const [cart, setCart] = useState<Record<string, number>>({});
-    const { addItem } = useCart();
+    const { items, addItem, updateQuantity } = useCart();
 
     useGSAP(
         () => {
@@ -156,16 +156,24 @@ function ShopSection() {
         { scope: sectionRef }
     );
 
-    const addToCart = (id: string) => {
-        const mappedSlug = PRODUCT_ID_TO_SLUG[id];
-        if (mappedSlug) {
-            addItem({ slug: mappedSlug });
-        }
+    const getQtyInCart = (id: string) => {
+        const slug = PRODUCT_ID_TO_SLUG[id];
+        const item = items.find((i) => i.slug === slug);
+        return item ? item.quantity : 0;
+    };
 
-        setCart((prev) => ({
-            ...prev,
-            [id]: (prev[id] || 0) + 1,
-        }));
+    const handleUpdateQty = (id: string, qty: number) => {
+        const slug = PRODUCT_ID_TO_SLUG[id];
+        if (slug) {
+            updateQuantity(slug, qty);
+        }
+    };
+
+    const addToCart = (id: string) => {
+        const slug = PRODUCT_ID_TO_SLUG[id];
+        if (slug) {
+            addItem({ slug });
+        }
     };
 
     return (
@@ -194,9 +202,10 @@ function ShopSection() {
                 {/* Product cards */}
                 <div className="shop-grid grid grid-cols-1 gap-8 md:grid-cols-3">
                     {products.map((product) => {
-                        const inCart = cart[product.id] || 0;
+                        const inCart = getQtyInCart(product.id);
                         const isPopular = product.badge === "Most Popular";
                         const productImageSrc = PRODUCT_PREVIEW_IMAGES[product.id] ?? "/productIImg/download-1.png";
+                        const mappedSlug = PRODUCT_ID_TO_SLUG[product.id];
 
                         return (
                             <div
@@ -206,95 +215,112 @@ function ShopSection() {
                                     : "border-black/5"
                                     }`}
                             >
-                                {/* Badge */}
-                                {product.badge && (
-                                    <div
-                                        className={`absolute right-5 top-5 z-10 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${isPopular
-                                            ? "bg-brand-primary text-white"
-                                            : "bg-black/5 text-[#231711]/60"
-                                            }`}
-                                    >
-                                        {product.badge}
-                                    </div>
-                                )}
+                                <LoadingLink href={`/products/${mappedSlug}`} className="block flex-1">
+                                    {/* Badge */}
+                                    {product.badge && (
+                                        <div
+                                            className={`absolute right-5 top-5 z-10 rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest ${isPopular
+                                                ? "bg-brand-primary text-white"
+                                                : "bg-black/5 text-[#231711]/60"
+                                                }`}
+                                        >
+                                            {product.badge}
+                                        </div>
+                                    )}
 
-                                {/* Product render preview (now full-bleed image) */}
-                                <div className="relative h-48 w-full overflow-hidden bg-black/3">
-                                    <Image
-                                        src={productImageSrc}
-                                        alt={`${product.name} render`}
-                                        fill
-                                        priority={false}
-                                        sizes="(max-width: 768px) 100vw, 33vw"
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />
-                                </div>
-
-                                {/* Content */}
-                                <div className="flex flex-1 flex-col gap-6 p-7">
-                                    <div>
-                                        <p className="mb-1 text-sm font-medium uppercase tracking-widest text-[#231711]/60">
-                                            {product.colorLabel} · {product.capacity}
-                                        </p>
-                                        <h3 className="text-2xl font-semibold text-[#231711] group-hover:text-primary/90 transition-colors">
-                                            {product.name}
-                                        </h3>
+                                    {/* Product render preview (now full-bleed image) */}
+                                    <div className="relative h-48 w-full overflow-hidden bg-black/3">
+                                        <Image
+                                            src={productImageSrc}
+                                            alt={`${product.name} render`}
+                                            fill
+                                            priority={false}
+                                            sizes="(max-width: 768px) 100vw, 33vw"
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div aria-hidden className={`pointer-events-none absolute inset-0 opacity-6 ${product.glowClass}`} />
                                     </div>
 
-                                    {/* Price */}
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-3xl font-semibold text-[#231711]">
-                                            {format(product.price)}
-                                        </span>
+                                    {/* Content */}
+                                    <div className="flex flex-col gap-6 p-7 pb-2">
+                                        <div>
+                                            <p className="mb-1 text-sm font-medium uppercase tracking-widest text-[#231711]/60">
+                                                {product.colorLabel} · {product.capacity}
+                                            </p>
+                                            <h3 className="text-2xl font-semibold text-[#231711] group-hover:text-primary/90 transition-colors">
+                                                {product.name}
+                                            </h3>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-3xl font-semibold text-[#231711]">
+                                                {format(product.price)}
+                                            </span>
+                                        </div>
+
+                                        {/* Feature list */}
+                                        <ul className="flex flex-col gap-2.5">
+                                            {product.features.map((f) => (
+                                                <li key={f} className="flex items-center gap-3 text-base font-medium text-[#231711]/95">
+                                                    <svg className="h-5 w-5 shrink-0 text-[#231711]/90" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    {f}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
+                                </LoadingLink>
 
-                                    {/* Feature list */}
-                                    <ul className="flex flex-1 flex-col gap-2.5">
-                                        {product.features.map((f) => (
-                                            <li key={f} className="flex items-center gap-3 text-base font-medium text-[#231711]/95">
-                                                <svg className="h-5 w-5 shrink-0 text-[#231711]/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    {/* CTA */}
-                                    <button
-                                        onClick={() => addToCart(product.id)}
-                                        className={`group/btn mt-2 h-12 w-full rounded-full text-base font-semibold tracking-wide transition-all duration-300 relative overflow-hidden ${isPopular
-                                            ? "bg-white text-[#111111] hover:bg-white/95"
-                                            : "bg-black/5 text-[#231711] border border-black/10 hover:bg-black/10"
-                                            }`}
-                                    >
-                                        <span className="relative z-10 flex items-center justify-center gap-2">
-                                            <svg
-                                                className="h-5 w-5 transition-transform group-hover/btn:scale-110"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
+                                {/* Button Container */}
+                                <div className="p-7 pt-0 mt-auto">
+                                    {inCart > 0 ? (
+                                        <div className="mt-2 flex h-12 w-full items-center justify-between rounded-full border border-stone-200 bg-stone-50 px-2 shadow-inner">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUpdateQty(product.id, inCart - 1)}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full text-stone-600 hover:bg-stone-200 hover:text-stone-900 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+                                                aria-label="Decrease quantity"
                                             >
-                                                {inCart > 0 ? (
+                                                <span className="text-xl font-bold leading-none">-</span>
+                                            </button>
+                                            <span className="text-sm font-semibold text-[#231711] select-none">In Cart ({inCart})</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleUpdateQty(product.id, inCart + 1)}
+                                                className="flex h-8 w-8 items-center justify-center rounded-full text-stone-600 hover:bg-stone-200 hover:text-stone-900 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+                                                aria-label="Increase quantity"
+                                            >
+                                                <span className="text-xl font-bold leading-none">+</span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => addToCart(product.id)}
+                                            className={`group/btn mt-2 h-12 w-full rounded-full text-base font-semibold tracking-wide transition-all duration-300 relative overflow-hidden cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:shadow-md ${isPopular
+                                                ? "bg-stone-900 text-white hover:bg-stone-850"
+                                                : "bg-stone-100 text-[#231711] border border-stone-200/80 hover:bg-stone-900 hover:text-white hover:border-stone-900"
+                                                }`}
+                                        >
+                                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                                <svg
+                                                    className="h-5 w-5 transition-transform group-hover/btn:scale-110"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={2}
+                                                >
                                                     <path
                                                         strokeLinecap="round"
                                                         strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M5 13l4 4L19 7"
-                                                    />
-                                                ) : (
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
                                                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                                                     />
-                                                )}
-                                            </svg>
-                                            {inCart > 0 ? `In Cart (${inCart})` : product.cta}
-                                        </span>
-                                    </button>
+                                                </svg>
+                                                {product.cta}
+                                            </span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );

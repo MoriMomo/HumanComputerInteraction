@@ -41,7 +41,7 @@ export default function LoginPage() {
     return (
         <>
             <Navbar />
-            <main className="min-h-screen bg-brand-dark text-white">
+            <main className="min-h-screen pt-20 bg-brand-dark text-white">
                 <div className="grid min-h-screen lg:grid-cols-2">
                     <section className="hidden relative items-end overflow-hidden bg-brand-dark px-6 py-10 sm:px-10 lg:px-14 lg:py-12 lg:flex">
                         <SeamlessLoopVideo src="/video/login.mp4" />
