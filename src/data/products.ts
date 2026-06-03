@@ -62,7 +62,7 @@ export const PRODUCTS: Product[] = [
             camera: [1.1, 0.6, 1.9],
         },
         image: {
-            src: "/productIImg/download-1.png",
+            src: "/productIImg/image.png",
             alt: "CardHolder Pro in studio lighting",
             sizes: "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 32vw",
         },

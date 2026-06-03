@@ -85,7 +85,7 @@ const PRODUCT_ID_TO_SLUG: Record<string, string> = {
 };
 
 const PRODUCT_PREVIEW_IMAGES: Record<string, string> = {
-    standard: "/productIImg/download-1.png",
+    standard: "/productIImg/image.png",
     pro: "/productIImg/download-2.png",
     executive: "/productIImg/download-3.png",
 };

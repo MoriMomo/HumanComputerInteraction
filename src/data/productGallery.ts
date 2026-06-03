@@ -1,5 +1,5 @@
 export const PRODUCT_PAGE_GALLERY = [
-    { src: "/productIImg/download-1.png", alt: "Leather carry case", slugs: ["cardholder-pro"] },
+    { src: "/productIImg/image.png", alt: "Leather carry case", slugs: ["cardholder-pro"] },
     { src: "/productIImg/download-2.png", alt: "Dual wallet set", slugs: ["wallet-elite"] },
     { src: "/productIImg/download-3.png", alt: "Desk organizer tray", slugs: ["desk-organizer"] },
     { src: "/productIImg/Adjustable_LED_desk_lamp_control_202605202209.jpeg", alt: "Adjustable desk lamp", slugs: ["lamp-arc"] },
