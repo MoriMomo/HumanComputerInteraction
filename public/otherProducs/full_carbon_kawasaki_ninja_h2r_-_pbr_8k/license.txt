@@ -1,0 +1,11 @@
+Model Information:
+* title:	FULL CARBON Kawasaki Ninja H2R - PBR, 8K
+* source:	https://sketchfab.com/3d-models/full-carbon-kawasaki-ninja-h2r-pbr-8k-7546dbe04bfe4f0dacce4351460aaadc
+* author:	theguyfran (https://sketchfab.com/theguyfran)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "FULL CARBON Kawasaki Ninja H2R - PBR, 8K" (https://sketchfab.com/3d-models/full-carbon-kawasaki-ninja-h2r-pbr-8k-7546dbe04bfe4f0dacce4351460aaadc) by theguyfran (https://sketchfab.com/theguyfran) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

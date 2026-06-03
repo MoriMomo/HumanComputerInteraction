@@ -44,6 +44,7 @@ const PRODUCT_MODELS = [
     { id: "old_wallet", label: "Old Wallet", modelSrc: "/otherProducs/old_wallet.glb" },
     { id: "office_chair", label: "Office Chair", modelSrc: "/otherProducs/office_chair.glb" },
     { id: "mouse_pad", label: "Keyboard & Mouse Pad", modelSrc: "/otherProducs/mouse_pad_keyboard_pad.glb" },
+    { id: "kawasaki_h2r", label: "Kawasaki H2R", modelSrc: "/otherProducs/full_carbon_kawasaki_ninja_h2r_-_pbr_8k/scene.gltf" },
 ];
 
 interface MaterialSectionProps {
