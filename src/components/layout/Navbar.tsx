@@ -308,6 +308,11 @@ export default function Navbar() {
                             >
                                 Log in
                             </LoadingLink>
+
+                            <div className="mt-8 flex justify-center">
+                                <CurrencyToggle />
+                            </div>
+
                             <p className="text-center text-white/40 text-sm mt-6">
                                 Free shipping on orders over $100
                             </p>
