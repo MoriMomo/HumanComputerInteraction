@@ -115,54 +115,56 @@ export default function ExitIntentOffer() {
     };
 
     return (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-lg rounded-4xl border border-white/12 bg-brand-dark p-7 text-white shadow-[0_24px_120px_rgba(0,0,0,0.65)]">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+            <div className="relative w-full max-w-md rounded-3xl border border-white/12 bg-brand-dark p-8 md:p-10 text-white shadow-[0_24px_120px_rgba(0,0,0,0.65)]">
                 <button
                     type="button"
                     onClick={close}
                     aria-label="Close offer"
-                    className="ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors hover:bg-white/10"
+                    className="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all hover:bg-white/10 hover:text-white"
                 >
-                    <span className="material-symbols-outlined text-base">close</span>
+                    <span className="material-symbols-outlined text-sm">close</span>
                 </button>
 
-                <p className="mt-1 text-xs font-semibold uppercase tracking-[0.28em] text-primary">Before you go</p>
-                <h3 className="mt-3 font-serif text-3xl font-bold tracking-tight">Get 10% off your first order.</h3>
-                <p className="mt-3 text-sm leading-7 text-white/62">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">Before you go</p>
+                <h3 className="mt-4 font-serif text-3xl font-bold tracking-tight leading-tight">Get 10% off your first order.</h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/60">
                     Join the SatSet list for launch drops, workshop notes, and a one-time first-purchase code.
                 </p>
 
                 {submitted ? (
-                    <div className="mt-6 rounded-2xl border border-white/14 bg-white/6 p-4 text-sm text-white/84">
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/80 text-center">
                         Thanks. Your welcome code is on the way.
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3 sm:flex-row">
-                        <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                            placeholder="you@example.com"
-                            className="w-full rounded-full border border-white/14 bg-white/6 px-5 py-3 text-sm text-white placeholder:text-white/35 focus:border-white/30 focus:outline-none"
-                        />
-                        <div className="flex items-center gap-3">
+                    <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+                        <div className="flex flex-col gap-2.5 sm:flex-row">
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
+                                placeholder="you@example.com"
+                                className="flex-1 rounded-full border border-white/12 bg-white/5 px-5 py-3.5 text-sm text-white placeholder:text-white/30 focus:border-white/24 focus:bg-white/8 focus:outline-none transition-all"
+                            />
                             <button
                                 type="submit"
-                                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-brand-dark transition-colors hover:bg-white/90"
+                                className="rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-brand-dark transition-all hover:bg-white/95 active:scale-98 whitespace-nowrap"
                             >
                                 Get code
                             </button>
                         </div>
-                        <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                        <div className="flex items-center gap-2.5 px-1 pt-1">
                             <input
                                 id="dont-show-again"
                                 type="checkbox"
                                 checked={dontShowAgain}
                                 onChange={(e) => setDontShowAgain(e.target.checked)}
-                                className="h-4 w-4 rounded border-white/20 bg-white/6 text-primary focus:ring-primary"
+                                className="h-4.5 w-4.5 rounded border border-white/20 bg-white/5 text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer accent-white transition-all"
                             />
-                            <label htmlFor="dont-show-again" className="text-sm text-white/82">Do not show again</label>
+                            <label htmlFor="dont-show-again" className="text-xs text-white/50 cursor-pointer select-none hover:text-white/80 transition-colors">
+                                Do not show again
+                            </label>
                         </div>
                     </form>
                 )}
