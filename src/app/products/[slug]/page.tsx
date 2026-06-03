@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useParams } from "next/navigation";
@@ -43,13 +43,12 @@ export default function ProductDetailPage() {
     const params = useParams<{ slug: string }>();
     const slug = params?.slug ?? "";
     const containerRef = useRef<HTMLDivElement>(null);
-    const leftRef = useRef<HTMLDivElement | null>(null);
-    const fillerRef = useRef<HTMLDivElement | null>(null);
     const product = PRODUCT_MAP.get(slug) ?? PRODUCTS[0];
     const [selectedColor, setSelectedColor] = useState(product.colors[0]);
     const [selected3D, setSelected3D] = useState<string | null>(null);
     const [selected3DColor, setSelected3DColor] = useState<string | null>(null);
     const [addedToCart, setAddedToCart] = useState(false);
+    const [activeVisualTab, setActiveVisualTab] = useState<"3d" | "gallery">("3d");
     const { addItem } = useCart();
     const { format, currency, rate } = useCurrency();
 
@@ -104,36 +103,6 @@ export default function ProductDetailPage() {
         { scope: containerRef }
     );
 
-    useEffect(() => {
-        function updateHeight() {
-            const rightEl = document.querySelector('.detail-info') as HTMLElement | null;
-            const leftEl = leftRef.current;
-            const fillerEl = fillerRef.current;
-            if (!rightEl || !leftEl || !fillerEl) return;
-
-            const rightRect = rightEl.getBoundingClientRect();
-            const leftRect = leftEl.getBoundingClientRect();
-            const fillerRect = fillerEl.getBoundingClientRect();
-
-            // filler top offset relative to left column top
-            const offset = Math.max(0, Math.round(fillerRect.top - leftRect.top));
-            const desired = Math.max(120, Math.round(rightRect.height - offset));
-            fillerEl.style.height = `${desired}px`;
-        }
-
-        updateHeight();
-
-        const ro = new ResizeObserver(() => updateHeight());
-        const rightEl = document.querySelector('.detail-info') as HTMLElement | null;
-        if (rightEl) ro.observe(rightEl);
-        window.addEventListener('resize', updateHeight);
-
-        return () => {
-            ro.disconnect();
-            window.removeEventListener('resize', updateHeight);
-        };
-    }, [product.slug]);
-
     const handleAddToCart = () => {
         trackEvent("add_to_cart", { slug: product.slug, color: selectedColor, price: product.price });
         // actually add the product to the cart
@@ -149,8 +118,8 @@ export default function ProductDetailPage() {
             <main ref={containerRef} className="min-h-screen bg-brand-dark pb-28 text-white md:pb-0">
                 <section className="relative overflow-hidden border-b border-white/8">
                     <GridMap spacing={140} opacity={0.06} color="rgba(181,158,125,0.18)" />
-                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.05fr_0.95fr] lg:px-20 lg:pb-20 lg:pt-40 items-start">
-                        <div className="detail-visual">
+                    <div className="relative mx-auto grid max-w-7xl gap-10 px-6 pb-16 pt-36 md:px-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-20 lg:pb-20 lg:pt-40 items-start">
+                        <div className="detail-visual lg:sticky lg:top-28">
                             <LoadingLink
                                 href="/products"
                                 className="inline-flex items-center gap-2 text-sm text-white/45 transition-colors hover:text-white/80"
@@ -159,70 +128,98 @@ export default function ProductDetailPage() {
                                 All Products
                             </LoadingLink>
 
-                            <div ref={leftRef} className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
-                                <div className="relative">
-                                    <Product3DViewer
-                                        product={product}
-                                        color={selectedColor}
-                                        className="min-h-120 p-0"
-                                        onSelect={(name) => {
-                                            setSelected3D(name);
-                                            const m = name.match(/#?([0-9A-Fa-f]{6})/);
-                                            setSelected3DColor(m ? `#${m[1]}` : null);
-                                            // auto-clear badge after a few seconds
-                                            window.setTimeout(() => setSelected3D(null), 5000);
-                                        }}
-                                    />
+                            <div className="mt-8 rounded-4xl border border-white/10 bg-white/5 p-4 shadow-[0_24px_100px_rgba(0,0,0,0.34)]">
+                                <div className="relative h-[480px] w-full overflow-hidden rounded-3xl bg-black/10">
+                                    {activeVisualTab === "3d" ? (
+                                        <div className="h-full w-full">
+                                            <Product3DViewer
+                                                product={product}
+                                                color={selectedColor}
+                                                className="h-full w-full p-0"
+                                                onSelect={(name) => {
+                                                    setSelected3D(name);
+                                                    const m = name.match(/#?([0-9A-Fa-f]{6})/);
+                                                    setSelected3DColor(m ? `#${m[1]}` : null);
+                                                    // auto-clear badge after a few seconds
+                                                    window.setTimeout(() => setSelected3D(null), 5000);
+                                                }}
+                                            />
 
-                                    {/* Selected-state badge */}
-                                    {selected3D && (
-                                        <div data-testid="product-3d-selected-badge" className="absolute top-4 right-4 z-50 pointer-events-auto">
-                                            <div className="flex items-center gap-3 rounded-full border border-white/12 bg-black/60 px-3 py-2 text-xs text-white">
-                                                <div className="text-xs font-semibold">Selected:</div>
-                                                <div className="max-w-[9rem] truncate font-medium">{selected3D}</div>
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            if (selected3DColor) setSelectedColor(selected3DColor);
-                                                        }}
-                                                        disabled={!selected3DColor}
-                                                        className={`rounded-full border px-3 py-1 text-[11px] transition-colors ${selected3DColor ? 'bg-white/8 border-white/16 text-white' : 'bg-transparent border-white/8 text-white/40'}`}
-                                                    >
-                                                        Use as color
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            // add item with the current selected color (prefers 3D-derived color if available)
-                                                            const colorToUse = selected3DColor ?? selectedColor;
-                                                            trackEvent("add_to_cart_from_3d", { slug: product.slug, color: colorToUse });
-                                                            addItem({ slug: product.slug, color: colorToUse });
-                                                            setAddedToCart(true);
-                                                            setTimeout(() => setAddedToCart(false), 2500);
-                                                        }}
-                                                        className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-brand-dark"
-                                                    >
-                                                        Add
-                                                    </button>
+                                            {/* Selected-state badge */}
+                                            {selected3D && (
+                                                <div data-testid="product-3d-selected-badge" className="absolute top-4 right-4 z-50 pointer-events-auto">
+                                                    <div className="flex items-center gap-3 rounded-full border border-white/12 bg-black/60 px-3 py-2 text-xs text-white">
+                                                        <div className="text-xs font-semibold">Selected:</div>
+                                                        <div className="max-w-[9rem] truncate font-medium">{selected3D}</div>
+                                                        <div className="flex items-center gap-1">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (selected3DColor) setSelectedColor(selected3DColor);
+                                                                }}
+                                                                disabled={!selected3DColor}
+                                                                className={`rounded-full border px-3 py-1 text-[11px] transition-colors ${selected3DColor ? 'bg-white/8 border-white/16 text-white' : 'bg-transparent border-white/8 text-white/40'}`}
+                                                            >
+                                                                Use as color
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    // add item with the current selected color (prefers 3D-derived color if available)
+                                                                    const colorToUse = selected3DColor ?? selectedColor;
+                                                                    trackEvent("add_to_cart_from_3d", { slug: product.slug, color: colorToUse });
+                                                                    addItem({ slug: product.slug, color: colorToUse });
+                                                                    setAddedToCart(true);
+                                                                    setTimeout(() => setAddedToCart(false), 2500);
+                                                                }}
+                                                                className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-brand-dark"
+                                                            >
+                                                                Add
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="relative h-full w-full bg-white/2">
+                                            <SmartImage
+                                                src={product.image?.src ?? "/productIImg/download-1.png"}
+                                                alt={product.image?.alt ?? product.name}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, 40vw"
+                                                className="object-contain p-6"
+                                                priority
+                                            />
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="mt-4">
-                                    <div
-                                        ref={fillerRef}
-                                        className="relative h-80 overflow-hidden rounded-2xl border border-white/10 bg-white/5"
-                                    >
-                                        <SmartImage
-                                            src={product.image?.src ?? "/productIImg/download-1.png"}
-                                            alt={product.image?.alt ?? product.name}
-                                            fill
-                                            sizes="(max-width: 768px) 100vw, 40vw"
-                                            className="object-contain"
-                                        />
+                                {/* Media Switcher Tab Controls */}
+                                <div className="mt-4 flex justify-center">
+                                    <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md">
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveVisualTab("3d")}
+                                            className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 cursor-pointer ${
+                                                activeVisualTab === "3d"
+                                                    ? "bg-white text-brand-dark shadow-md"
+                                                    : "text-white/60 hover:text-white"
+                                            }`}
+                                        >
+                                            Interactive 3D
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveVisualTab("gallery")}
+                                            className={`rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 cursor-pointer ${
+                                                activeVisualTab === "gallery"
+                                                    ? "bg-white text-brand-dark shadow-md"
+                                                    : "text-white/60 hover:text-white"
+                                            }`}
+                                        >
+                                            Photo Gallery
+                                        </button>
                                     </div>
                                 </div>
                             </div>
