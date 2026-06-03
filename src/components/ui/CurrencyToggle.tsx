@@ -6,16 +6,24 @@ export default function CurrencyToggle() {
     const { currency, setCurrency } = useCurrency();
 
     return (
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center bg-white/5 border border-white/10 rounded-full p-1 h-11">
             <button
                 onClick={() => setCurrency("IDR")}
-                className={`px-3 py-1 rounded-md text-sm font-medium ${currency === "IDR" ? "bg-white text-[#231711]" : "text-white/70 border border-white/8"}`}
+                className={`h-full px-4 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                    currency === "IDR"
+                        ? "bg-white text-[#231711] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+                        : "text-white/60 hover:text-white/90"
+                }`}
             >
                 IDR
             </button>
             <button
                 onClick={() => setCurrency("USD")}
-                className={`px-3 py-1 rounded-md text-sm font-medium ${currency === "USD" ? "bg-white text-[#231711]" : "text-white/70 border border-white/8"}`}
+                className={`h-full px-4 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                    currency === "USD"
+                        ? "bg-white text-[#231711] shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
+                        : "text-white/60 hover:text-white/90"
+                }`}
             >
                 USD
             </button>

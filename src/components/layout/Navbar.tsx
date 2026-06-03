@@ -130,12 +130,12 @@ export default function Navbar() {
         <>
             <nav
                 ref={navRef}
-                className={`fixed top-0 left-0 right-0 z-100 bg-[#231711] transition-all duration-300 ${scrolled
-                    ? "border-b border-black/20 shadow-[0_6px_24px_rgba(0,0,0,0.28)]"
+                className={`fixed top-0 left-0 right-0 z-100 bg-[#231711]/90 backdrop-blur-md transition-all duration-300 ${scrolled
+                    ? "border-b border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
                     : "border-b border-transparent shadow-none"
                     }`}
             >
-                <div className="p-0 max-w-4xl mx-auto px-6 md:px-12">
+                <div className="w-full max-w-7xl mx-auto px-6 md:px-12">
                     <div className="flex items-center justify-between h-20">
                         {/* Left - Brand */}
                         <LoadingLink
@@ -164,7 +164,7 @@ export default function Navbar() {
                         </LoadingLink>
 
                         {/* Center - Desktop Nav */}
-                        <div className="hidden md:flex items-center gap-1">
+                        <div className="hidden md:flex items-center gap-2">
                             {NAV_LINKS.map((link) => {
                                 const active = isActive(link.href);
                                 const cls = `relative px-5 py-2 text-sm font-medium tracking-wide transition-all duration-300 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${active ? "text-white" : "text-white/80 hover:text-white"
@@ -181,7 +181,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Right - Utility + CTA */}
-                        <div className="hidden md:flex items-center gap-2">
+                        <div className="hidden md:flex items-center gap-3">
                             <LoadingLink
                                 href="/cart"
                                 onClick={closeMenu}
@@ -194,7 +194,7 @@ export default function Navbar() {
                                     role="status"
                                     aria-live="polite"
                                     // aria-hidden={!(mounted && itemCount > 0)}
-                                    className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-brand-darker"
+                                    className="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-white px-2 py-0.5 text-xs font-bold text-[#231711]"
                                 >
                                     {mounted && itemCount > 0 ? itemCount : null}
                                 </span>
@@ -203,14 +203,13 @@ export default function Navbar() {
                             <LoadingLink
                                 href="/auth/login"
                                 onClick={closeMenu}
-                                className="group relative px-6 py-2.5 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/14 hover:border-white/26 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                                className="group relative inline-flex h-11 items-center justify-center px-6 rounded-full bg-white/10 text-white text-sm font-medium overflow-hidden border border-white/14 hover:border-white/26 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                             >
                                 <span className="relative z-10">Log in</span>
                                 <div className="absolute inset-0 bg-white/12 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                             </LoadingLink>
-                            <div className="ml-2">
-                                <CurrencyToggle />
-                            </div>
+
+                            <CurrencyToggle />
                         </div>
 
                         {/* Mobile Menu Toggle */}
