@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-31T17:44:49.807Z",
+  "timestamp": "2026-06-04T15:40:54.459Z",
   "url": "http://localhost:3000/",
   "viewport": {
     "width": 1920,
@@ -7,20 +7,20 @@
   },
   "customMetrics": {
     "fps": {
-      "current": 12.358589219525065,
-      "average": 11.821233502775355,
-      "min": 5.386687187379762,
-      "max": 47.581284694651615,
-      "samples": 24
+      "current": 16.64871217312231,
+      "average": 15.222211937065634,
+      "min": 12.946917637666276,
+      "max": 16.64871217312231,
+      "samples": 14
     },
     "cwv": {
-      "ttfb": 458,
+      "ttfb": 164.30000000074506,
       "cls": 0
     },
     "memory": {
       "jsHeapSizeLimit": 3760000000,
-      "totalJSHeapSize": 29400000,
-      "usedJSHeapSize": 26000000
+      "totalJSHeapSize": 47400000,
+      "usedJSHeapSize": 33100000
     }
   }
 }

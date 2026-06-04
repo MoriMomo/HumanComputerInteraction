@@ -15,14 +15,18 @@ interface CurrencyContextValue {
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-    const [currency, setCurrency] = useState<Currency>(() => {
+    const [currency, setCurrency] = useState<Currency>("IDR");
+
+    useEffect(() => {
         try {
             const stored = localStorage.getItem("satset_currency");
-            return (stored as Currency) || "IDR";
+            if (stored === "USD" || stored === "IDR") {
+                setCurrency(stored);
+            }
         } catch {
-            return "IDR";
+            // noop
         }
-    });
+    }, []);
 
     const [rate, setRate] = useState<number>(() => {
         // default fallback rate USD -> IDR

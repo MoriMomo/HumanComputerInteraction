@@ -52,47 +52,91 @@ function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
             if (child instanceof THREE.Mesh) {
                 const mesh = child as THREE.Mesh;
                 
+                // Keep track of the original material to clone/restore/read maps from
+                if (!mesh.userData._originalMaterial) {
+                    mesh.userData._originalMaterial = mesh.material;
+                }
+                const originalMat = mesh.userData._originalMaterial as THREE.Material | THREE.Material[];
+
                 // Dispose of old override material if we created one
                 if (mesh.userData._currentMaterial) {
-                    mesh.userData._currentMaterial.dispose();
+                    const prevMat = mesh.userData._currentMaterial;
+                    if (Array.isArray(prevMat)) {
+                        prevMat.forEach(m => m.dispose());
+                    } else {
+                        prevMat.dispose();
+                    }
                 }
 
-                let overrideMat: THREE.Material;
+                let overrideMat: THREE.Material | THREE.Material[];
 
-                if (renderMode === "glass") {
-                    overrideMat = new THREE.MeshPhysicalMaterial({
-                        color: color,
-                        transparent: true,
-                        opacity: 0.18,
-                        roughness: 0.08,
-                        metalness: 0,
-                        transmission: 0.92,
-                        thickness: 0.7,
-                        ior: 1.45,
-                        clearcoat: 1,
-                        clearcoatRoughness: 0.05,
-                        side: THREE.DoubleSide,
-                        depthWrite: false,
-                    });
-                } else if (renderMode === "wireframe") {
-                    overrideMat = new THREE.MeshStandardMaterial({
-                        color: color,
-                        wireframe: true,
-                        transparent: true,
-                        opacity: 0.28,
-                        side: THREE.DoubleSide,
-                    });
-                } else {
-                    overrideMat = new THREE.MeshStandardMaterial({
+                const threeColor = new THREE.Color(color);
+
+                const processSingleMaterial = (mat: THREE.Material): THREE.Material => {
+                    if (renderMode === "glass") {
+                        const glassMat = new THREE.MeshPhysicalMaterial({
+                            color: color,
+                            transparent: true,
+                            opacity: 0.18,
+                            roughness: 0.08,
+                            metalness: 0,
+                            transmission: 0.92,
+                            thickness: 0.7,
+                            ior: 1.45,
+                            clearcoat: 1,
+                            clearcoatRoughness: 0.05,
+                            side: THREE.DoubleSide,
+                            depthWrite: false,
+                        });
+                        // Preserve original maps if present
+                        if (mat && 'map' in mat && mat.map) {
+                            glassMat.map = mat.map as THREE.Texture;
+                        }
+                        if (mat && 'normalMap' in mat && mat.normalMap) {
+                            glassMat.normalMap = mat.normalMap as THREE.Texture;
+                        }
+                        return glassMat;
+                    }
+
+                    if (mat) {
+                        const cloned = mat.clone();
+                        if ('color' in cloned && cloned.color instanceof THREE.Color) {
+                            cloned.color.copy(threeColor);
+                        }
+                        if (renderMode === "wireframe") {
+                            if ('wireframe' in cloned) {
+                                (cloned as any).wireframe = true;
+                                (cloned as any).transparent = true;
+                                (cloned as any).opacity = 0.28;
+                            }
+                        } else {
+                            if ('wireframe' in cloned) {
+                                (cloned as any).wireframe = false;
+                            }
+                        }
+                        return cloned;
+                    }
+
+                    // Fallback if original mat doesn't exist
+                    return new THREE.MeshStandardMaterial({
                         color: color,
                         roughness: 0.35,
                         metalness: 0.15,
+                        wireframe: renderMode === "wireframe",
+                        transparent: renderMode === "wireframe",
+                        opacity: renderMode === "wireframe" ? 0.28 : 1,
                         side: THREE.DoubleSide,
                     });
+                };
+
+                if (Array.isArray(originalMat)) {
+                    overrideMat = originalMat.map(mat => processSingleMaterial(mat));
+                } else {
+                    overrideMat = processSingleMaterial(originalMat);
                 }
 
                 mesh.userData._currentMaterial = overrideMat;
-                mesh.material = overrideMat;
+                mesh.material = overrideMat as any;
             }
         });
     }, [gltf.scene, color, renderMode]);

@@ -95,15 +95,21 @@ async function requestCart(method: "GET" | "POST" | "PUT" | "DELETE", body?: unk
 
 export function CartProvider({ children }: { children: ReactNode }) {
     const { user, isAuthLoading } = useAuth();
-    const [items, setItems] = useState<CartItem[]>(() => getLocalCart());
+    const [items, setItems] = useState<CartItem[]>([]);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (typeof window === "undefined" || user) {
+        setItems(getLocalCart());
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted || typeof window === "undefined" || user) {
             return;
         }
 
         window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-    }, [items, user]);
+    }, [items, user, mounted]);
 
     const syncFromServer = useCallback(async () => {
         const serverItems = await requestCart("GET");
