@@ -12,6 +12,7 @@ import MaterialSection from "@/components/sections/MaterialSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ShopSection from "@/components/sections/ShopSection";
 import StatsSection from "@/components/sections/StatsSection";
+import BrandCollaborations from "@/components/sections/BrandCollaborations";
 
 const ENABLE_3D_MODEL = true;
 
@@ -83,6 +84,7 @@ export default function ShowcasePage() {
               activeColor={activeColor}
               show3DModel={loadingComplete}
             />
+            <BrandCollaborations />
           </div>
 
           <StatsSection videoSrc="/video/Create_video_of_cards_engineered_202605181051.mp4" />

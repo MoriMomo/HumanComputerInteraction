@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { memo } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,6 +12,17 @@ import GridMap from "@/components/ui/GridMap";
 import LoadingLink from "@/components/ui/LoadingLink";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const SHOP_BRAND_PARTNERS = [
+    { name: "Prada", image: "/ALLBRANDS/prada.png" },
+    { name: "Gucci", image: "/ALLBRANDS/images (1).png" },
+    { name: "Hermès", image: "/ALLBRANDS/images (2).png" },
+    { name: "Saint Laurent", image: "/ALLBRANDS/images (3).png" },
+    { name: "Balenciaga", image: "/ALLBRANDS/balenciaga-logo-png_seeklogo-365962.png" },
+    { name: "Chanel", image: "/ALLBRANDS/Chanel_logo_interlocking_cs.svg.png" },
+    { name: "Louis Vuitton", image: "/ALLBRANDS/Louis_Vuitton_logo_and_wordmark.svg.png" },
+    { name: "Rolex", image: "/ALLBRANDS/Rolex-Logo-PNG-Pic.png" },
+];
 
 const products = [
     {
@@ -325,6 +336,26 @@ function ShopSection() {
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Premium Brand Partnerships Banner */}
+                <div className="mt-20 border-t border-black/5 pt-16 pb-8">
+                    <p className="text-center text-[10px] sm:text-xs font-semibold uppercase tracking-[0.28em] text-primary mb-10">
+                        Co-Designed with Premium Brand Partners
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16 opacity-75">
+                        {SHOP_BRAND_PARTNERS.map((brand) => (
+                            <div key={brand.name} className="relative h-14 w-28 sm:w-32 md:w-36 flex items-center justify-center">
+                                <Image
+                                    src={brand.image}
+                                    alt={`${brand.name} Logo`}
+                                    fill
+                                    sizes="(max-width: 768px) 112px, 144px"
+                                    className="object-contain filter grayscale opacity-60 hover:opacity-100 hover:grayscale-0 mix-blend-multiply transition-all duration-300"
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Trust signals */}

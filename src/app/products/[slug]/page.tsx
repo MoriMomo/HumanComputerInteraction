@@ -313,7 +313,7 @@ export default function ProductDetailPage() {
                                     ].map((mode) => (
                                         <button
                                             key={mode.id}
-                                            onClick={() => setRenderMode(mode.id as any)}
+                                            onClick={() => setRenderMode(mode.id as "normal" | "glass" | "wireframe")}
                                             className={`flex-1 px-4 py-3 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                                                 renderMode === mode.id
                                                     ? "bg-stone-900 border border-stone-900 text-white shadow-sm"
