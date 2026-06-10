@@ -21,6 +21,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         try {
             const stored = localStorage.getItem("satset_currency");
             if (stored === "USD" || stored === "IDR") {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setCurrency(stored);
             }
         } catch {

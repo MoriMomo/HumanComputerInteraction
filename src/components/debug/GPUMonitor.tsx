@@ -15,6 +15,7 @@ const defaultGPUInfo: GPUInfo = {
 export default function GPUMonitor() {
     const [mounted, setMounted] = useState(false);
     const [fps, setFps] = useState(0);
+    const [crashed, setCrashed] = useState(false);
 
     const gpuInfo = useMemo(
         () => (mounted ? detectGPU() : defaultGPUInfo),
@@ -45,11 +46,28 @@ export default function GPUMonitor() {
 
         rafId = window.requestAnimationFrame(measureFPS);
 
+        // Listen for crash/reset events from elsewhere to keep state synchronized
+        const handleCrashSimulated = () => setCrashed(true);
+        const handleResetSimulated = () => setCrashed(false);
+
+        window.addEventListener("simulate-webgl-crash", handleCrashSimulated);
+        window.addEventListener("reset-webgl-scene", handleResetSimulated);
+
         return () => {
             window.cancelAnimationFrame(mountRaf);
             window.cancelAnimationFrame(rafId);
+            window.removeEventListener("simulate-webgl-crash", handleCrashSimulated);
+            window.removeEventListener("reset-webgl-scene", handleResetSimulated);
         };
     }, []);
+
+    const toggleCrash = () => {
+        if (crashed) {
+            window.dispatchEvent(new CustomEvent("reset-webgl-scene"));
+        } else {
+            window.dispatchEvent(new CustomEvent("simulate-webgl-crash"));
+        }
+    };
 
     const fpsColor = fps >= 50 ? "text-emerald-400" : fps >= 30 ? "text-amber-400" : "text-rose-400";
 
@@ -61,6 +79,16 @@ export default function GPUMonitor() {
             <p>WebGL2: {gpuInfo.hasWebGL2 ? "Yes" : "No"}</p>
             <p>Power: {gpuInfo.preferredPowerMode}</p>
             <p className={fpsColor}>FPS: {fps}</p>
+            <button
+                onClick={toggleCrash}
+                className={`mt-3 w-full px-2.5 py-1.5 rounded-lg font-bold text-[10px] tracking-widest uppercase transition-all duration-200 cursor-pointer shadow-sm text-center ${
+                    crashed
+                        ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30"
+                        : "bg-rose-600 hover:bg-rose-500 text-white shadow-rose-900/30"
+                }`}
+            >
+                {crashed ? "Reset 3D Scene" : "Simulate 3D Crash"}
+            </button>
         </aside>
     );
 }

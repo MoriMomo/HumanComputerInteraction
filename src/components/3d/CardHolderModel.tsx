@@ -9,15 +9,18 @@ interface CardHolderModelProps {
     color?: string;
     renderMode?: "normal" | "glass" | "wireframe";
     modelSrc?: string;
+    finish?: "standard" | "matte" | "brushed" | "polished";
+    autoRotate?: boolean;
 }
 
 interface LoadedModelProps {
     modelSrc: string;
     color: string;
     renderMode: "normal" | "glass" | "wireframe";
+    finish: "standard" | "matte" | "brushed" | "polished";
 }
 
-function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
+function LoadedModel({ modelSrc, color, renderMode, finish }: LoadedModelProps) {
     const gltf = useGLTF(modelSrc);
 
     // 1. Scale and center the model once when the GLB model itself loads (idempotently)
@@ -103,25 +106,78 @@ function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
                         if ('color' in cloned && cloned.color instanceof THREE.Color) {
                             cloned.color.copy(threeColor);
                         }
+
+                        // Apply physical finishes properties if the material supports it
+                        if ('roughness' in cloned && 'metalness' in cloned) {
+                            const standardMat = cloned as THREE.MeshStandardMaterial;
+                            if (finish === "matte") {
+                                standardMat.roughness = 0.85;
+                                standardMat.metalness = 0.1;
+                                if ('clearcoat' in standardMat) {
+                                    (standardMat as THREE.MeshPhysicalMaterial).clearcoat = 0;
+                                }
+                            } else if (finish === "brushed") {
+                                standardMat.roughness = 0.35;
+                                standardMat.metalness = 0.85;
+                                if ('clearcoat' in standardMat) {
+                                    (standardMat as THREE.MeshPhysicalMaterial).clearcoat = 0.1;
+                                }
+                            } else if (finish === "polished") {
+                                standardMat.roughness = 0.08;
+                                standardMat.metalness = 0.95;
+                                if ('clearcoat' in standardMat) {
+                                    const physicalMat = standardMat as THREE.MeshPhysicalMaterial;
+                                    physicalMat.clearcoat = 1.0;
+                                    physicalMat.clearcoatRoughness = 0.02;
+                                }
+                            } else { // standard
+                                standardMat.roughness = 0.35;
+                                standardMat.metalness = 0.15;
+                            }
+                        }
+
                         if (renderMode === "wireframe") {
                             if ('wireframe' in cloned) {
-                                (cloned as any).wireframe = true;
-                                (cloned as any).transparent = true;
-                                (cloned as any).opacity = 0.28;
+                                const wireframeMat = cloned as THREE.Material & { wireframe: boolean };
+                                wireframeMat.wireframe = true;
+                                wireframeMat.transparent = true;
+                                wireframeMat.opacity = 0.28;
                             }
                         } else {
                             if ('wireframe' in cloned) {
-                                (cloned as any).wireframe = false;
+                                const wireframeMat = cloned as THREE.Material & { wireframe: boolean };
+                                wireframeMat.wireframe = false;
                             }
                         }
                         return cloned;
                     }
 
-                    // Fallback if original mat doesn't exist
-                    return new THREE.MeshStandardMaterial({
+                    // Fallback Standard Material
+                    let roughness = 0.35;
+                    let metalness = 0.15;
+                    let clearcoat = 0;
+                    let clearcoatRoughness = 0;
+
+                    if (finish === "matte") {
+                        roughness = 0.85;
+                        metalness = 0.1;
+                    } else if (finish === "brushed") {
+                        roughness = 0.35;
+                        metalness = 0.85;
+                        clearcoat = 0.1;
+                    } else if (finish === "polished") {
+                        roughness = 0.08;
+                        metalness = 0.95;
+                        clearcoat = 1.0;
+                        clearcoatRoughness = 0.02;
+                    }
+
+                    return new THREE.MeshPhysicalMaterial({
                         color: color,
-                        roughness: 0.35,
-                        metalness: 0.15,
+                        roughness: roughness,
+                        metalness: metalness,
+                        clearcoat: clearcoat,
+                        clearcoatRoughness: clearcoatRoughness,
                         wireframe: renderMode === "wireframe",
                         transparent: renderMode === "wireframe",
                         opacity: renderMode === "wireframe" ? 0.28 : 1,
@@ -136,10 +192,10 @@ function LoadedModel({ modelSrc, color, renderMode }: LoadedModelProps) {
                 }
 
                 mesh.userData._currentMaterial = overrideMat;
-                mesh.material = overrideMat as any;
+                mesh.material = overrideMat;
             }
         });
-    }, [gltf.scene, color, renderMode]);
+    }, [gltf.scene, color, renderMode, finish]);
 
     return <primitive object={gltf.scene} />;
 }
@@ -148,22 +204,43 @@ export default function CardHolderModel({
     color = "#B48A63",
     renderMode = "normal",
     modelSrc,
+    finish = "standard",
+    autoRotate = true,
 }: CardHolderModelProps) {
     const groupRef = useRef<THREE.Group>(null);
 
     useFrame(() => {
-        if (groupRef.current) {
-            groupRef.current.rotation.y += 0.01;
+        if (groupRef.current && autoRotate) {
+            groupRef.current.rotation.y += 0.008;
         }
     });
 
     const isGlass = renderMode === "glass";
     const isWireframe = renderMode === "wireframe";
 
+    let roughness = 0.35;
+    let metalness = 0.15;
+    let clearcoat = 0;
+    let clearcoatRoughness = 0;
+
+    if (finish === "matte") {
+        roughness = 0.85;
+        metalness = 0.1;
+    } else if (finish === "brushed") {
+        roughness = 0.35;
+        metalness = 0.85;
+        clearcoat = 0.1;
+    } else if (finish === "polished") {
+        roughness = 0.08;
+        metalness = 0.95;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.02;
+    }
+
     return (
         <group ref={groupRef}>
             {modelSrc ? (
-                <LoadedModel modelSrc={modelSrc} color={color} renderMode={renderMode} />
+                <LoadedModel modelSrc={modelSrc} color={color} renderMode={renderMode} finish={finish} />
             ) : (
                 <>
                     <mesh>
@@ -184,13 +261,15 @@ export default function CardHolderModel({
                                 depthWrite={false}
                             />
                         ) : (
-                            <meshStandardMaterial
+                            <meshPhysicalMaterial
                                 color={color}
                                 wireframe={isWireframe}
                                 transparent={isWireframe}
                                 opacity={isWireframe ? 0.28 : 1}
-                                roughness={0.35}
-                                metalness={0.15}
+                                roughness={roughness}
+                                metalness={metalness}
+                                clearcoat={clearcoat}
+                                clearcoatRoughness={clearcoatRoughness}
                                 side={THREE.DoubleSide}
                             />
                         )}

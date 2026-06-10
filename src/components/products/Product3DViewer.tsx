@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import SmartImage from "@/components/ui/SmartImage";
+import WebGLBoundary from "@/components/3d/WebGLBoundary";
 import { PRODUCT_PAGE_GALLERY } from "@/data/productGallery";
 import type { Product } from "@/data/products";
 
@@ -48,22 +49,27 @@ export default function Product3DViewer({ product, color, renderMode = "normal",
             <div aria-hidden className="absolute inset-0 office-grid opacity-[0.03]" />
 
             <div className="absolute inset-0">
-                <ProductScene
-                    variant={scene3d.variant}
-                    color={color ?? scene3d.color ?? product.colors[0]}
-                    renderMode={renderMode}
-                    enableZoom={scene3d.enableZoom ?? true}
-                    autoRotate={scene3d.autoRotate ?? true}
-                    scale={scene3d.scale ?? 1}
-                    position={scene3d.position}
-                    rotation={scene3d.rotation}
-                    modelSrc={scene3d.modelSrc}
-                    onSelect={({ object }) => {
-                        const name = object.name || object.parent?.name || "unnamed object";
-                        onSelect?.(name, object);
-                    }}
-                    testAutoSelect={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('testSelect') === '1'}
-                />
+                <WebGLBoundary
+                    fallbackImageSrc={product.image?.src ?? "/productIImg/download-1.png"}
+                    fallbackImageAlt={product.image?.alt ?? product.name}
+                >
+                    <ProductScene
+                        variant={scene3d.variant}
+                        color={color ?? scene3d.color ?? product.colors[0]}
+                        renderMode={renderMode}
+                        enableZoom={scene3d.enableZoom ?? true}
+                        autoRotate={scene3d.autoRotate ?? true}
+                        scale={scene3d.scale ?? 1}
+                        position={scene3d.position}
+                        rotation={scene3d.rotation}
+                        modelSrc={scene3d.modelSrc}
+                        onSelect={({ object }) => {
+                            const name = object.name || object.parent?.name || "unnamed object";
+                            onSelect?.(name, object);
+                        }}
+                        testAutoSelect={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('testSelect') === '1'}
+                    />
+                </WebGLBoundary>
             </div>
 
             <div className="pointer-events-none relative flex h-full min-h-[inherit] flex-col justify-end p-5 md:p-6">

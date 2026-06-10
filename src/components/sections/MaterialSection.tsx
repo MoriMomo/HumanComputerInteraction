@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from 'next/dynamic';
 import { useCart } from "@/contexts/CartProvider";
+import WebGLBoundary from "@/components/3d/WebGLBoundary";
 
 // Lazy load the 3D scene
 const CardHolderScene = dynamic(
@@ -38,6 +39,19 @@ const RENDER_MODES = [
     { id: "wireframe", label: "Wireframe", icon: "dashboard" },
 ];
 
+const FINISHES = [
+    { id: "standard", label: "Standard", description: "Smooth standard satin finish" },
+    { id: "matte", label: "Matte Powder", description: "Non-reflective textured coat" },
+    { id: "brushed", label: "Brushed Metal", description: "Subtly textured metallic finish" },
+    { id: "polished", label: "Polished Gold/Chrome", description: "Ultra-reflective mirror shine" },
+];
+
+const LIGHTING_PRESETS = [
+    { id: "studio", label: "Studio Light", description: "Clean daylight studio setup" },
+    { id: "sunset", label: "Warm Sunset", description: "Golden hour sunset glow" },
+    { id: "neon", label: "Cyberpunk Neon", description: "Futuristic cyan & magenta highlights" },
+];
+
 const PRODUCT_MODELS = [
     { id: "cube", label: "Studio Cube", modelSrc: "" },
     { id: "ridge_wallet", label: "Ridge Wallet", modelSrc: "/otherProducs/the_ridge_wallet.glb" },
@@ -61,10 +75,14 @@ export default function MaterialSection({
 }: MaterialSectionProps) {
     const sectionRef = useRef<HTMLElement>(null);
     const [renderMode, setRenderMode] = useState<"normal" | "glass" | "wireframe">("normal");
+    const [finish, setFinish] = useState<"standard" | "matte" | "brushed" | "polished">("standard");
+    const [lightingPreset, setLightingPreset] = useState<"studio" | "sunset" | "neon">("studio");
+    const [autoRotate, setAutoRotate] = useState<boolean>(true);
     const [selectedModel, setSelectedModel] = useState<string>("");
     const activeSwatch = SWATCHES.find((s) => s.hex === activeColor) ?? SWATCHES[0];
     const { addItem } = useCart();
     const [addedToCart, setAddedToCart] = useState(false);
+    const screenshotRef = useRef<(() => void) | null>(null);
 
     const handleAddToCart = () => {
         addItem({ slug: "cardholder-pro", color: activeColor });
@@ -160,6 +178,17 @@ export default function MaterialSection({
                                     Optimized • 60 FPS
                                 </div>
                             </div>
+                            <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-600">
+                                <span className="font-semibold">Auto Rotate:</span>
+                                <button
+                                    onClick={() => setAutoRotate(!autoRotate)}
+                                    className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                                        autoRotate ? "bg-green-100 text-green-700" : "bg-stone-100 text-stone-600"
+                                    }`}
+                                >
+                                    {autoRotate ? "ACTIVE" : "PAUSED"}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
@@ -181,16 +210,25 @@ export default function MaterialSection({
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
-                            <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors cursor-pointer">
-                                Customize
-                            </button>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex gap-3">
+                                <button className="flex-1 px-6 py-3 rounded-xl bg-stone-900 text-white font-medium hover:bg-stone-800 transition-colors cursor-pointer">
+                                    Customize
+                                </button>
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={addedToCart}
+                                    className="flex-1 px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors disabled:opacity-60 cursor-pointer"
+                                >
+                                    {addedToCart ? "Added ✓" : "Add to Cart"}
+                                </button>
+                            </div>
                             <button
-                                onClick={handleAddToCart}
-                                disabled={addedToCart}
-                                className="flex-1 px-6 py-3 rounded-xl bg-white border border-stone-200 text-stone-900 font-medium hover:bg-stone-50 transition-colors disabled:opacity-60 cursor-pointer"
+                                onClick={() => screenshotRef.current?.()}
+                                className="w-full px-6 py-3 rounded-xl bg-stone-100 border border-stone-200 text-stone-800 text-sm font-medium hover:bg-stone-200 transition-all flex items-center justify-center gap-2 cursor-pointer"
                             >
-                                {addedToCart ? "Added ✓" : "Add to Cart"}
+                                <span className="material-symbols-outlined text-[18px]">photo_camera</span>
+                                Take Snapshot
                             </button>
                         </div>
                     </div>
@@ -198,12 +236,18 @@ export default function MaterialSection({
                     {/* Center Viewer */}
                     <div className="material-viewer relative aspect-square lg:aspect-auto lg:h-150 rounded-3xl overflow-hidden border border-stone-200 bg-stone-100 shadow-xl">
                         {show3DModel ? (
-                            <CardHolderScene
-                                color={activeColor}
-                                enableZoom={true}
-                                renderMode={renderMode}
-                                modelSrc={selectedModel || undefined}
-                            />
+                            <WebGLBoundary fallbackImageSrc="/productIImg/image.png" fallbackImageAlt="SatSet Pro Card Holder">
+                                <CardHolderScene
+                                    color={activeColor}
+                                    enableZoom={true}
+                                    renderMode={renderMode}
+                                    modelSrc={selectedModel || undefined}
+                                    finish={finish}
+                                    autoRotate={autoRotate}
+                                    lightingPreset={lightingPreset}
+                                    screenshotRef={screenshotRef}
+                                />
+                            </WebGLBoundary>
                         ) : (
                             <div className="flex h-full w-full items-center justify-center text-stone-500">
                                 3D viewer disabled
@@ -216,7 +260,7 @@ export default function MaterialSection({
 
                         {/* Render Mode */}
                         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
-                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-4">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-3">
                                 Render Mode
                             </p>
                             <div className="space-y-2">
@@ -224,14 +268,69 @@ export default function MaterialSection({
                                     <button
                                         key={mode.id}
                                         onClick={() => setRenderMode(mode.id as typeof renderMode)}
-                                        className={`w-full px-4 py-3 rounded-xl flex items-center justify-between text-sm transition-all ${renderMode === mode.id
+                                        className={`w-full px-4 py-2.5 rounded-xl flex items-center justify-between text-sm transition-all cursor-pointer ${renderMode === mode.id
                                             ? "bg-stone-900 text-white"
                                             : "bg-stone-50 text-stone-700 hover:bg-stone-100"
                                             }`}
                                     >
                                         <span>{mode.label}</span>
                                         {renderMode === mode.id && (
-                                            <span className="w-2 h-2 rounded-full bg-white" />
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Material Finish */}
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-3">
+                                Material Finish
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {FINISHES.map((f) => (
+                                    <button
+                                        key={f.id}
+                                        onClick={() => setFinish(f.id as typeof finish)}
+                                        className={`px-3 py-2 rounded-xl text-left border transition-all cursor-pointer ${
+                                            finish === f.id
+                                                ? "bg-stone-900 border-stone-900 text-white shadow-sm"
+                                                : "bg-white border-stone-200 text-stone-700 hover:bg-stone-50"
+                                        }`}
+                                    >
+                                        <div className="text-xs font-semibold">{f.label}</div>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-2 text-[10px] text-stone-500 leading-normal">
+                                {FINISHES.find(f => f.id === finish)?.description}
+                            </div>
+                        </div>
+
+                        {/* Environment Lighting */}
+                        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
+                            <p className="text-xs uppercase tracking-widest text-stone-400 mb-3">
+                                Environment Lighting
+                            </p>
+                            <div className="space-y-2">
+                                {LIGHTING_PRESETS.map((lp) => (
+                                    <button
+                                        key={lp.id}
+                                        onClick={() => setLightingPreset(lp.id as typeof lightingPreset)}
+                                        className={`w-full px-4 py-2.5 rounded-xl flex items-center justify-between text-xs transition-all cursor-pointer ${
+                                            lightingPreset === lp.id
+                                                ? "bg-stone-900 text-white"
+                                                : "bg-stone-50 text-stone-700 hover:bg-stone-100"
+                                        }`}
+                                    >
+                                        <div className="text-left">
+                                            <span className="font-semibold block">{lp.label}</span>
+                                            <span className="text-[10px] text-stone-400">
+                                                {lp.description}
+                                            </span>
+                                        </div>
+                                        {lightingPreset === lp.id && (
+                                            <span className="w-1.5 h-1.5 rounded-full bg-white" />
                                         )}
                                     </button>
                                 ))}
@@ -248,7 +347,7 @@ export default function MaterialSection({
                                     <button
                                         key={swatch.id}
                                         onClick={() => onColorChange(swatch.hex)}
-                                        className={`relative w-full aspect-square rounded-xl transition-all ${activeColor === swatch.hex
+                                        className={`relative w-full aspect-square rounded-xl transition-all cursor-pointer ${activeColor === swatch.hex
                                             ? "ring-2 ring-stone-900 ring-offset-2"
                                             : "hover:scale-105"
                                             }`}
@@ -283,6 +382,8 @@ export default function MaterialSection({
                             <div className="space-y-2 text-xs text-stone-600">
                                 <p>Tier: High Quality</p>
                                 <p>Camera: Interactive</p>
+                                <p>Finish: {FINISHES.find(f => f.id === finish)?.label}</p>
+                                <p>Lighting: {LIGHTING_PRESETS.find(lp => lp.id === lightingPreset)?.label}</p>
                                 <p>Mode: {renderMode}</p>
                             </div>
                         </div>

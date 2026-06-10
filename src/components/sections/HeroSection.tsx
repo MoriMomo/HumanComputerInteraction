@@ -11,6 +11,7 @@ import { EASING, TIMELINE_DEFAULTS } from "@/config/animations";
 import HeroActions from "./HeroActions";
 const ReactiveBackground = dynamic(() => import("@/components/ui/ReactiveBackground"), { ssr: false });
 import GridMap from "@/components/ui/GridMap";
+import WebGLBoundary from "@/components/3d/WebGLBoundary";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -235,10 +236,12 @@ export default function HeroSection({
                             {/* <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-linear-to-t from-white/80 via-white/25 to-transparent" /> */}
                             <div className="w-full h-[110%] md:h-full mt-[-5%] md:mt-0 pointer-events-auto">
                                 {show3DModel ? (
-                                    <CardHolderScene
-                                        color={activeColor}
-                                        enableZoom={false}
-                                    />
+                                    <WebGLBoundary fallbackImageSrc="/productIImg/image.png" fallbackImageAlt="SatSet Pro Card Holder">
+                                        <CardHolderScene
+                                            color={activeColor}
+                                            enableZoom={false}
+                                        />
+                                    </WebGLBoundary>
                                 ) : (
                                     <div className="h-full w-full rounded-4xl border border-black/10 bg-white flex items-center justify-center">
                                         <div className="text-center px-4 sm:px-6">
